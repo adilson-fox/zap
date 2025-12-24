@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
+
+
+  <title>Registro de Ordem de Serviço</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --azul-escuro:#003562;
+      --azul-claro:#b0cbe9;
+      --cinza-card:#e0e0e0;
+      --borda:#888;
+      --borda-input:#ccc;
+      --shadow-strong:0 4px 10px rgba(0,0,0,0.2);
+      --shadow-soft:0 2px 5px rgba(0,0,0,0.2);
+      --radius:12px;
+      --bg:#f7f9fb;
+      --header-height:0px;
+      --nav-height:0px;
+      --success:#28a745;
+      --error:#dc3545;
+      --warning:#ffc107;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      font-family:'Roboto',sans-serif;
+      margin:0; background:var(--bg);
+      display:grid; grid-template-rows:auto auto 1fr; min-height:100vh;
+    }
+
+    /* Cabeçalho (fixo) */
+    header{
+      background:var(--azul-escuro); color:#fff; text-align:center; padding:20px;
+      box-shadow:0 4px 8px rgba(0,0,0,0.2); position:sticky; top:0; z-index:1000;
+    }
+    .titulo{font-size:2.4em;font-weight:bold;margin:0}
+    .subtitulo{font-size:1.4em;font-weight:bold;margin:0}
+
+    /* Navegação (fixa) */
+    nav{
+      background:var(--azul-claro); padding:15px 10px;
+      display:flex; justify-content:center; gap:15px;
+      box-shadow:var(--shadow-strong);
+      position:sticky; top:var(--header-height,0px); z-index:950;
+      margin-bottom:16px;
+    }
+    .nav-button{
+      background:var(--azul-claro); color:#000; font-weight:bold;
+      border:1px solid var(--borda); padding:10px 20px; border-radius:var(--radius);
+      box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; transition:transform .2s;
+    }
+    .nav-button:hover{ transform:scale(1.05) }
+
+    /* Card do formulário (título fixo + corpo rolável) */
+    .formulario{
+      background:var(--cinza-card); width:92%; max-width:1100px;
+      margin:0 auto; padding:30px; border-radius:10px; box-shadow:var(--shadow-strong);
+      display:flex; flex-direction:column; min-height:0;
+      height: calc(100vh - var(--header-height) - var(--nav-height) - 32px);
+      overflow:hidden;
+    }
+    .form-title{
+      color:var(--azul-escuro); font-weight:bold; font-size:1.6em;
+      margin:0 0 14px 0; flex:0 0 auto;
+      background:var(--cinza-card); padding:6px 8px; border-bottom:1px solid #d8d8d8;
+    }
+    .form-body{
+      flex:1 1 auto; min-height:0; overflow-y:auto;
+      padding-inline-end:14px;
+      scrollbar-gutter:stable;
+    }
+
+    /* Campos */
+    label{display:block; font-weight:bold; color:#000; margin-bottom:6px}
+    input[type="text"], input[type="number"], input[type="date"], input[type="tel"],
+    input[type="email"], select, textarea{
+      width:100%; background:#fff; padding:10px; border:1px solid var(--borda-input);
+      border-radius:6px; font-size:1em; box-shadow:var(--shadow-soft)
+    }
+    textarea{min-height:86px; resize:vertical}
+    .radio-group{display:flex; gap:24px; align-items:center; margin-top:6px}
+    .muted{color:#444; font-weight:500}
+    .auto-generated{background-color:#f8f9fa; color:#666;}
+
+    /* GRID 12 colunas */
+    .grid12{display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:18px}
+    .c1{grid-column:span 1}.c2{grid-column:span 2}.c3{grid-column:span 3}
+    .c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}
+    .c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}
+    .c10{grid-column:span 10}.c11{grid-column:span 11}.c12{grid-column:span 12}
+
+    /* Accordion */
+    details{background:#f1f1f1; border:1px solid #d8d8d8; border-radius:8px; padding:12px 14px}
+    details>summary{cursor:pointer; list-style:none; font-weight:600; color:#222}
+    details>summary::-webkit-details-marker{display:none}
+
+    /* Botões */
+    .form-buttons{display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; margin-top:24px}
+    .command-button{
+      background:var(--cinza-card); color:#000; font-weight:bold; border:1px solid var(--borda);
+      padding:12px 20px; border-radius:var(--radius); box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; flex:1; min-width:180px; transition:transform .15s
+    }
+    .command-button:hover{transform:scale(1.03)}
+    .command-button:disabled{
+      background:#ccc; color:#666; cursor:not-allowed; transform:none
+    }
+
+    /* Mensagens de status */
+     .status-message {
+        position: sticky;
+        bottom: 0;
+        width: 100%;
+        margin-bottom: 0;           /* espaço abaixo, ajuste conforme necessário */
+        box-sizing: border-box;
+        position: relative;              /* garantir que permaneça no fluxo */
+        z-index: 10;                      /* elevar sobre botões se necessário */
+      }
+          
+      .form-buttons {
+        clear: both;                     /* garantir que fique abaixo de qualquer elemento flutuante anterior */
+        margin-top: 0;                   /* zera margem superior se houver */
+        position: relative;              /* mantê-lo no fluxo */
+        z-index: 1;                       /* botões ficam “atrás” da mensagem, se necessário */
+      }
+   .status-container {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 20px; /* ajusta conforme espaço */
+      width: calc(100% - 40px);
+      margin: 0 auto;
+    }
+
+    .status-success{background:var(--success); color:white; display:block;}
+    .status-error{background:var(--error); color:white; display:block;}
+    .status-warning{background:var(--warning); color:black; display:block;}
+
+    /* Loading spinner */
+    .spinner {
+      border: 4px solid rgba(0,0,0,0.1);
+      border-radius: 50%;
+      border-top: 4px solid var(--azul-escuro);
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsividade */
+    @media (max-width: 980px){
+      .grid12{grid-template-columns:repeat(6, minmax(0,1fr))}
+      .c8{grid-column:span 6} .c9{grid-column:span 6} .c6{grid-column:span 6}
+      .c4{grid-column:span 3} .c3{grid-column:span 3} .c2{grid-column:span 3}
+    }
+    @media (max-width: 620px){
+      .grid12{grid-template-columns:1fr}
+      .c1,.c2,.c3,.c4,.c5,.c6,.c7,.c8,.c9,.c10,.c11,.c12{grid-column:1/-1}
+      .titulo{font-size:2em} .subtitulo{font-size:1.2em}
+      .form-buttons{flex-direction:column}
+      .command-button{min-width:100%}
+    } 
+
+    /* === SIDEBAR (DASHBOARD LATERAL) ================================== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  background: var(--azul-escuro);
+  color: #fff;
+  padding: 20px 0;
+  transform: translateX(-240px);
+  transition: 0.3s ease;
+  z-index: 9999;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.sidebar a {
+  display: block;
+  padding: 12px 22px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.sidebar a:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Botão que abre e fecha o menu */
+.menu-toggle {
+  position: fixed;
+  top: 18px;
+  left: 16px;
+  background: var(--azul-escuro);
+  color: #fff;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 10000;
+  font-size: 18px;
+  transition: background 0.2s;
+}
+
+.menu-toggle:hover {
+  background: #022d52;
+}
+
+/* Empurra o conteúdo quando o menu abre */
+.content.shift {
+  margin-left: 240px;
+  transition: margin-left 0.3s ease;
+}
+  </style>
+</head>
+
+<script>
+  // const para abrir e fechar o menu 
+  
+  document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.querySelector(".menu-toggle");
+  const sidebar   = document.getElementById("sidebar");
+  const content   = document.getElementById("content");
+
+  toggleBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("open");
+    content.classList.toggle("shift");
+  });
+});
+
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://vepnalrpyaxhpklicqrb.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlcG5hbHJweWF4aHBrbGljcXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5MDgxNzIsImV4cCI6MjA3NzQ4NDE3Mn0.-9_J-RE4IWdaGISGZgAXe6S2MLStG9lVm50suQKr7jY";
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+
+
+  //
+/* Função Principal de Pesquisa */
+document.addEventListener("DOMContentLoaded", () => {
+    // Função Principal de Pesquisa
+    async function buscarOS() {
+        const termo = document.getElementById('numeroOS').value.trim();
+        const resultsContainer = document.getElementById('resultsContainer');
+        const btnBuscar = document.getElementById('btnBuscar');
+        
+        resultsContainer.innerHTML = '';
+        mostrarStatus('', ''); // Limpa status
+        
+        if (termo.length < 5) {
+            mostrarStatus('❌ Digite pelo menos 5 caracteres para a busca (Ex: OS-1001).', 'error');
+            return;
+        }
+        
+        btnBuscar.disabled = true;
+        btnBuscar.textContent = 'Buscando...';
+        
+        // 1. Busca exata
+        let { data: results, error } = await supabase
+            .from('Principal') 
+            
+            .select('id, nextosnumber, protocolo, tipoocorrencia, paciente') 
+            .or(`nextosnumber.eq.${termo},protocolo.eq.${termo}`)
+            .limit(10); 
+
+        // 2. Busca parcial
+        if (!results || results.length === 0) {
+            ({ data: results, error } = await supabase
+                .from('Principal')
+                .ilike('protocolo', `%${termo}%`)
+                .select('id, nextosnumber, protocolo, tipoocorrencia, paciente')
+                .limit(10));
+        }
+        
+        btnBuscar.disabled = false;
+        btnBuscar.textContent = '🔍 Buscar OS';
+        
+        if (error) {
+            console.error("Erro Supabase:", error);
+            mostrarStatus('🚨 Erro ao buscar: ' + error.message, 'error');
+            return;
+        }
+
+        if (results.length > 0) {
+            mostrarResultados(results);
+            mostrarStatus(`✅ ${results.length} OS(s) encontrada(s).`, 'success');
+        } else {
+            resultsContainer.innerHTML = '<p style="color: red; font-weight: bold;">Nenhuma Ordem de Serviço encontrada com este termo.</p>';
+            mostrarStatus('Nenhuma OS encontrada.', 'warning');
+        }
+    }
+
+    // 3. Liga o botão Salvar/Atualizar
+    document.getElementById('btnSalvar').addEventListener('click', salvarOuAtualizarOS);
+
+    // 4. Atualiza UBS quando DA muda
+    document.querySelectorAll('input[name="da"]').forEach(radio => {
+        radio.addEventListener('change', atualizarOpcoesUBS);
+    });
+
+    // 5. Verifica se veio parâmetro na URL
+    const params = new URLSearchParams(window.location.search);
+    const osNumeroBusca = params.get('osnumero'); 
+
+    if (osNumeroBusca) {
+        document.getElementById('numeroOS').value = osNumeroBusca;
+        buscarOS();
+    }
+
+    // Funções globais
+    window.buscarOS = buscarOS;
+    window.limparFormulario = limparFormulario;
+   // window.resetarContadorOS = resetarContadorOS;
+});
+
+   
+
+  // Mapeamento do tipo de ocorrência (coluna 'tipoocorrencia' na tabela Principal) 
+    // para o nome do arquivo HTML da ficha de campo.
+   const FICHA_MAP = {
+        'Escorpião': 'Escorpiao.html',
+        'Dengue': 'dengue.html', // Assumindo que este é o nome da ocorrência
+        'Himenópteros': 'himenoptero.html', // Assumindo que este é o nome da ocorrência
+         'Abelhas': 'himenoptero.html', // Pode ser um sinônimo para Himenópteros
+        // Adicione mais mapeamentos conforme suas ocorrências:
+        // 'Raiva': 'zoosanitaria.html' 
+    };
+   
+
+// === SETUP DE EVENTOS ===
+   
+
+
+
+   // 
+   function loadPage(key){
+                const routes = { 
+                gestao_os_supabase:'Gestao.html', // Ajuste conforme seu arquivo
+                ficha_OS:'Ficha_OS.html', // Ajuste conforme seu arquivo
+                login_senha:'login_senha.html',
+                  Sessao_Encerrada: 'Sessao_Encerrada.html',
+                  welcome_sigva: 'welcome_sigva.html'
+                };
+                window.location.href = routes[key] || (key + '.html');
+            }
+ 
+   // 
+   function mostrarStatus(mensagem, tipo) {
+        const statusEl = document.getElementById('statusMessage');
+        statusEl.textContent = mensagem;
+        statusEl.className = 'status-message';
+        statusEl.style.display = 'block';
+
+        if (tipo === 'success') {
+          statusEl.classList.add('status-success');
+        } else if (tipo === 'error') {
+          statusEl.classList.add('status-error');
+        } else if (tipo === 'warning') {
+          statusEl.classList.add('status-warning');
+        }
+        
+        if (tipo !== 'error') {
+          setTimeout(() => { statusEl.style.display = 'none'; }, 5000);
+        }
+    }
+
+  // 
+   
+  /* Função para exibir os resultados na tela e preparar o clique */
+    function mostrarResultados(results) {
+        const resultsContainer = document.getElementById('resultsContainer');
+        resultsContainer.innerHTML = '<h3>Clique na OS para abrir a Ficha de Campo:</h3>';
+        
+        results.forEach(os => {
+            // Determina qual arquivo HTML abrir baseado no tipo de ocorrência
+            const tipoOcorrencia = os.tipoocorrencia ? os.tipoocorrencia.trim() : 'FichaOS';
+            const fichaHTML = FICHA_MAP[tipoOcorrencia] || 'ficha_OS.html'; // Padrão se não mapeado
+            
+            const item = document.createElement('div');
+            item.className = 'os-item';
+            item.setAttribute('data-os-id', os.id);
+            item.setAttribute('data-ficha-html', fichaHTML);
+            
+            item.innerHTML = `
+                <strong>OS Nº: ${os.nextosnumber || 'N/A'}</strong> | 
+                Protocolo: ${os.protocolo || 'N/A'} <span class="tipo-ficha">Ficha: ${tipoOcorrencia}</span> <br>
+                Solicitante: ${os.paciente || 'N/A'}
+            `;
+            
+            item.addEventListener('click', () => {
+                const osId = item.getAttribute('data-os-id');
+                const ficha = item.getAttribute('data-ficha-html');
+                
+                // Redireciona para o arquivo correto, passando o ID na URL
+                window.location.href = `${ficha}?osid=${osId}`;
+            });
+            
+            resultsContainer.appendChild(item);
+        });
+    }
+
+// 
+</script>
+
+<body>
+
+
+<button class="menu-toggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <h2>      >--------          SIGVA - Acesso Rápido</h2>
+
+
+  <a href="welcome_sigva.html">Página Inicial</a>
+
+  <a href="pesquisa_os.html">Pesquisar OS</a>
+
+  <a href="dengue.html">Dengue</a>
+  
+  
+  <a href="Escorpiao.html">Escorpião</a>
+  <a href="himenoptero.html">Himenopteros - Abelhas</a>
+  <a href="identificacao_sorologia.html">Identificação e Sorologia</a>
+  <a href="materialapoio.html">Material de Apoio</a>
+  <a href="monitoramento.html">Monitoramento</a>
+  <a href="acessoOS.html">Ordem de Serviço</a>
+  <a href="zoosanitaria.html">Zoosanitária</a>
+</div>
+
+<div class="content" id="content">
+
+
+
+
+  <!-- Cabeçalho -->
+  <header>
+    <p class="titulo">Sistema de Gestão de Ordens de Serviço</p>
+    <p class="subtitulo">Unidade de Vigilância em Saúde - M' Boi Mirim</p>
+
+    <p id="welcomeMsg" class="welcome-message"></p>
+  </header>
+
+  <!-- Navegação -->
+  <nav>
+    <button class="nav-button" onclick="loadPage('welcome_sigva')">Home</button>
+    <button class="nav-button" onclick="loadPage('gestao_os_supabase')">Gestão</button>
+    <button class="nav-button" onclick="loadPage('ficha_OS')">Ficha de campo-OS</button>
+    <button class="nav-button" onclick="loadPage('login_senha')">Login</button>
+    <button class="nav-button" onclick="loadPage('Sessao_Encerrada')">Sair</button>
+   
+    
+    
+  <!-- Encerrando a Navegação //  <a class="nav-button" onclick="handleLogout()" style="cursor: pointer;">Sair</a>  -->
+
+  </nav>
+
+  <!-- Formulário -->
+  <main class="formulario">
+    <div class="form-title">Pesquisa e Atualização do Registro de Ordem de Serviço</div>
+
+    <div class="form-body">
+      <!-- Mensagens de status -->
+      <div id="statusMessage" class="status-message"></div>
+      <div id="loadingSpinner" class="spinner"></div>
+      
+      <form id="form-os">
+        <section class="grid12">
+          <!-- 1) Nº OS, Origem, Protocolo -->
+          
+          
+
+          <div class="c4">
+            <label for="numeroOS">Nº da OS <span class="muted">( digite aqui p/ pesquisar)</span></label>
+            <input id="numeroOS" name="numeroOS" type="text" placeholder="EX: os-1001/2025">
+
+            <button type="button" class="command-button" id="btnBuscar">  🔍 Buscar OS
+             </button>
+
+          </div>
+          
+          
+          <div class="c4">
+            <label for="origem">Origem da Solicitação</label>
+            <select id="origem" name="origem">
+              <option value="" selected>Selecione</option>
+              <option>SIGRC</option><option>Email</option><option>e-SIC</option><option>Outros</option>
+            </select>
+          </div>
+          <div class="c4">
+            <label for="protocolo">Protocolo</label>
+            <input id="protocolo" name="protocolo" type="text" placeholder="Ex.: SIGRC-0000/2025">
+          </div>
+
+          <!-- 2) Datas e Tipo de ocorrência -->
+          <div class="c4">
+            <label for="dataNotificacao">Data da Notificação</label>
+            <input id="dataNotificacao" name="dataNotificacao" type="date">
+          </div>
+          <div class="c4">
+            <label for="dataRecebimento">Data de Recebimento</label>
+            <input id="dataRecebimento" name="dataRecebimento" type="date">
+          </div>
+          <div class="c4">
+            <label for="tipoOcorrencia">Tipo de Ocorrência</label>
+            <select id="tipoOcorrencia" name="tipoOcorrencia">
+              <option value="" selected>Selecione</option>
+              <option>Aedes aegypti</option>
+              <option>Animais</option>
+              <option>Barbeiro</option>
+              <option>Culex sp.</option>
+              
+              <option>Escorpião</option>
+
+              <option>Escorpionismo</option>
+              <option>Esporotricose</option>
+              <option>Febre maculosa</option>
+              <option>Himenoptero</option>
+              <option>Leptospirose</option>
+              <option>Roedores</option>
+              <option>Pombos</option>
+              <option>Transtorno de acumulação</option>
+            </select>
+          </div>
+
+          <!-- Descrição -->
+          <div class="c12">
+            <label for="descricao">Descrição da Solicitação</label>
+            <textarea id="descricao" name="descricao" placeholder="Descreva a solicitação..."></textarea>
+          </div>
+
+          <!-- 3) Paciente + Telefones -->
+          <div class="c4">
+            <label for="paciente">Paciente / Solicitante</label>
+            <input id="paciente" name="paciente" type="text" placeholder="Nome completo">
+          </div>
+          <div class="c4">
+            <label for="tel1">Telefone 1</label>
+            <input id="tel1" name="tel1" type="tel" placeholder="(XX) XXXXX-XXXX">
+          </div>
+          <div class="c4">
+            <label for="tel2">Telefone 2</label>
+            <input id="tel2" name="tel2" type="tel" placeholder="(XX) XXXXX-XXXX">
+          </div>
+
+          <!-- 4) Endereço -->
+          <div class="c2">
+            <label for="tipoLogradouro">Tipo</label>
+            <select id="tipoLogradouro" name="tipoLogradouro">
+              <option value="" selected>Selecione</option>
+              <option>Rua</option><option>Avenida</option><option>Travessa</option>
+              <option>Praça</option><option>Estrada</option>
+            </select>
+          </div>
+          <div class="c6">
+            <label for="logradouro">Logradouro</label>
+            <input id="logradouro" name="logradouro" type="text" placeholder="Ex.: Bento de Souza">
+          </div>
+          <div class="c2">
+            <label for="numero">Nº</label>
+            <input id="numero" name="numero" type="text" inputmode="numeric" placeholder="000">
+          </div>
+          <div class="c2">
+            <label for="bairro">Bairro</label>
+            <input id="bairro" name="bairro" type="text" placeholder="Bairro">
+          </div>
+
+          <!-- 5) DA + Unidade de Origem (UBS) -->
+          <div class="c6">
+            <label>Diretoria Administrativa (DA)</label>
+            <div class="radio-group">
+              <label class="muted"><input type="radio" name="da" value="42"> 42</label>
+              <label class="muted"><input type="radio" name="da" value="45"> 45</label>
+            </div>
+          </div>
+
+          <div class="c6">
+            <label for="ubs">Unidade de Origem (UBS)</label>
+            <select id="ubs" name="ubs" disabled>
+              <option value="">Selecione a DA primeiro</option>
+            </select>
+          </div>
+
+          <!-- 6) Técnico + Responsável -->
+          <div class="c6">
+            <label for="tecnico">Técnico Responsável</label>
+            <select id="tecnico" name="tecnico">
+              <option value="" selected>Selecione</option>
+              <option>Ana Vieira da Costa</option>
+              <option>Isabela Pereira Ricci Rocha</option>
+              <option>Juliana Blanco Bovino</option>
+              <option>Leandro Cesar Pompeu</option>
+              <option>Rosely Therezinha de Conti Cannavó</option>
+              <option>Samuel Paulo Gioia Guizze</option>
+            </select>
+          </div>
+          <div class="c6">
+         <label for="preenchedor">Responsável pelo Preenchimento</label>
+          <select id="preenchedor" name="preenchedor">
+             <option value="" selected>Selecione</option>
+            <option value="Adilson">Adilson</option>
+            <option value="Aline">Aline</option>
+            <option value="Benê">Benê</option>
+           <option value="William R.">William R.</option>
+          </select>
+         </div>
+
+          <!-- 8) Pré-agendar 1ª visita (opcional) -->
+          <div class="c12">
+            <details id="status_ordem_servico" open>               
+              
+                <div>
+                <label for="status-os">Status da OS:</label><br>
+                <select id="status-os">
+                    <option value="">Selecione</option>
+                    <option value="Em aberto">Em aberto</option>
+                    <option value="Retorno">Retorno</option>
+                    <option value="Arquivada">Arquivada</option>
+                </select>
+            </div>
+            </div>
+          </details>
+      </div>
+        </section>
+
+        <!-- Botões -->
+        <div class="form-buttons">
+          
+          
+          <div id="statusMessage" class="status-message"></div>
+          <div id="resultsContainer"></div>
+
+
+          <button type="button" class="command-button" id="btnSalvar" > Salvar OS </button>
+          <button type="button" class="command-button" onclick="limparFormulario()">Limpar campos</button>
+         
+           
+          <button type="button" class="command-button" onclick="tracarRota();return true;">Ver End. no Mapa</button>
+
+          <button type="button" onclick="resetarContadorOS()">Zerar Contador [OS]</button>
+
+
+        </div>
+      </form>
+    </div>
+  </main> 
+
+<script>
+// COLOCANDO RESTRIÇÃO A PAGINA 
+
+window.addEventListener("DOMContentLoaded", () => {
+      const logado = localStorage.getItem("usuarioLogado");
+      if (logado !== "true") {
+        // Se não está logado, volta para login
+        window.location.href = "login_senha.html";
+      } else {
+        // Se está logado, mostra o nome
+        const nome = localStorage.getItem("usuarioNome");
+        if (nome) {
+          document.getElementById("welcomeMsg").textContent = "Bem-vindo, " + nome + "!";
+        }
+      }
+    });
+ 
+  
+</script>
+
+
+
+  <script>
+    // OBS: ESTA PAGINA ESTA VINCULADA AO CODIGO GS = Registro2.gs NO GOOGLE APPS SCRIPT - GESTAO (EM AJUSTE)
+
+    // Contador para gerar números de OS automáticos
+    // let contadorOS = localStorage.getItem('contadorOS') ? parseInt(localStorage.getItem('contadorOS')) : 1000;
+
+    /* mede header e nav para o cálculo da altura do card */
+    (function(){
+      function setHeights(){
+        const h = document.querySelector('header');
+        const n = document.querySelector('nav');
+        const hH = h ? h.offsetHeight : 0;
+        const nH = n ? n.offsetHeight : 0;
+        document.documentElement.style.setProperty('--header-height', hH + 'px');
+        document.documentElement.style.setProperty('--nav-height', nH + 'px');
+      }
+      setHeights();
+      window.addEventListener('resize', setHeights);
+    })();
+
+    /* Roteador simples para os botões da barra */
+    function loadPage(key){
+      const routes = { gestao:'Gestao.html', fichaOS:'FichaOS.html', login:'index.html' };
+      window.location.href = routes[key] || (key + '.html');
+    }
+
+    /* Liga/desliga campos do pré-agendamento */
+    (function(){
+      const chk = document.getElementById('chkPreAgendar');
+      if (!chk) return;
+      const deps = ['v1data_plan','v1obs_plan'].map(id => document.getElementById(id));
+      const toggle = () => deps.forEach(el => { if (el) el.disabled = !chk.checked; });
+      toggle();
+      chk.addEventListener('change', toggle);
+    })();
+
+    /* Função para gerar número de OS automático */
+    // Removido: definição duplicada da função gerarNumeroOS
+
+    /* Função para mostrar mensagens de status */
+    function mostrarStatus(mensagem, tipo) {
+      const statusEl = document.getElementById('statusMessage');
+      statusEl.textContent = mensagem;
+      statusEl.className = 'status-message';
+      
+      if (mostrar) {
+        //spinner.style.display = 'block';
+        spinner.style.display = 'none';
+        btnSalvar.disabled = true;
+        //btnSalvar.textContent = 'Salvando...'; 
+        btnSalvar.textContent = "✅ OS salva com sucesso!";  
+        
+        const tempoVisivel = 8000; 
+        
+        setTimeout(() => {
+          mostrarStatus();
+          spinner.style.display = 'none';
+          btnSalvar.disabled = true;
+          btnSalvar.textContent = 'Salvar OS';
+        }, tempoVisivel);
+
+
+        setTimeout(() => {
+          limparFormulario();
+          spinner.style.display = 'none';
+          btnSalvar.disabled = false;
+          btnSalvar.textContent = 'Salvar OS';
+        }, tempoVisivel);
+
+
+
+
+      } else {
+        spinner.style.display = 'none';
+        btnSalvar.disabled = false;
+        btnSalvar.textContent = 'Salvar OS';
+      }
+    }
+
+    /* Validação do formulário */
+    function validarFormulario(dados) {
+      const erros = [];
+
+      // Validar formato do telefone se preenchido
+      const telRegex = /^\([0-9]{2}\) [0-9]{4,5}-[0-9]{4}$/;
+      if (dados.tel1 && !telRegex.test(dados.tel1)) {
+        erros.push('Telefone 1 no formato incorreto (use: (XX) XXXXX-XXXX)');
+      }
+      if (dados.tel2 && !telRegex.test(dados.tel2)) {
+        erros.push('Telefone 2 no formato incorreto (use: (XX) XXXXX-XXXX)');
+      }
+
+      // Validar data de pré-agendamento se marcado
+      if (dados.preAgendamento && dados.preAgendamento.data) {
+        const dataAgendamento = new Date(dados.preAgendamento.data);
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        
+        if (dataAgendamento < hoje) {
+          erros.push('Data do pré-agendamento não pode ser anterior à data atual');
+        }
+      }
+
+      return erros;
+    }
+
+     /* FUNCAO === LerIDdaURL === */
+
+      function LerIDdaURL() {
+            const params = new URLSearchParams(window.location.search);
+            const osId = params.get('osid');
+            if (!osId) {
+                document.getElementById('r-os').textContent = 'ERRO';
+                alert('Erro: ID da Ordem de Serviço não encontrado na URL.');
+                return null;
+            }
+            return parseInt(osId);
+        }
+
+                    // =========================================================================
+            // SCRIPT DE BUSCA E ATUALIZAÇÃO (Substituir o bloco <script> existente)
+            // =========================================================================
+
+            // Variável para armazenar o ID (Supabase) da OS que está sendo editada/visualizada.
+            let currentOSId = null; 
+
+            // Variável para armazenar o Nº da OS (texto) que está sendo editada/visualizada.
+            let currentOSNumber = null;
+
+
+     /* === UBS por DA === */
+    const UBS_BY_DA = {
+        "42": [
+            "Alto do Riviera","Aracati","Caiçara","Capela","Chácara Santa Maria",
+            "Coimbra","Guarujá","Herculano","Horizonte Azul","Kagohara","Nakamura",
+            "Paranapanema","Parque do Lago","Parque Novo Santo Amaro",
+            "Santa Lúcia","Santa Margarida","Vera Cruz","Jardim Souza", 
+        ],
+        "45": [
+            "Jardim Alfredo","Jardim Souza","Jardim Thomas","Novo Jardim I", "Novo Caminho",
+            "Parque Figueira Grande","Jardim Celeste","Parque Santo Antônio","Parque Santo Antônio II",
+            "Vila das Belezas","Zumbi dos Palmares","Brasília",
+        ]
+    };
+   
+   let contadorOS = 0; // Declare a variável no escopo global/superior
+
+window.onload = function() {
+    // Tenta carregar o contador do localStorage.
+  //  const savedCount = localStorage.getItem('contadorOS');
+  //  if (savedCount) {
+  //      contadorOS = parseInt(savedCount);
+  //  }
+ // }
+
+
+ // =========================================================================
+// FUNÇÕES DE UTILIDADE E UI
+// =========================================================================
+};
+function limparFormulario() {
+    document.getElementById('form-os').reset();
+    currentOSId = null;
+    currentOSNumber = null;
+    document.getElementById('numeroOS').disabled = false;
+    document.getElementById('btnSalvar').textContent = 'Salvar OS';
+    mostrarStatus('Formulário limpo. Pronto para um novo registro ou busca.', 'warning');
+}
+
+function mostrarStatus(mensagem, tipo) {
+    const statusEl = document.getElementById('statusMessage');
+    const statusContainer = statusEl.closest('.status-message');
+    
+    statusEl.textContent = mensagem;
+    statusEl.className = 'status-message';
+    statusContainer.style.display = 'block';
+
+    if (tipo === 'success') {
+        statusEl.classList.add('status-success');
+    } else if (tipo === 'error') {
+        statusEl.classList.add('status-error');
+    } else if (tipo === 'warning') {
+        statusEl.classList.add('status-warning');
+    }
+    
+    if (tipo !== 'error') {
+        setTimeout(() => { statusContainer.style.display = 'none'; }, 5000);
+    }
+}
+
+function toggleLoading(mostrar, mensagem = 'Processando...') {
+    const spinner = document.getElementById('loadingSpinner');
+    const btnSalvar = document.getElementById('btnSalvar');
+    
+    if (mostrar) {
+        spinner.style.display = 'block';
+        btnSalvar.disabled = true;
+        btnSalvar.textContent = mensagem;
+    } else {
+        spinner.style.display = 'none';
+        btnSalvar.disabled = false;
+        btnSalvar.textContent = currentOSId ? 'Atualizar OS' : 'Salvar OS';
+    }
+}
+
+
+/* Preenchimento Dinâmico da UBS (Manter esta função) */
+function atualizarOpcoesUBS() {
+    const ubsSelect = document.getElementById('ubs');
+    const radiosDA = document.querySelectorAll('input[name="da"]');
+    let selectedDA = null;
+
+    radiosDA.forEach(radio => {
+        if (radio.checked) {
+            selectedDA = radio.value;
+        }
+    });
+
+    ubsSelect.innerHTML = '<option value="">Selecione</option>';
+    ubsSelect.disabled = true;
+
+    if (selectedDA && UBS_BY_DA[selectedDA]) {
+        UBS_BY_DA[selectedDA].forEach(ubs => {
+            const option = document.createElement('option');
+            option.value = ubs;
+            option.textContent = ubs;
+            ubsSelect.appendChild(option);
+        });
+        ubsSelect.disabled = false;
+    }
+}
+
+// =========================================================================
+// FUNÇÕES DE DADOS (BUSCA/CARREGAMENTO)
+// =========================================================================
+
+/* Função que carrega e preenche os dados no formulário */
+async function carregarOS(osNumero) {
+    toggleLoading(true, 'Carregando dados da OS...');
+    
+    const { data: results, error } = await supabase
+        .from('Principal') 
+        .select('*') // Seleciona todas as colunas para preenchimento
+        .or(`nextosnumber.eq.${osNumero},protocolo.eq.${osNumero}`)
+        .single(); // Espera apenas um registro
+
+    if (error && error.code !== 'PGRST116') { // PGRST116 = Não encontrado (zero rows)
+        console.error("Erro Supabase ao carregar:", error);
+        mostrarStatus('🚨 Erro ao carregar OS: ' + error.message, 'error');
+        toggleLoading(false);
+        return false;
+    }
+
+    if (!results) {
+        mostrarStatus(`⚠️ OS/Protocolo **${osNumero}** não encontrado(s).`, 'warning');
+        limparFormulario();
+        toggleLoading(false);
+        return false;
+    }
+    
+    // Sucesso no carregamento
+    currentOSId = results.id; 
+    currentOSNumber = results.nextosnumber;
+
+    preencherFormulario(results);
+    document.getElementById('numeroOS').disabled = true; // Bloqueia o campo de busca
+    document.getElementById('btnSalvar').textContent = 'Atualizar OS';
+    mostrarStatus(`✅ OS ${currentOSNumber} carregada com sucesso!`, 'success');
+    toggleLoading(false);
+    return true;
+}
+
+
+/* Função para preencher todos os campos do formulário */
+function preencherFormulario(dados) {
+    // Campos de texto e data
+    document.getElementById('numeroOS').value = dados.nextosnumber || '';
+    document.getElementById('protocolo').value = dados.protocolo || '';
+    document.getElementById('dataNotificacao').value = dados.datanotificacao || '';
+    document.getElementById('dataRecebimento').value = dados.datarecebimento || '';
+    document.getElementById('descricao').value = dados.descricao || '';
+    document.getElementById('paciente').value = dados.paciente || '';
+    document.getElementById('tel1').value = dados.tel1 || '';
+    document.getElementById('tel2').value = dados.tel2 || '';
+    document.getElementById('tipoLogradouro').value = dados.tipologradouro || '';
+    document.getElementById('logradouro').value = dados.logradouro || '';
+    document.getElementById('numero').value = dados.numero || '';
+    document.getElementById('bairro').value = dados.bairro || '';
+
+    // Selects
+    document.getElementById('origem').value = dados.origem || '';
+    document.getElementById('tipoOcorrencia').value = dados.tipoocorrencia || '';
+    document.getElementById('tecnico').value = dados.tecnico || '';
+    document.getElementById('preenchedor').value = dados.preenchedor || '';
+    document.getElementById('status-os').value = dados.status || '';
+
+    // Radio Buttons (DA)
+    document.querySelectorAll('input[name="da"]').forEach(radio => {
+        radio.checked = radio.value === dados.da;
+    });
+
+    // Chama para preencher e selecionar o campo UBS (depende do DA)
+    atualizarOpcoesUBS(); 
+    if (dados.ubs) {
+        document.getElementById('ubs').value = dados.ubs;
+    }
+}
+
+
+/* Função Principal de Pesquisa para a página de MÚLTIPLOS RESULTADOS */
+async function buscarMultiplasOS() {
+    // O ID do campo de busca é o 'numeroOS' na sua página de formulário.
+    const termo = document.getElementById('numeroOS').value.trim(); 
+    const resultsContainer = document.getElementById('resultsContainer');
+    const btnBuscar = document.getElementById('btnBuscar');
+    
+    resultsContainer.innerHTML = '';
+    mostrarStatus('', ''); // Limpa status
+    
+    if (termo.length < 5) {
+        mostrarStatus('❌ Digite pelo menos 5 caracteres para a busca (Ex: OS-1001).', 'error');
+        return;
+    }
+    
+    btnBuscar.disabled = true;
+    btnBuscar.textContent = 'Buscando...';
+    
+    // 1. Tenta buscar pelo Nº da OS exato OU Protocolo exato
+    let { data: results, error } = await supabase
+        .from('Principal') 
+        .select('id, nextosnumber, protocolo, tipoocorrencia, paciente') 
+        .limit(10)
+        .or(`nextosnumber.eq.${termo},protocolo.eq.${termo}`); 
+
+    // 2. Se a busca exata falhar, tenta uma busca parcial (LIKE) no Protocolo
+    if (!results || results.length === 0) {
+      ({ data: results, error } = await supabase
+        .from('Principal')
+        .ilike('protocolo', `%${termo}%`) // Busca Protocolo que CONTENHA o termo
+        .limit(10))
+        .select('id, nextosnumber, protocolo, tipoocorrencia, paciente');
+    }
+    
+    btnBuscar.disabled = false;
+    btnBuscar.textContent = '🔍 Buscar OS';
+    
+    if (error) {
+        console.error("Erro Supabase:", error);
+        mostrarStatus('🚨 Erro ao buscar: ' + error.message, 'error');
+        return;
+    }
+
+    if (results.length > 0) {
+        mostrarResultados(results);
+        mostrarStatus(`✅ ${results.length} OS(s) encontrada(s).`, 'success');
+    } else {
+        resultsContainer.innerHTML = '<p style="color: red; font-weight: bold;">Nenhuma Ordem de Serviço encontrada com este termo.</p>';
+        mostrarStatus('Nenhuma OS encontrada.', 'warning');
+    }
+}
+
+/* Função para obter todos os dados do formulário */
+function obterDadosFormulario() {
+    // Mapeia os dados do formulário para o formato da sua tabela 'Principal'
+    const dados = {
+        // Campos de busca/ID não são enviados, apenas usados
+        nextosnumber: document.getElementById('numeroOS').value.trim(),
+        protocolo: document.getElementById('protocolo').value.trim(),
+        datanotificacao: document.getElementById('dataNotificacao').value,
+        datarecebimento: document.getElementById('dataRecebimento').value,
+        descricao: document.getElementById('descricao').value.trim(),
+        paciente: document.getElementById('paciente').value.trim(),
+        tel1: document.getElementById('tel1').value.trim(),
+        tel2: document.getElementById('tel2').value.trim(),
+        tipologradouro: document.getElementById('tipoLogradouro').value,
+        logradouro: document.getElementById('logradouro').value.trim(),
+        numero: document.getElementById('numero').value.trim(),
+        bairro: document.getElementById('bairro').value.trim(),
+        origem: document.getElementById('origem').value,
+        tipoocorrencia: document.getElementById('tipoOcorrencia').value,
+        ubs: document.getElementById('ubs').value,
+        tecnico: document.getElementById('tecnico').value,
+        preenchedor: document.getElementById('preenchedor').value,
+        status: document.getElementById('status-os').value,
+        // Captura o DA selecionado
+        da: document.querySelector('input[name="da"]:checked')?.value || null,
+        // Adicione outros campos se necessário (ex: latitude, longitude, etc.)
+    };
+
+    return dados;
+}
+
+/* Função para atualizar um registro existente */
+async function atualizarOS(osId, dados) {
+    toggleLoading(true, `Atualizando OS ${dados.nextosnumber || osId}...`);
+
+    const { error } = await supabase
+        .from('Principal')
+        .update(dados)
+        .eq('id', osId); // Usa o ID (chave primária) para identificar o registro
+
+    toggleLoading(false);
+
+    if (error) {
+        console.error("Erro Supabase ao atualizar:", error);
+        mostrarStatus('🚨 Erro ao atualizar OS: ' + error.message, 'error');
+        return false;
+    } else {
+        mostrarStatus(`✅ OS ${dados.nextosnumber || osId} atualizada com sucesso!`, 'success');
+        // Não limpa o formulário após a atualização para que o usuário veja o que foi salvo.
+        return true;
+    }
+}
+
+
+/* Função que decide se salva (Novo) ou atualiza (Existente) */
+async function salvarOuAtualizarOS() {
+    const dados = obterDadosFormulario();
+    
+    // Validação básica
+    if (!dados.nextosnumber || !dados.protocolo) {
+        mostrarStatus('O Número da OS e Protocolo são obrigatórios.', 'error');
+        return;
+    }
+    
+    // Usa a variável global definida em carregarOS
+    if (currentOSId) { 
+        // Se currentOSId existe (carregado via busca), ATUALIZA
+        await atualizarOS(currentOSId, dados);
+    } else {
+        // Se currentOSId NÃO existe, REGISTRA NOVO
+        await salvarOS(dados); // Chama a função de salvar novo registro
+    }
+}
+
+// =========================================================================
+// EVENT LISTENERS E SETUP
+// =========================================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Liga o botão de busca à função principal
+    document.getElementById('btnBuscar').addEventListener('click', buscarOS);
+
+    // 2. Permite a busca ao pressionar Enter no campo do Número da OS
+    document.getElementById('numeroOS').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault(); 
+            buscarOS();
+        }
+    });
+    
+
+    /* Função para gerar número de OS automático */
+    function gerarNumeroOS() {
+  contadorOS++;
+  localStorage.setItem('contadorOS', contadorOS.toString());
+  const anoAtual = new Date().getFullYear();
+  return `OS-${contadorOS.toString().padStart(4, '0')}/${anoAtual}`;
+}
+
+ /* Função para zerar o número de OS automático */
+function resetarContadorOS() {
+    // 1. Zera a variável global (se ela estiver definida como let/var)
+    contadorOS = 0; 
+    
+    // 2. Remove o item do localStorage (o mais importante para o reset persistente)
+    localStorage.removeItem('contadorOS'); 
+    
+    alert('O contador de Ordens de Serviço foi resetado para 0.');
+    
+    // Opcional: recarrega a página para aplicar o novo contador imediatamente.
+     window.location.reload(); 
+}
+
+    /* Função para mostrar mensagens de status */
+    function mostrarStatus(mensagem, tipo) {
+        const statusEl = document.getElementById('statusMessage');
+        statusEl.textContent = mensagem;
+        statusEl.className = 'status-message';
+        
+        if (tipo === 'success') {
+            statusEl.classList.add('status-success');
+        } else if (tipo === 'error') {
+            statusEl.classList.add('status-error');
+        } else if (tipo === 'warning') {
+            statusEl.classList.add('status-warning');
+        }
+        
+        if (tipo !== 'error') {
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 5000);
+        }
+    }
+
+    /* Função para mostrar/ocultar loading */
+    function toggleLoading(mostrar) {
+        const spinner = document.getElementById('loadingSpinner');
+        const btnSalvar = document.getElementById('btnSalvar');
+        
+        if (mostrar) {
+            spinner.style.display = 'block';
+            btnSalvar.disabled = true;
+            btnSalvar.textContent = 'Salvando...';
+            btnSalvar.textContent = "✅ OS salva com sucesso!";
+
+        } else {
+            spinner.style.display = 'none';
+            btnSalvar.disabled = false;
+            btnSalvar.textContent = 'Salvar OS';
+        }
+    }
+
+    /* Função principal para salvar OS no Google Sheets */
+     
+    async function salvarOS() {
+    toggleLoading(true); // <--- Adiciona o loading 
+
+    const logado = localStorage.getItem("usuarioLogado");
+    if (logado !== "true") {
+      alert("Sessão inválida. Faça login novamente.");
+      window.location.replace("login_senha.html");
+      return; // interrompe a função
+    }
+
+
+// 2. PREENCHIMENTO DOS CAMPOS DE INPUT/SELECT/TEXTAREA (Editáveis)
+                
+                const ALL_FIELDS = { ...PRINCIPAL_FIELD_MAP, ...DETALHES_FIELD_MAP };
+                
+                for (const id in ALL_FIELDS) {
+                    const element = document.getElementById(id);
+                    const campoBD = ALL_FIELDS[id];
+                    
+                    // Pega o valor da tabela correta
+                    let valorDoBD = id in PRINCIPAL_FIELD_MAP ? os[campoBD] : detalhes[campoBD];
+
+                    if (element && valorDoBD !== undefined && valorDoBD !== null) {
+                        if (element.type === 'date') {
+                            // Garante o formato YYYY-MM-DD
+                            element.value = valorDoBD.substring(0, 10); 
+                        } else if (element.type !== 'checkbox') {
+                            element.value = valorDoBD;
+                        }
+                    }
+                }
+
+
+
+
+
+    // Coletar dados do formulário
+    const dados = {
+        // ... (Seus dados coletados aqui, mantendo o que já está) ...
+        nextosnumber: document.getElementById('numeroOS').value,
+        origem: document.getElementById('origem').value,
+        protocolo: document.getElementById('protocolo').value,
+        datanotificacao: document.getElementById('dataNotificacao').value,
+        datarecebimento: document.getElementById('dataRecebimento').value,
+        tipoocorrencia: document.getElementById('tipoOcorrencia').value,
+        descricao: document.getElementById('descricao').value,
+        paciente: document.getElementById('paciente').value,
+        resppreenchimento: document.getElementById('preenchedor').value,
+        tecnico_responsavel: document.getElementById('tecnico').value,
+        logradouro: document.getElementById('logradouro').value,
+        tel1: document.getElementById('tel1').value,
+        tel2: document.getElementById('tel2').value,
+        tipologradouro: document.getElementById('tipoLogradouro').value,
+        numero: document.getElementById('numero').value,
+        bairro: document.getElementById('bairro').value,
+        da: (document.querySelector('input[name="da"]:checked') || {}).value,
+        ubs: document.getElementById('ubs').value,
+        statusos: document.getElementById('status-os').value,
+    };
+
+    // Inserir no Supabase
+    const { data, error } = await supabase
+        .from('Principal') // nome da tabela
+        .insert([dados]);
+
+    toggleLoading(false); // <--- Remove o loading
+
+    if (error) {
+        console.error("Erro ao salvar:", error);
+        mostrarStatus("❌ Erro ao salvar OS: " + error.message, 'error'); // <--- Usa a função de status
+    } else {
+        console.log("Dados salvos:", data);
+        mostrarStatus("✅ OS salva com sucesso!", 'success'); // <--- Usa a função de status
+        limparFormulario(); 
+    }
+}
+
+
+     function salvarLocalmente(dados) {
+  try {
+    const ordensSalvas = JSON.parse(localStorage.getItem('ordensServico')) || [];
+
+    // Capturar e formatar datas do formulário
+     const dataNotificacao = document.getElementById('dataNotificacao').value;
+    const dataRecebimento = document.getElementById('dataRecebimento').value;
+
+    dados.dataNotificacao = FormatarDataBrasileira(dataNotificacao);
+    dados.dataRecebimento = FormatarDataBrasileira(dataRecebimento);
+    
+    // anulado o timestamp original para evitar erro
+    //dados.timestamp = FormatarDataHoraBrasileira(new Date().toISOString());
+    //dados.id = Date.now();
+    
+    dados.salvoLocalmente = true;
+
+    ordensSalvas.push(dados);
+    localStorage.setItem('ordensServico', JSON.stringify(ordensSalvas));
+
+    console.log('OS salva localmente:', dados);
+    mostrarStatus(`OS ${dados.numeroOS} salva localmente! Dados preservados.`, 'success');
+
+    setTimeout(() => {
+      limparFormulario();
+    }, 3000);
+
+  } catch (error) {
+    console.error('Erro ao salvar localmente:', error);
+    mostrarStatus('Erro ao salvar localmente. Os dados podem ter sido perdidos.', 'error');
+  }
+}
+
+    /* Função para limpar formulário */
+    function limparFormulario() {
+        document.getElementById('form-os').reset();
+        document.getElementById('ubs').innerHTML = '<option value="">Selecione a DA primeiro</option>';
+        document.getElementById('ubs').disabled = true;
+        
+        // Gerar novo número de OS automaticamente
+        const novaOS = gerarNumeroOS();
+        document.getElementById('numeroOS').value = novaOS;
+        
+        // Manter o preenchedor preenchido
+        document.getElementById('preenchedor').value = 'Usuário Demo';
+        
+        // Preencher datas com data atual
+        const hoje = new Date().toISOString().split('T')[0];
+        document.getElementById('dataNotificacao').value = hoje;
+        document.getElementById('dataRecebimento').value = hoje;
+
+        mostrarStatus(' Dados Registrados. Nova OS gerada: ' + novaOS, 'success');
+    }
+   
+
+function FormatarDataBrasileira(data) {
+  if (!data) return '';
+  const partes = data.split("-");
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+function FormatarDataHoraBrasileira(dataISO) {
+  const data = new Date(dataISO);
+  const dia = String(data.getDate()).padStart(2, '0');
+  const mes = String(data.getMonth() + 1).padStart(2, '0');
+  const ano = data.getFullYear();
+  const hora = String(data.getHours()).padStart(2, '0');
+  const minuto = String(data.getMinutes()).padStart(2, '0');
+  return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+}
+
+
+    function updateUBS(){
+        const da = (document.querySelector('input[name="da"]:checked')||{}).value;
+        const sel = document.getElementById('ubs');
+        sel.innerHTML = "";
+
+        if(!da || !UBS_BY_DA[da]){
+            sel.disabled = true;
+            sel.appendChild(new Option("Selecione a DA primeiro",""));
+            return;
+        }
+
+        sel.disabled = false;
+        sel.appendChild(new Option("Selecione a UBS",""));
+        UBS_BY_DA[da].forEach(nome => sel.appendChild(new Option(nome, nome)));
+    }
+
+    // Inicialização quando a página carrega
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configurar eventos
+        document.querySelectorAll('input[name="da"]').forEach(r => r.addEventListener('change', updateUBS));
+        updateUBS();
+
+        // Inicializar formulário
+        const numeroOS = gerarNumeroOS();
+        document.getElementById('numeroOS').value = numeroOS;
+        document.getElementById('preenchedor').value = 'Status aberto '; // Ajuste conforme o sistema de login
+        
+        const hoje = new Date().toISOString().split('T')[0];
+        document.getElementById('dataNotificacao').value = hoje;
+        document.getElementById('dataRecebimento').value = hoje;
+
+           console.log('Sistema inicializado. Número da OS:', numeroOS);
+        
+        // Configurar evento do botão salvar
+        document.getElementById('btnSalvar').addEventListener('click', salvarOS);
+
+    });
+
+
+    function FormatarDataBrasileira(data) {
+  if (!data) return '';
+  const partes = data.split("-");
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+function FormatarDataHoraBrasileira(dataISO) {
+  const data = new Date(dataISO);
+  const dia = String(data.getDate()).padStart(2, '0');
+  const mes = String(data.getMonth() + 1).padStart(2, '0');
+  const ano = data.getFullYear();
+  const hora = String(data.getHours()).padStart(2, '0');
+  const minuto = String(data.getMinutes()).padStart(2, '0');
+  return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+}
+
+    // Formata data para DD/MM/AAAA
+  function FormatarDataBrasileira(data) {
+    if (!data) return '';
+    const partes = data.split("-");
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  }
+
+    /* Função para gerar mapa */
+    function gerarMapa() {
+        const logradouro = document.getElementById('logradouro').value;
+        const bairro = document.getElementById('bairro').value;
+        
+        if (!logradouro || !bairro) {
+            mostrarStatus('Preencha logradouro e bairro para gerar o mapa', 'warning');
+            return;
+        }
+        
+        const endereco = `${logradouro}, ${bairro}`;
+        mostrarStatus(`Mapa gerado para: ${endereco} (funcionalidade de demonstração)`, 'success');
+    }
+    
+     function tracarRota() {
+  // Pega os valores digitados nos campos do formulário
+  const tipo = document.getElementById('tipoLogradouro').value;
+  const logradouro = document.getElementById('logradouro').value;
+  const numero = document.getElementById('numero').value;
+  const bairro = document.getElementById('bairro').value;
+
+  // Verifica se o usuário preencheu os dados mínimos
+  if (!logradouro || !bairro) {
+    mostrarStatus('⚠️ Preencha pelo menos o logradouro e o bairro para ver o mapa.', 'warning');
+    return;
+  }
+
+  // Monta o endereço completo
+  const enderecoCompleto = `${tipo ? tipo + ' ' : ''}${logradouro}${numero ? ', ' + numero : ''} - ${bairro}, São Paulo, SP`;
+
+  // Codifica o endereço para a URL
+  const enderecoCodificado = encodeURIComponent(enderecoCompleto);
+
+  // Cria a URL de rota no Google Maps
+  const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${enderecoCodificado}`;
+
+  // Abre o Google Maps em uma nova aba
+  window.open(mapsUrl, '_blank');
+
+  console.log("Abrindo rota para:", enderecoCompleto);
+}
+})
+</script>
+
+</html>

@@ -1,0 +1,1295 @@
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
+
+
+  <title>Registro de Ordem de Serviço</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --azul-escuro:#003562;
+      --azul-claro:#b0cbe9;
+      --cinza-card:#e0e0e0;
+      --borda:#888;
+      --borda-input:#ccc;
+      --shadow-strong:0 4px 10px rgba(0,0,0,0.2);
+      --shadow-soft:0 2px 5px rgba(0,0,0,0.2);
+      --radius:12px;
+      --bg:#f7f9fb;
+      --header-height:0px;
+      --nav-height:0px;
+      --success:#28a745;
+      --error:#dc3545;
+      --warning:#ffc107;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      font-family:'Roboto',sans-serif;
+      margin:0; background:var(--bg);
+      display:grid; grid-template-rows:auto auto 1fr; min-height:100vh;
+    }
+
+    /* Cabeçalho (fixo) */
+    header{
+      background:var(--azul-escuro); color:#fff; text-align:center; padding:20px;
+      box-shadow:0 4px 8px rgba(0,0,0,0.2); position:sticky; top:0; z-index:1000;
+    }
+    .titulo{font-size:2.4em;font-weight:bold;margin:0}
+    .subtitulo{font-size:1.4em;font-weight:bold;margin:0}
+
+    /* Navegação (fixa) */
+    nav{
+      background:var(--azul-claro); padding:15px 10px;
+      display:flex; justify-content:center; gap:15px;
+      box-shadow:var(--shadow-strong);
+      position:sticky; top:var(--header-height,0px); z-index:950;
+      margin-bottom:16px;
+    }
+    .nav-button{
+      background:var(--azul-claro); color:#000; font-weight:bold;
+      border:1px solid var(--borda); padding:10px 20px; border-radius:var(--radius);
+      box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; transition:transform .2s;
+    }
+    .nav-button:hover{ transform:scale(1.05) }
+
+    /* Card do formulário (título fixo + corpo rolável) */
+    .formulario{
+      background:var(--cinza-card); width:92%; max-width:1100px;
+      margin:0 auto; padding:30px; border-radius:10px; box-shadow:var(--shadow-strong);
+      display:flex; flex-direction:column; min-height:0;
+      height: calc(100vh - var(--header-height) - var(--nav-height) - 32px);
+      overflow:hidden;
+    }
+    .form-title{
+      color:var(--azul-escuro); font-weight:bold; font-size:1.6em;
+      margin:0 0 14px 0; flex:0 0 auto;
+      background:var(--cinza-card); padding:6px 8px; border-bottom:1px solid #d8d8d8;
+    }
+    .form-body{
+      flex:1 1 auto; min-height:0; overflow-y:auto;
+      padding-inline-end:14px;
+      scrollbar-gutter:stable;
+    }
+
+    /* Campos */
+    label{display:block; font-weight:bold; color:#000; margin-bottom:6px}
+    input[type="text"], input[type="number"], input[type="date"], input[type="tel"],
+    input[type="email"], select, textarea{
+      width:100%; background:#fff; padding:10px; border:1px solid var(--borda-input);
+      border-radius:6px; font-size:1em; box-shadow:var(--shadow-soft)
+    }
+    textarea{min-height:86px; resize:vertical}
+    .radio-group{display:flex; gap:24px; align-items:center; margin-top:6px}
+    .muted{color:#444; font-weight:500}
+    .auto-generated{background-color:#f8f9fa; color:#666;}
+
+    /* GRID 12 colunas */
+    .grid12{display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:18px}
+    .c1{grid-column:span 1}.c2{grid-column:span 2}.c3{grid-column:span 3}
+    .c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}
+    .c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}
+    .c10{grid-column:span 10}.c11{grid-column:span 11}.c12{grid-column:span 12}
+
+    /* Accordion */
+    details{background:#f1f1f1; border:1px solid #d8d8d8; border-radius:8px; padding:12px 14px}
+    details>summary{cursor:pointer; list-style:none; font-weight:600; color:#222}
+    details>summary::-webkit-details-marker{display:none}
+
+    /* Botões */
+    .form-buttons{display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; margin-top:24px}
+    .command-button{
+      background:var(--cinza-card); color:#000; font-weight:bold; border:1px solid var(--borda);
+      padding:12px 20px; border-radius:var(--radius); box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; flex:1; min-width:180px; transition:transform .15s
+    }
+    .command-button:hover{transform:scale(1.03)}
+    .command-button:disabled{
+      background:#ccc; color:#666; cursor:not-allowed; transform:none
+    }
+
+    /* Mensagens de status */
+     .status-message {
+        position: sticky;
+        bottom: 0;
+        width: 100%;
+        margin-bottom: 0;           /* espaço abaixo, ajuste conforme necessário */
+        box-sizing: border-box;
+        position: relative;              /* garantir que permaneça no fluxo */
+        z-index: 10;                      /* elevar sobre botões se necessário */
+      }
+          
+      .form-buttons {
+        clear: both;                     /* garantir que fique abaixo de qualquer elemento flutuante anterior */
+        margin-top: 0;                   /* zera margem superior se houver */
+        position: relative;              /* mantê-lo no fluxo */
+        z-index: 1;                       /* botões ficam “atrás” da mensagem, se necessário */
+      }
+   .status-container {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 20px; /* ajusta conforme espaço */
+      width: calc(100% - 40px);
+      margin: 0 auto;
+    }
+
+    .status-success{background:var(--success); color:white; display:block;}
+    .status-error{background:var(--error); color:white; display:block;}
+    .status-warning{background:var(--warning); color:black; display:block;}
+
+    /* Loading spinner */
+    .spinner {
+      border: 4px solid rgba(0,0,0,0.1);
+      border-radius: 50%;
+      border-top: 4px solid var(--azul-escuro);
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsividade */
+    /* Desktop padrão (acima de 980px) */
+.grid12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 20px;
+}
+
+/* Tablet (entre 620px e 980px) */
+/* Tablet (entre 620px e 980px) */
+@media (max-width: 780px) and (min-width: 621px) {
+  .grid12 {
+    grid-template-columns: repeat(2, 1fr); /* duas colunas iguais */
+    gap: 15px;
+  }
+
+  /* Campos grandes ocupam largura total */
+  .c8, .c9, .c6 {
+    grid-column: span 2;
+  }
+
+  /* Campos médios ocupam metade da tela */
+  .c4, .c3, .c2 {
+    grid-column: span 1;
+  }
+
+  /* Inputs sempre ocupam toda a largura da célula */
+  input, select, textarea {
+    width: 100%;
+  }
+}
+
+  .titulo { font-size: 2em; }
+  .subtitulo { font-size: 1.2em; }
+  .form-buttons { flex-direction: column; }
+  .command-button { min-width: 100%; }
+
+
+
+    /* === SIDEBAR (DASHBOARD LATERAL) ================================== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  background: var(--azul-escuro);
+  color: #fff;
+  padding: 20px 0;
+  transform: translateX(-240px);
+  transition: 0.3s ease;
+  z-index: 9999;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.sidebar a {
+  display: block;
+  padding: 12px 22px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.sidebar a:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Botão que abre e fecha o menu */
+.menu-toggle {
+  position: fixed;
+  top: 18px;
+  left: 16px;
+  background: var(--azul-escuro);
+  color: #fff;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 10000;
+  font-size: 18px;
+  transition: background 0.2s;
+}
+
+.menu-toggle:hover {
+  background: #022d52;
+}
+
+/* Empurra o conteúdo quando o menu abre */
+.content.shift {
+  margin-left: 240px;
+  transition: margin-left 0.3s ease;
+}
+
+.alerta {
+    font-size: 14px;
+    color: red;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+
+
+
+
+.message-form {
+    display: flex;
+    padding: 12px;
+    background: #f0f0f0;
+    border-top: 1px solid #ddd;
+    gap: 8px;
+    flex-wrap: wrap; /* Permite que os campos "quebrem" a linha se necessário */
+}
+
+#username-input {
+    flex: 1; /* O nome cresce para ocupar o espaço disponível */
+    min-width: 80px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+}
+
+#message-input {
+    flex: 2; /* A mensagem ocupa o dobro do espaço do nome */
+    min-width: 150px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+}
+
+
+ 
+#chat-window {
+    position: relative; /* Mudado de fixed para relative pois o container pai já é fixed */
+    width: 400px;
+    height: 500px;
+    border: 1px solid #ccc;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    display: none; /* Começa escondido */
+    border-radius: 15px;
+    overflow: hidden;
+}
+ 
+
+/* No seu <style> */
+#container-mapa {
+    position: relative; /* Para o botão de fechar ficar posicionado em relação ao mapa */
+    width: 100%;
+    height: 450px; /* Aumentei de 300px para 450px */
+    margin-top: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: all 0.3s ease; /* Transição suave ao abrir/fechar */
+}
+
+.btn-fechar-mapa {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #cc0000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-fechar-mapa:hover {
+    background: #fff;
+    transform: scale(1.1);
+}
+
+
+  </style> 
+
+ 
+   
+ 
+ 
+
+
+
+</head>
+
+ <link rel="stylesheet" href="styles.css"> 
+
+<script>
+  // const para abrir e fechar o menu 
+  
+  document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.querySelector(".menu-toggle");
+  const sidebar   = document.getElementById("sidebar");
+  const content   = document.getElementById("content");
+
+  toggleBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("open");
+    content.classList.toggle("shift");
+  });
+});
+
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://vepnalrpyaxhpklicqrb.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlcG5hbHJweWF4aHBrbGljcXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5MDgxNzIsImV4cCI6MjA3NzQ4NDE3Mn0.-9_J-RE4IWdaGISGZgAXe6S2MLStG9lVm50suQKr7jY";
+  //const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const supabaseOS = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
+
+<body> 
+
+
+  <div id="container-mapa" style="display: none;">
+    <button class="btn-fechar-mapa" onclick="fecharMapa()" title="Fechar Mapa">✕</button>
+    
+    <iframe 
+        id="iframe-google-maps"
+        width="100%" 
+        height="100%" 
+        style="border:0;" 
+        loading="lazy" 
+        src="">
+    </iframe>
+</div>
+
+
+
+<button class="menu-toggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <h2>      >-------          SIGVA - Acesso Rápido</h2>
+
+
+  <a href="welcome_sigva.html">Página Inicial</a>
+
+  <a href="pesquisa_os_v2.html">Pesquisar OS</a> >
+
+  <a href="Bloqueio_supabase.html">Bloqueios - Cadastro</a> 
+  
+  <a href="Bloqueio_Consulta.html">Bloqueios - Consulta</a>  >    
+  
+  <a href="Bloqueio_supabase.html">Arbovirores - Ficha Cadastral</a> 
+  
+  
+  <a href="Escorpiao.html">Escorpião</a>
+
+  <a href="himenoptero.html">Himenopteros - Abelhas</a>
+  
+  <a href="identificacao_sorologia.html">Identificação e Sorologia</a>
+  
+  <a href="materialapoio.html">Material de Apoio</a>
+  
+  <a href="monitoramento.html">Monitoramento</a>
+  
+  <a href="acessoOS.html">Ordem de Serviço</a>
+  
+  <a href="zoosanitaria.html">Zoosanitária</a>
+
+   <!-- <a href="https://chat-frontend-production-66c5.up.railway.app/">Dúvidas / Suporte</a> -->
+
+  <a href="#" id="menu-suporte">Dúvidas / Suporte</a>
+
+  
+    
+
+
+</div>
+
+<div class="content" id="content">
+
+
+
+
+  <!-- Cabeçalho -->
+  <header>
+    <p class="titulo">Sistema de Gestão de Ordens de Serviço</p>
+    <p class="subtitulo">Unidade de Vigilância em Saúde - M' Boi Mirim</p>
+  </header>
+
+  <!-- Navegação -->
+  <nav>
+    <button class="nav-button" onclick="loadPage('welcome_sigva')">Home</button>
+    <button class="nav-button" onclick="loadPage('gestao_os_supabase')">Gestão</button>
+    <button class="nav-button" onclick="loadPage('ficha_OS')">Ficha de campo-OS</button>
+    <button class="nav-button" onclick="loadPage('login_senha')">Login</button>
+    <button class="nav-button" onclick="loadPage('Sessao_Encerrada')">Sair</button>
+   
+    
+    
+  <!-- Encerrando a Navegação //  <a class="nav-button" onclick="handleLogout()" style="cursor: pointer;">Sair</a>  -->
+
+  </nav>
+
+  <!-- Formulário -->
+  <main class="formulario">
+    <div class="form-title">Registro de Ordem de Serviço</div>
+
+    <div class="form-body">
+      <!-- Mensagens de status -->
+      <div id="statusMessage" class="status-message"></div>
+      <div id="loadingSpinner" class="spinner"></div>
+      
+      <form id="form-os">
+        <section class="grid12">
+          <!-- 1) Nº OS, Origem, Protocolo -->
+          <div class="c4">
+            <label for="numeroOS">Nº da OS <span class="muted">(automático)</span></label>
+            <input id="numeroOS" name="numeroOS" type="text" class="auto-generated" readonly>
+          </div>
+          <div class="c4">
+            <label for="origem">Origem da Solicitação</label>
+            <select id="origem" name="origem">
+              <option value="" selected>Selecione</option>
+              <option>SIGRC</option><option>Email</option><option>e-SIC</option><option>Outros</option>
+            </select>
+          </div>
+          <div class="c4">
+            <label for="protocolo">Protocolo</label>
+            <input id="protocolo" name="protocolo" type="text" placeholder="Ex.: SIGRC-0000/2025">
+          </div>
+
+          <!-- 2) Datas e Tipo de ocorrência -->
+          <div class="c4">
+            <label for="dataNotificacao">Data da Notificação</label>
+            <input id="dataNotificacao" name="dataNotificacao" type="date">
+          </div>
+          <div class="c4">
+            <label for="dataRecebimento">Data de Recebimento</label>
+            <input id="dataRecebimento" name="dataRecebimento" type="date">
+          </div>
+          <div class="c4">
+            <label for="tipoOcorrencia">Tipo de Ocorrência</label>
+            <select id="tipoOcorrencia" name="tipoOcorrencia" required> 
+              <option value="" selected>Selecione</option>
+              <option>Aedes aegypti</option>
+              <option>Animais</option>
+              <option>Barbeiro</option>
+              <option>Culex sp.</option>
+              
+              <option>Escorpião</option>
+
+              <option>Escorpionismo</option>
+              <option>Esporotricose</option>
+              <option>Febre maculosa</option>
+              <option>Himenoptero</option>
+              <option>Leptospirose</option>
+              <option>Roedores</option>
+              <option>Pombos</option>
+              <option>Transtorno de acumulação</option>
+            </select>
+          </div>
+
+          <!-- Descrição -->
+          <div class="c12">
+            <label for="descricao">Descrição da Solicitação</label>
+            <textarea id="descricao" name="descricao" placeholder="Descreva a solicitação..."></textarea>
+          </div>
+
+          <!-- 3) Paciente + Telefones -->
+          <div class="c4">
+            <label for="paciente">Paciente / Solicitante</label>
+             <input id="paciente" name="paciente" type="text" placeholder="Nome completo" required>
+          </div>
+         
+          <div class="c4">
+            <label for="tel1">Telefone 1</label>
+            <input id="tel1" name="tel1" type="tel" placeholder="(XX) XXXXX-XXXX">
+          </div>
+         
+          <div class="c4">
+            <label for="tel2">Telefone 2</label>
+            <input id="tel2" name="tel2" type="tel" placeholder="(XX) XXXXX-XXXX">
+          </div>
+
+          <!-- 4) Endereço -->
+          <div class="c2">
+            <label for="tipoLogradouro">Tipo</label>
+            <select id="tipoLogradouro" name="tipoLogradouro">
+              <option value="" selected>Selecione</option>
+              <option>Rua</option><option>Avenida</option><option>Travessa</option>
+              <option>Praça</option><option>Estrada</option>
+            </select>
+          </div>
+          <div class="c6">
+            <label for="logradouro">Logradouro</label>
+            <input id="logradouro" name="logradouro" type="text" placeholder="Ex.: Bento de Souza">
+          </div>
+          <div class="c2">
+            <label for="numero">Nº</label>
+            <input id="numero" name="numero" type="text" inputmode="numeric" placeholder="000">
+          </div>
+          <div class="c2">
+            <label for="bairro">Bairro</label>
+            <input id="bairro" name="bairro" type="text" placeholder="Bairro">
+          </div>
+
+          <!-- 5) DA + Unidade de Origem (UBS) -->
+          <div class="c6">
+            <label>Diretoria Administrativa (DA)</label>
+            <div class="radio-group">
+              <label class="muted"><input type="radio" name="da" value="42"> 42</label>
+              <label class="muted"><input type="radio" name="da" value="45"> 45</label>
+            </div>
+          </div>
+
+          <div class="c6">
+            <label for="ubs">Unidade de Origem (UBS)</label>
+            <select id="ubs" name="ubs" disabled>
+              <option value="">Selecione a DA primeiro</option>
+            </select>
+          </div>
+
+          <!-- 6) Técnico + Responsável -->
+          <div class="c6">
+            <label for="tecnico">Técnico Responsável</label>
+            <select id="tecnico" name="tecnico">
+              <option value="" selected>Selecione</option>
+              <option>Ana Vieira da Costa</option>
+              <option>Isabela Pereira Ricci Rocha</option>
+              <option>Juliana Blanco Bovino</option>
+              <option>Leandro Cesar Pompeu</option>
+              <option>Rosely Therezinha de Conti Cannavó</option>
+              <option>Samuel Paulo Gioia Guizze</option>
+            </select>
+          </div>
+          <div class="c6">
+         <label for="preenchedor">Responsável pelo Preenchimento</label>
+          <select id="preenchedor" name="preenchedor">
+             <option value="" selected>Selecione</option>
+            <option value="Adilson">Adilson</option>
+            <option value="Aline">Aline</option>
+            <option value="Benê">Benê</option>
+           <option value="William R.">William R.</option>
+          </select>
+         </div>
+
+          <!-- 8) Pré-agendar 1ª visita (opcional)  <details id="status_ordem_servico" open>  -->
+          <div class="c12">
+            
+              
+                <div>
+                <label for="status-os">Status da OS:</label><br>
+                <select id="status-os">
+                    <option value="">Selecione</option>
+                    <option value="Em aberto">Em aberto</option>
+                    <option value="Retorno">Retorno</option>
+                    <option value="Arquivada">Arquivada</option>
+                </select>
+            </div>
+            </div>
+          </details>
+      </div>
+        </section>
+
+         <div id="container-mapa" style="width: 100%; height: 300px; margin-top: 15px; display: none;">
+              <iframe 
+                  id="iframe-google-maps"
+                  width="100%" 
+                  height="100%" 
+                  style="border:0; border-radius: 8px;" 
+                  loading="lazy" 
+                  src="">
+              </iframe>
+          </div>
+
+
+
+        <!-- Botões -->
+                <div class="form-buttons">
+          <div id="statusMessage" class="status-message"></div>
+
+          <button type="button" class="command-button" id="btnSalvar"> Salvar OS </button>
+          
+          <button type="button" class="command-button" onclick="limparFormulario()">Limpar campos</button>
+          <button type="button" class="command-button" onclick="tracarRota();return true;">Ver End. no Mapa</button>
+          <button type="button" onclick="resetarContadorOS()">Zerar Contador [OS]</button>
+        </div>
+
+        </div>
+      </form>
+    </div> 
+
+   
+   <div id="chat-widget-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; align-items: flex-end;">
+    
+    <div id="chat-window" style="display: none; margin-bottom: 15px; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); background: white; border: 1px solid #ccc;">
+        <iframe src="chat.html" width="400" height="500" style="border:none; display: block;"></iframe>
+    </div>
+
+    <button onclick="toggleChat()" style="background-color: #075E54; color: white; border: none; border-radius: 50%; width: 60px; height: 60px; cursor: pointer; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; outline: none;">
+        <span id="chat-icon">💬</span>
+    </button>
+</div>
+
+
+
+
+  </main> 
+
+<script>
+// COLOCANDO RESTRIÇÃO A PAGINA 
+
+//window.addEventListener("DOMContentLoaded", () => {
+//      const logado = localStorage.getItem("usuarioLogado");
+//      if (logado !== "true") {
+        // Se não está logado, volta para login
+//        window.location.href = "login_senha.html";
+//      } else {
+        // Se está logado, mostra o nome
+//        const nome = localStorage.getItem("usuarioNome");
+//        if (nome) {
+ //         document.getElementById("welcomeMsg").textContent = "Bem-vindo, " + nome + "!";
+ //       }
+ //     }
+ //   });
+ 
+  
+</script>
+
+
+
+  <script>
+    // OBS: ESTA PAGINA ESTA VINCULADA AO CODIGO GS = Registro2.gs NO GOOGLE APPS SCRIPT - GESTAO (EM AJUSTE)
+
+    // Contador para gerar números de OS automáticos
+    // let contadorOS = localStorage.getItem('contadorOS') ? parseInt(localStorage.getItem('contadorOS')) : 1000;
+
+    /* mede header e nav para o cálculo da altura do card */
+    (function(){
+      function setHeights(){
+        const h = document.querySelector('header');
+        const n = document.querySelector('nav');
+        const hH = h ? h.offsetHeight : 0;
+        const nH = n ? n.offsetHeight : 0;
+        document.documentElement.style.setProperty('--header-height', hH + 'px');
+        document.documentElement.style.setProperty('--nav-height', nH + 'px');
+      }
+      setHeights();
+      window.addEventListener('resize', setHeights);
+    })();
+
+    /* Roteador simples para os botões da barra */
+    function loadPage(key){
+      const routes = { gestao:'Gestao.html', fichaOS:'FichaOS.html', login:'index.html' };
+      window.location.href = routes[key] || (key + '.html');
+    }
+
+    /* Liga/desliga campos do pré-agendamento */
+    (function(){
+      const chk = document.getElementById('chkPreAgendar');
+      if (!chk) return;
+      const deps = ['v1data_plan','v1obs_plan'].map(id => document.getElementById(id));
+      const toggle = () => deps.forEach(el => { if (el) el.disabled = !chk.checked; });
+      toggle();
+      chk.addEventListener('change', toggle);
+    })();
+
+    /* Função para gerar número de OS automático */
+    // Removido: definição duplicada da função gerarNumeroOS
+
+    /* Função para mostrar mensagens de status */
+    function mostrarStatus(mensagem, tipo) {
+      const statusEl = document.getElementById('statusMessage');
+      statusEl.textContent = mensagem;
+      statusEl.className = 'status-message';
+      
+      if (mostrar) {
+        //spinner.style.display = 'block';
+        spinner.style.display = 'none';
+        btnSalvar.disabled = true;
+        //btnSalvar.textContent = 'Salvando...'; 
+        btnSalvar.textContent = "✅ OS salva com sucesso!";  
+        
+        const tempoVisivel = 7000; 
+        
+        setTimeout(() => {
+          mostrarStatus();
+          spinner.style.display = 'none';
+          btnSalvar.disabled = true;
+          btnSalvar.textContent = 'Salvar OS';
+        }, tempoVisivel);
+
+
+        setTimeout(() => {
+          limparFormulario();
+          spinner.style.display = 'none';
+          btnSalvar.disabled = false;
+          btnSalvar.textContent = 'Salvar OS';
+        }, tempoVisivel);
+
+
+
+
+      } else {
+        spinner.style.display = 'none';
+        btnSalvar.disabled = false;
+        btnSalvar.textContent = 'Salvar OS';
+      }
+    }
+
+    /* Validação do formulário */
+    function validarFormulario(dados) {
+      const erros = [];
+
+      // Validar formato do telefone se preenchido
+      const telRegex = /^\([0-9]{2}\) [0-9]{4,5}-[0-9]{4}$/;
+      if (dados.tel1 && !telRegex.test(dados.tel1)) {
+        erros.push('Telefone 1 no formato incorreto (use: (XX) XXXXX-XXXX)');
+      }
+      if (dados.tel2 && !telRegex.test(dados.tel2)) {
+        erros.push('Telefone 2 no formato incorreto (use: (XX) XXXXX-XXXX)');
+      }
+
+      // Validar data de pré-agendamento se marcado
+      if (dados.preAgendamento && dados.preAgendamento.data) {
+        const dataAgendamento = new Date(dados.preAgendamento.data);
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        
+        if (dataAgendamento < hoje) {
+          erros.push('Data do pré-agendamento não pode ser anterior à data atual');
+        }
+      }
+
+      return erros;
+    }
+
+
+     /* === UBS por DA === */
+    const UBS_BY_DA = {
+        "42": [
+            "Alto do Riviera","Aracati","Caiçara","Capela","Chácara Santa Maria",
+            "Coimbra","Guarujá","Herculano","Horizonte Azul","Kagohara","Nakamura",
+            "Paranapanema","Parque do Lago","Parque Novo Santo Amaro",
+            "Santa Lúcia","Santa Margarida","Vera Cruz","Jardim Souza", 
+        ],
+        "45": [
+            "Jardim Alfredo","Jardim Souza","Jardim Thomas","Novo Jardim I", "Novo Caminho",
+            "Parque Figueira Grande","Jardim Celeste","Parque Santo Antônio","Parque Santo Antônio II",
+            "Vila das Belezas","Zumbi dos Palmares","Brasília",
+        ]
+    };
+   
+  // let contadorOS = 0; // Declare a variável no escopo global/superior
+
+
+  window.onload = function() {
+    // Tenta carregar do localStorage de forma segura
+    const savedCount = localStorage.getItem('contadorOS');
+    if (savedCount) {
+        // Se você usa uma variável global contadorOS, garanta que ela existe
+        window.contadorOS = parseInt(savedCount);
+    }
+};
+
+  //NOVA FUNCAO DE CONTADOR DE OS com tabela do supabase os_counter
+  async function gerarNumeroOS() {
+   const { data, error } = await supabaseOS.rpc('get_next_os');
+
+    if (error) {
+        console.error("Erro ao gerar número da OS:", error);
+        alert("Erro ao gerar número da OS.");
+        return "";
+    }
+
+    const sequencial = data; // número retornado do banco
+    const ano = new Date().getFullYear();
+
+    return `OS-${String(sequencial).padStart(4, '0')}/${ano}`;
+}
+
+  
+  
+  
+  /* Função para gerar número de OS automático */
+  //function gerarNumeroOS() {
+  //contadorOS++;
+  //localStorage.setItem('contadorOS', contadorOS.toString());
+  //const anoAtual = new Date().getFullYear();
+  //return `OS-${contadorOS.toString().padStart(4, '0')}/${anoAtual}`;
+//}
+
+ /* Função para zerar o número de OS automático */
+// function resetarContadorOS() {
+    // 1. Zera a variável global (se ela estiver definida como let/var)
+  //  contadorOS = 0; 
+    
+    // 2. Remove o item do localStorage (o mais importante para o reset persistente)
+  //  localStorage.removeItem('contadorOS'); 
+    
+  //  alert('O contador de Ordens de Serviço foi resetado para 0.');
+    
+    // Opcional: recarrega a página para aplicar o novo contador imediatamente.
+  //   window.location.reload(); 
+// }
+
+    /* Função para mostrar mensagens de status */
+    function mostrarStatus(mensagem, tipo) {
+        const statusEl = document.getElementById('statusMessage');
+        statusEl.textContent = mensagem;
+        statusEl.className = 'status-message';
+        
+        if (tipo === 'success') {
+            statusEl.classList.add('status-success');
+        } else if (tipo === 'error') {
+            statusEl.classList.add('status-error');
+        } else if (tipo === 'warning') {
+            statusEl.classList.add('status-warning');
+        }
+        
+        if (tipo !== 'error') {
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 5000);
+        }
+    }
+
+    /* Função para mostrar/ocultar loading */
+    //function toggleLoading(mostrar) {
+    //    const spinner = document.getElementById('loadingSpinner');
+    //    const btnSalvar = document.getElementById('btnSalvar');
+        
+     //   if (mostrar) {
+    //        spinner.style.display = 'block';
+    //        btnSalvar.disabled = true;
+    //        btnSalvar.textContent = 'Salvando...';
+    //        btnSalvar.textContent = "✅ OS salva com sucesso!";
+
+    //    } else {
+    //        spinner.style.display = 'none';
+    //        btnSalvar.disabled = false;
+   //         btnSalvar.textContent = 'Salvar OS';
+   //     }
+   // }
+
+    /* Função principal para salvar OS no Google Sheets */
+
+
+   function toggleLoading(mostrar) {
+    const btnSalvar = document.getElementById('btnSalvar');
+    const spinner = document.getElementById('loadingSpinner');
+
+    if (mostrar) {
+        if (spinner) spinner.style.display = 'block';
+        btnSalvar.disabled = true; // ISSO TRAVA O BOTÃO
+        btnSalvar.textContent = 'Processando...';
+    } else {
+        if (spinner) spinner.style.display = 'none';
+        btnSalvar.disabled = false; // ISSO LIBERA O BOTÃO
+       // btnSalvar.textContent = 'Salvar OS';
+       btnSalvar.textContent = "✅ OS salva com sucesso!"; 
+
+         
+       btnSalvar.disabled = true;
+
+        mostrarStatus('Dados registrados com sucesso!', 'success');
+
+        // Chama a limpeza que vai resetar o botão após o tempo definido
+        limparFormulario();
+       
+        
+
+
+    }
+}
+
+
+
+
+
+     
+    async function salvarOS() {
+  toggleLoading(true);
+
+  try {
+    const novoNumero = await gerarNumeroOS();
+    document.getElementById('numeroOS').value = novoNumero;
+
+    const dados = {
+      nextosnumber: novoNumero,
+      origem: document.getElementById('origem').value,
+      protocolo: document.getElementById('protocolo').value,
+      datanotificacao: document.getElementById('dataNotificacao').value,
+      datarecebimento: document.getElementById('dataRecebimento').value,
+      tipoocorrencia: document.getElementById('tipoOcorrencia').value,
+      descricao: document.getElementById('descricao').value,
+      paciente: document.getElementById('paciente').value,
+      resppreenchimento: document.getElementById('preenchedor').value,
+      tecnico_responsavel: document.getElementById('tecnico').value,
+      logradouro: document.getElementById('logradouro').value,
+      tel1: document.getElementById('tel1').value,
+      tel2: document.getElementById('tel2').value,
+      tipologradouro: document.getElementById('tipoLogradouro').value,
+      numero: document.getElementById('numero').value,
+      bairro: document.getElementById('bairro').value,
+      da: (document.querySelector('input[name="da"]:checked') || {}).value,
+      ubs: document.getElementById('ubs').value,
+      statusos: document.getElementById('status-os').value,
+    };
+
+    const { error } = await supabaseOS
+      .from('Principal')
+      .insert([dados]);
+
+    if (error) throw error;
+
+    mostrarStatus('✅ OS salva com sucesso!', 'success');
+    limparFormulario();
+
+  } catch (err) {
+    console.error('Erro detalhado:', err);
+    mostrarStatus('❌ Erro ao salvar: ' + err.message, 'error');
+
+  } finally {
+    toggleLoading(false);
+  }
+}
+
+
+  
+    /* Função para salvar localmente */
+    /**
+     * Salva os dados da Ordem de Serviço localmente no navegador usando localStorage.
+     * Usado como fallback quando não é possível salvar no Google Sheets.
+     * Garante que os dados não sejam perdidos em caso de falha de conexão.
+     */
+
+     function salvarLocalmente(dados) {
+          try {
+            const ordensSalvas = JSON.parse(localStorage.getItem('ordensServico')) || [];
+
+            // Capturar e formatar datas do formulário
+            const dataNotificacao = document.getElementById('dataNotificacao').value;
+            const dataRecebimento = document.getElementById('dataRecebimento').value;
+
+            dados.dataNotificacao = FormatarDataBrasileira(dataNotificacao);
+            dados.dataRecebimento = FormatarDataBrasileira(dataRecebimento);
+            
+            // anulado o timestamp original para evitar erro
+            //dados.timestamp = FormatarDataHoraBrasileira(new Date().toISOString());
+            //dados.id = Date.now();
+            
+            dados.salvoLocalmente = true;
+
+            ordensSalvas.push(dados);
+            
+            //localStorage.setItem('ordensServico', JSON.stringify(ordensSalvas));
+
+            console.log('OS salva localmente:', dados);
+            mostrarStatus(`OS ${dados.numeroOS} salva localmente! Dados preservados.`, 'success');
+
+            setTimeout(() => {
+              limparFormulario();
+            }, 3000);
+
+          } catch (error) {
+            console.error('Erro ao salvar localmente:', error);
+            mostrarStatus('Erro ao salvar localmente. Os dados podem ter sido perdidos.', 'error');
+          }
+        }
+
+    /* Função para limpar formulário */
+   /* Função para limpar formulário */
+
+function limparFormulario() {
+    // 1. Reseta todos os campos do formulário
+    document.getElementById('form-os').reset();
+    
+    // 2. Limpa e desativa a lista de UBS
+    const ubsSelect = document.getElementById('ubs');
+    ubsSelect.innerHTML = '<option value="">Selecione a DA primeiro</option>';
+    ubsSelect.disabled = true;
+
+    // 3. Aguarda 3 segundos e volta o botão ao estado original
+    setTimeout(() => {
+        const btnSalvar = document.getElementById('btnSalvar');
+        btnSalvar.disabled = false;
+        btnSalvar.textContent = 'Salvar OS';
+        
+        // 4. Opcional: Já gera o próximo número de OS para o próximo registro
+        gerarNumeroOS().then(novaOS => {
+            document.getElementById('numeroOS').value = novaOS;
+        });
+    }, 3000); // 3000ms = 3 segundos
+}
+
+
+
+
+function FormatarDataBrasileira(data) {
+  if (!data) return '';
+  const partes = data.split("-");
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+function FormatarDataHoraBrasileira(dataISO) {
+  const data = new Date(dataISO);
+  const dia = String(data.getDate()).padStart(2, '0');
+  const mes = String(data.getMonth() + 1).padStart(2, '0');
+  const ano = data.getFullYear();
+  const hora = String(data.getHours()).padStart(2, '0');
+  const minuto = String(data.getMinutes()).padStart(2, '0');
+  return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+}
+
+
+    function updateUBS(){
+        const da = (document.querySelector('input[name="da"]:checked')||{}).value;
+        const sel = document.getElementById('ubs');
+        sel.innerHTML = "";
+
+        if(!da || !UBS_BY_DA[da]){
+            sel.disabled = true;
+            sel.appendChild(new Option("Selecione a DA primeiro",""));
+            return;
+        }
+
+        sel.disabled = false;
+        sel.appendChild(new Option("Selecione a UBS",""));
+        UBS_BY_DA[da].forEach(nome => sel.appendChild(new Option(nome, nome)));
+    }
+
+    // Inicialização quando a página carrega
+    // DEFININDO COMO ASYNCRONA 
+    document.addEventListener('DOMContentLoaded', async function() {
+        
+        // document.addEventListener('DOMContentLoaded', function() {
+        // Configurar eventos
+        
+        const numeroOS = await gerarNumeroOS();
+        document.getElementById('numeroOS').value = numeroOS;
+
+        
+        document.querySelectorAll('input[name="da"]').forEach(r => r.addEventListener('change', updateUBS));
+        updateUBS();
+
+        // Inicializar formulário
+        //const numeroOS = gerarNumeroOS();
+        //document.getElementById('numeroOS').value = numeroOS;
+        
+
+
+        document.getElementById('preenchedor').value = 'Status aberto '; // Ajuste conforme o sistema de login
+        
+        const hoje = new Date().toISOString().split('T')[0];
+        document.getElementById('dataNotificacao').value = hoje;
+        document.getElementById('dataRecebimento').value = hoje;
+
+           console.log('Sistema inicializado. Número da OS:', numeroOS);
+        
+        // Configurar evento do botão salvar
+        document.getElementById('btnSalvar').addEventListener('click', salvarOS);
+
+    });
+
+
+    function FormatarDataBrasileira(data) {
+  if (!data) return '';
+  const partes = data.split("-");
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+function FormatarDataHoraBrasileira(dataISO) {
+  const data = new Date(dataISO);
+  const dia = String(data.getDate()).padStart(2, '0');
+  const mes = String(data.getMonth() + 1).padStart(2, '0');
+  const ano = data.getFullYear();
+  const hora = String(data.getHours()).padStart(2, '0');
+  const minuto = String(data.getMinutes()).padStart(2, '0');
+  return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+}
+
+
+
+    // Formata data para DD/MM/AAAA
+  function FormatarDataBrasileira(data) {
+    if (!data) return '';
+    const partes = data.split("-");
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  }
+
+
+    /* Função para gerar mapa */
+  
+function gerarMapa() {
+        const logradouro = document.getElementById('logradouro').value;
+        const bairro = document.getElementById('bairro').value;
+        
+        
+        
+        // if (!logradouro || !bairro) {
+        if (!logradouro ) {
+            mostrarStatus('Preencha logradouro e bairro para gerar o mapa', 'warning');
+            return;
+        }
+        
+        const endereco = `${logradouro}, ${bairro}`;
+        mostrarStatus(`Mapa gerado para: ${endereco} (funcionalidade de demonstração)`, 'success');
+    }
+    
+            function tracarRota() {
+          // Pega os valores digitados nos campos do formulário
+          const tipo = document.getElementById('tipoLogradouro').value;
+          const logradouro = document.getElementById('logradouro').value;
+          const numero = document.getElementById('numero').value;
+          const bairro = document.getElementById('bairro').value;
+
+          // Verifica se o usuário preencheu os dados mínimos
+          // Retirei o bairro da obrigatoriedade
+          // if (!logradouro || !bairro) {
+          
+          if (!logradouro ) {
+            mostrarStatus('⚠️ Preencha pelo menos o logradouro e o bairro para ver o mapa.', 'warning');
+            return;
+          }
+
+          // Monta o endereço completo
+          const enderecoCompleto = `${tipo ? tipo + ' ' : ''}${logradouro}${numero ? ', ' + numero : ''} - ${bairro}, São Paulo, SP`;
+
+          // Codifica o endereço para a URL
+          const enderecoCodificado = encodeURIComponent(enderecoCompleto); 
+
+          //
+          // Se você NÃO tiver uma chave de API do Google agora, use esta versão alternativa (mais simples):
+          const urlAlternativa = `https://maps.google.com/maps?q=${enderecoCodificado}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+
+          
+          // Cria a URL de rota no Google Maps
+          
+          // const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${enderecoCodificado}`;
+
+           // Atualiza o iframe e mostra o container
+            const iframe = document.getElementById('iframe-google-maps');
+            const container = document.getElementById('container-mapa');
+            
+            iframe.src = urlAlternativa; // Usando a alternativa que não pede chave de imediato
+            container.style.display = 'block';
+
+            mostrarStatus(`Mapa carregado para: ${enderecoCompleto}`, 'success');
+
+
+
+          // Abre o Google Maps em uma nova aba
+         // window.open(mapsUrl, '_blank');
+
+          console.log("Abrindo rota para:", enderecoCompleto);
+        }
+
+       //FUNCAO PARA ABRIR O CHAT DE SUPORTE TECNICO AO USUARIO     
+
+  function toggleChat() {
+    const chatWindow = document.getElementById('chat-window');
+    const chatIcon = document.getElementById('chat-icon');
+    
+    // Verifica se está escondido (estilo inline ou computado)
+    if (chatWindow.style.display === 'none' || chatWindow.style.display === '') {
+        chatWindow.style.display = 'block';
+        chatIcon.innerText = '✕'; 
+    } else {
+        chatWindow.style.display = 'none';
+        chatIcon.innerText = '💬';
+    }
+}
+
+
+</script>
+
+<!-- Container do chat (inicialmente escondido) -->
+<div id="chat-container" style="display:none;">
+  <iframe src="chat.html" width="400" height="500"></iframe>
+</div>
+
+<script>
+  // Alterna a visibilidade do chat ao clicar no menu
+  document.getElementById("menu-suporte").addEventListener("click", function(event) {
+    event.preventDefault(); // evita navegação
+    const chat = document.getElementById("chat-container");
+    chat.style.display = (chat.style.display === "none") ? "block" : "none";
+  });
+
+
+
+
+document.querySelectorAll('input[name="da"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const ubsSelect = document.getElementById('ubs');
+        ubsSelect.disabled = false;
+        ubsSelect.innerHTML = '<option value="">Selecione a UBS</option>';
+        
+        const lista = UBS_BY_DA[this.value] || [];
+        lista.forEach(ubs => {
+            const opt = document.createElement('option');
+            opt.value = ubs;
+            opt.text = ubs;
+            ubsSelect.appendChild(opt);
+        });
+    });
+});
+
+
+</script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ação de Vigilância - Escorpiões</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --azul-escuro:#003562;
+      --azul-claro:#b0cbe9;
+      --cinza-card:#e0e0e0;
+      --borda:#888;
+      --borda-input:#ccc;
+      --shadow:0 4px 10px rgba(0,0,0,.2);
+      --radius:12px;
+      --bg:#f0f4f8;
+      --header-h:0px; --nav-h:0px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Roboto, sans-serif; background:var(--bg);
+      display:grid; grid-template-rows:auto auto 1fr; min-height:100vh;
+    }
+
+    header{
+      background:var(--azul-escuro); color:#fff; text-align:center; padding:20px;
+      box-shadow:0 4px 8px rgba(0,0,0,.2); position:sticky; top:0; z-index:1000;
+    }
+    .titulo{font-size:2.2em; font-weight:700; margin:0}
+    .subtitulo{font-size:1.2em; font-weight:600; margin:0}
+
+    nav{
+      background:var(--azul-claro); padding:14px 10px; text-align:center; box-shadow:var(--shadow);
+      position:sticky; top:var(--header-h); z-index:950; margin-bottom:16px;
+    }
+    .nav-button{
+      display:inline-block; text-decoration:none; background:var(--azul-claro); color:#000; font-weight:700;
+      border:1px solid var(--borda); padding:10px 20px; border-radius:var(--radius);
+      box-shadow:2px 2px 5px rgba(0,0,0,.2); font-size:16px; margin:0 6px; cursor:pointer; transition:transform .2s;
+    }
+    .nav-button:hover{ transform:scale(1.05) }
+
+    .formulario{
+      background:var(--cinza-card); width:92%; max-width:1100px;
+      margin:0 auto; padding:24px; border-radius:10px; box-shadow:var(--shadow);
+      display:flex; flex-direction:column; min-height:0;
+      height: calc(100vh - var(--header-h) - var(--nav-h) - 32px);
+      overflow:hidden;
+    }
+    .form-title{
+      position:sticky; top:0; z-index:10;
+      background:var(--cinza-card); color:var(--azul-escuro);
+      font-weight:800; letter-spacing:.3px; font-size:1.1rem;
+      margin:0 0 14px 0; padding:8px 10px; border-bottom:1px solid #d8d8d8;
+    }
+    .form-body{
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-inline-end: 14px;  /* só o lado da barra */
+  scrollbar-gutter: stable;
+}
+
+
+    .section-title{ color:var(--azul-escuro); font-weight:800; font-size:1.05rem; margin:10px 0 8px; }
+
+    label{display:block; font-weight:700; color:#000; margin-bottom:6px}
+    input[type="text"], input[type="number"], input[type="date"], input[type="tel"], select, textarea{
+      width:100%; background:#fff; padding:10px; border:1px solid var(--borda-input);
+      border-radius:6px; font-size:1rem; box-shadow:0 2px 5px rgba(0,0,0,.2)
+    }
+    textarea{min-height:70px; resize:vertical}
+
+    .grid12{display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:16px}
+    .c1{grid-column:span 1}.c2{grid-column:span 2}.c3{grid-column:span 3}
+    .c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}
+    .c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}
+    .c10{grid-column:span 10}.c11{grid-column:span 11}.c12{grid-column:span 12}
+
+    .cond{ border:2px solid #999; background:#eee; padding:12px; border-radius:10px; margin-top:8px; animation:fadeIn .4s ease }
+    .fechar-bloco{ position:absolute; right:10px; top:8px; font-size:20px; color:#444; background:transparent; border:0; cursor:pointer;}
+    @keyframes fadeIn{from{opacity:0} to{opacity:1}}
+
+    .form-buttons{display:flex; gap:12px; justify-content:flex-end; flex-wrap:wrap; margin-top:18px}
+    .command-button{
+      background:#e0e0e0; color:#000; font-weight:700; border:1px solid var(--borda);
+      padding:12px 20px; border-radius:12px; box-shadow:2px 2px 5px rgba(0,0,0,.2);
+      cursor:pointer; font-size:16px; transition:transform .15s; min-width:160px;
+    }
+    .command-button:hover{ transform:scale(1.03) }
+
+    .kv{
+      display:grid;
+      grid-template-columns:max-content 1fr max-content 1fr;
+      gap:8px 18px; padding:12px; background:var(--cinza-card); border-radius:8px;
+    }
+    .kv dt{margin:0; font-weight:700; color:#000;}
+    .kv dd{margin:0; color:#111}
+    .kv .full{grid-column:1/-1}
+
+    @media (max-width: 980px){
+      .grid12{ grid-template-columns:repeat(6, minmax(0,1fr)) }
+      .c8{grid-column:span 6} .c6{grid-column:span 6} .c4{grid-column:span 3} .c3{grid-column:span 3} .c2{grid-column:span 3}
+      .kv{ grid-template-columns:max-content 1fr; }
+    }
+    @media (max-width: 620px){
+      .grid12{ grid-template-columns:1fr }
+      .c1,.c2,.c3,.c4,.c5,.c6,.c7,.c8,.c9,.c10,.c11,.c12{ grid-column:1/-1 }
+      .titulo{font-size:1.8em} .subtitulo{font-size:1.1em}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="titulo">Ações de Vigilância e Controle de Escorpiões</p>
+    <p class="subtitulo">Unidade de Vigilância em Saúde - M’ Boi Mirim</p>
+  </header>
+
+  <nav>
+    <a class="nav-button" href="login.html">Login</a>
+    <a class="nav-button" href="fichaOS.html">Ficha OS</a>
+   <a class="nav-button" href="Sessao_Encerrada.html">Sair</a>
+  </nav>
+
+  <main class="formulario">
+    <div class="form-title">Formulário de campo</div>
+
+    <div class="form-body">
+      <!-- Registro -->
+      <h3 class="section-title">Registro</h3>
+      <section class="grid12">
+        <div class="c12">
+          <dl class="kv">
+            <dt>Nº OS:</dt>                 <dd id="r-os">001</dd>
+            <dt>Origem da solicitação:</dt> <dd id="r-origem">Telefone</dd>
+            <dt>Protocolo:</dt>             <dd id="r-protocolo">SP-2025-0001</dd>
+            <dt>Data da notificação:</dt>   <dd id="r-dn">21/07/2025</dd>
+            <dt>Data do recebimento:</dt>   <dd id="r-dr">21/07/2025</dd>
+            <dt>Ocorrência:</dt>            <dd id="r-ocorrencia">Escorpião</dd>
+
+            <dt class="full">Descrição da Solicitação:</dt>
+            <dd class="full" id="r-desc">Relato de escorpião no quintal.</dd>
+
+            <dt>Solicitante:</dt>           <dd id="r-sol">Maria dos Santos</dd>
+            <dt>Paciente:</dt>              <dd id="r-paciente">—</dd>
+
+            <dt>Telefones:</dt>             <dd id="r-tels">11 99999-0000 / 11 98888-0000</dd>
+            <dt>Endereço:</dt>              <dd id="r-endereco">Rua Exemplo, 123 – Vila Prel</dd>
+            <dt>DA:</dt>                    <dd id="r-da">45</dd>
+            <dt>UBS:</dt>                   <dd id="r-ubs">Alfredo</dd>
+          </dl>
+        </div>
+
+        <div class="c12">
+          <label for="obs-registro">Observações do registro</label>
+          <textarea id="obs-registro" placeholder="Ex.: Nome correto do paciente é ... / Endereço com complemento ..."></textarea>
+        </div>
+      </section>
+
+ <!-- Histórico de Atendimento -->
+<h3 class="section-title">Histórico de Atendimento</h3>
+<section class="grid12">
+  <div class="c4">
+    <label for="dt_v1">Data da 1ª visita</label>
+    <input id="dt_v1" type="date">
+  </div>
+  <div class="c4">
+    <label for="dt_v2">Data da 2ª visita</label>
+    <input id="dt_v2" type="date">
+  </div>
+  <div class="c4">
+    <label for="dt_v3">Data da 3ª visita</label>
+    <input id="dt_v3" type="date">
+  </div>
+
+  <div class="c4">
+    <label for="area-monitorada">Área monitorada</label>
+    <select id="area-monitorada">
+      <option>Selecione</option>
+      <option>4201 – Coimbra</option>
+      <option>4501 – Souza</option>
+      <option>4502 – Alfredo</option>
+    </select>
+  </div>
+  <div class="c4">
+    <label for="tipo-imovel">Tipo de imóvel</label>
+    <select id="tipo-imovel">
+      <option>Residencial</option>
+      <option>Comercial</option>
+      <option>Terreno baldio</option>
+    </select>
+  </div>
+  <div class="c4">
+    <label for="situacao-imovel">Situação do imóvel</label>
+    <select id="situacao-imovel">
+      <option>Trabalhado</option>
+      <option>Fechado</option>
+      <option>Desabitado</option>
+    </select>
+  </div>
+</section>
+
+     
+
+      <!-- Inspeção (ajustada: dois campos lado a lado) -->
+      <h3 class="section-title">Inspeção</h3>
+      <section class="grid12">
+        <div class="c6">
+          <label for="qtd-vistoriados">Imóveis vistoriados (qtd.)</label>
+          <input id="qtd-vistoriados" type="number" min="0">
+        </div>
+        <div class="c6">
+          <label for="condicoes-ambientais">Condições ambientais</label>
+          <select id="condicoes-ambientais">
+            <option>Entulho/Construção</option>
+            <option>Lixo/Inservíveis</option>
+            <option>Mato alto</option>
+          </select>
+        </div>
+
+        <div class="c12">
+          <label>Logradouros monitorados</label>
+          <div class="grid12">
+            <label class="c3"><input type="checkbox"> Bueiros</label>
+            <label class="c3"><input type="checkbox"> Caixa de inspeção/gordura</label>
+            <label class="c3"><input type="checkbox"> Rede pluvial</label>
+            <label class="c3"><input type="checkbox"> Linha férrea</label>
+            <label class="c3"><input type="checkbox"> Linha de transmissão</label>
+            <label class="c3"><input type="checkbox"> Córrego</label>
+            <label class="c3"><input type="checkbox"> Muro de gabião</label>
+            <label class="c3"><input type="checkbox"> Praça</label>
+            <label class="c3"><input type="checkbox"> Canteiro central</label>
+            <label class="c3"><input type="checkbox"> Terreno baldio não murado</label>
+            <label class="c3"><input type="checkbox"> Terreno público</label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Relatório da equipe (novo) -->
+      <h3 class="section-title">Relatório da equipe</h3>
+      <section class="grid12">
+        <div class="c12">
+          <textarea id="relatorio-equipe" placeholder="Descreva o que foi feito, orientações, pendências..."></textarea>
+        </div>
+      </section>
+
+      <!-- Identificação do Munícipe -->
+      <h3 class="section-title">Identificação do Munícipe</h3>
+      <section class="grid12">
+        <div class="c6"><label for="nome-municipe">Nome do Munícipe</label><input id="nome-municipe" type="text"></div>
+        <div class="c3"><label for="cpf">CPF</label><input id="cpf" type="text" placeholder="XXX.XXX.XXX-XX"></div>
+        <div class="c3"><label for="telefone-municipe">Telefone</label><input id="telefone-municipe" type="tel" placeholder="(XX) XXXXX-XXXX"></div>
+        <div class="c12"><label for="equipe">Equipe</label><input id="equipe" type="text" placeholder="Nomes da equipe"></div>
+      </section>
+
+      <div class="form-buttons">
+        <button class="command-button" type="button">Salvar</button>
+        <button class="command-button" type="button">Ver mapa</button>
+        <button class="command-button" type="button" onclick="limparCampos()">Limpar Campos</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      function setHeights(){
+        const h = document.querySelector('header');
+        const n = document.querySelector('nav');
+        document.documentElement.style.setProperty('--header-h', (h?.offsetHeight||0)+'px');
+        document.documentElement.style.setProperty('--nav-h',    (n?.offsetHeight||0)+'px');
+      }
+      setHeights(); window.addEventListener('resize', setHeights);
+    })();
+
+    (function(){
+      const btn = document.getElementById('btnAddData');
+      const w2  = document.getElementById('wrap_dt_v2');
+      const w3  = document.getElementById('wrap_dt_v3');
+      let step = 0;
+      btn.addEventListener('click', ()=>{
+        if(step===0){ w2.style.display=''; step=1; }
+        else if(step===1){ w3.style.display=''; step=2; }
+      });
+    })();
+
+    function toggleCampo(selectId, grupoId){
+      const sel = document.getElementById(selectId);
+      const grupo = document.getElementById(grupoId);
+      if (!sel || !grupo) return;
+      grupo.style.display = (sel.value === 'Sim') ? 'block' : 'none';
+    }
+    function fecharBloco(id){
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    }
+
+    function limparCampos(){
+      document.querySelectorAll('input, textarea, select').forEach(el=>{
+        if (el.closest('.kv')) return;       // não limpa o Registro (somente leitura)
+        if (el.tagName==='SELECT') el.selectedIndex = 0;
+        else if (el.type!=='button') el.value = '';
+      });
+      ['grupo-1','grupo-2','grupo-3'].forEach(id=>{
+        const g=document.getElementById(id); if(g) g.style.display='none';
+      });
+    }
+  </script>
+</body>
+</html>

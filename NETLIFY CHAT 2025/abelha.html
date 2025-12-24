@@ -1,0 +1,769 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AÇÕES DE VIGILÂNCIA E CONTROLE DE HYMENOPTERA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --azul-escuro:#003562;
+      --azul-claro:#b0cbe9;
+      --cinza-card:#e0e0e0;
+      --borda:#888;
+      --borda-input:#ccc;
+      --shadow:0 4px 10px rgba(0,0,0,.2);
+      --radius:12px;
+      --bg:#f0f4f8;
+      --header-h:0px; --nav-h:0px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Roboto, sans-serif; background:var(--bg);
+      display:grid; grid-template-rows:auto auto 1fr; min-height:100vh;
+    }
+
+    header{
+      background:var(--azul-escuro); color:#fff; text-align:center; padding:20px;
+      box-shadow:0 4px 8px rgba(0,0,0,.2); position:sticky; top:0; z-index:1000;
+    }
+    .titulo{font-size:2.2em; font-weight:700; margin:0}
+    .subtitulo{font-size:1.2em; font-weight:600; margin:0}
+
+    nav{
+      background:var(--azul-claro); padding:14px 10px; text-align:center; box-shadow:var(--shadow);
+      position:sticky; top:var(--header-h); z-index:950; margin-bottom:16px;
+    }
+    .nav-button{
+      display:inline-block; text-decoration:none; background:var(--azul-claro); color:#000; font-weight:700;
+      border:1px solid var(--borda); padding:10px 20px; border-radius:var(--radius);
+      box-shadow:2px 2px 5px rgba(0,0,0,.2); font-size:16px; margin:0 6px; cursor:pointer; transition:transform .2s;
+    }
+    .nav-button:hover{ transform:scale(1.05) }
+
+    .formulario{
+      background:var(--cinza-card); width:92%; max-width:1100px;
+      margin:0 auto; padding:24px; border-radius:10px; box-shadow:var(--shadow);
+      display:flex; flex-direction:column; min-height:0;
+      height: calc(100vh - var(--header-h) - var(--nav-h) - 32px);
+      overflow:hidden;
+    }
+    .form-title{
+      position:sticky; top:0; z-index:10;
+      background:var(--cinza-card); color:var(--azul-escuro);
+      font-weight:800; letter-spacing:.3px; font-size:1.1rem;
+      margin:0 0 14px 0; padding:8px 10px; border-bottom:1px solid #d8d8d8;
+    }
+    .form-body{
+      flex:1 1 auto; min-height:0; overflow-y:auto;
+      padding-inline-end:14px; scrollbar-gutter:stable;
+    }
+
+    .section-title{ color:var(--azul-escuro); font-weight:800; font-size:1.05rem; margin:10px 0 8px; }
+    label{display:block; font-weight:700; color:#000; margin-bottom:6px}
+
+    input[type="text"], input[type="number"], input[type="date"], input[type="tel"], select, textarea{
+      width:100%; background:#fff; padding:10px; border:1px solid var(--borda-input);
+      border-radius:6px; font-size:1rem; box-shadow:0 2px 5px rgba(0,0,0,.2)
+    }
+    textarea{min-height:70px; resize:vertical}
+
+    .grid12{display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:16px}
+    .c1{grid-column:span 1}.c2{grid-column:span 2}.c3{grid-column:span 3}
+    .c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}
+    .c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}
+    .c10{grid-column:span 10}.c11{grid-column:span 11}.c12{grid-column:span 12}
+
+    .kv{
+      display:grid; grid-template-columns:max-content 1fr max-content 1fr;
+      gap:8px 18px; padding:12px; background:var(--cinza-card); border-radius:8px;
+    }
+    .kv dt{margin:0; font-weight:700; color:#000;}
+    .kv dd{margin:0; color:#111}
+    .kv .full{grid-column:1/-1}
+
+    .form-buttons{display:flex; gap:12px; justify-content:flex-end; flex-wrap:wrap; margin-top:18px}
+    .command-button{
+      background:#e0e0e0; color:#000; font-weight:700; border:1px solid var(--borda);
+      padding:12px 20px; border-radius:12px; box-shadow:2px 2px 5px rgba(0,0,0,.2);
+      cursor:pointer; font-size:16px; transition:transform .15s; min-width:160px;
+    }
+    .command-button:hover{ transform:scale(1.03) }
+
+    @media (max-width: 980px){
+      .grid12{ grid-template-columns:repeat(6, minmax(0,1fr)) }
+      .c8{grid-column:span 6} .c6{grid-column:span 6} .c4{grid-column:span 3} .c3{grid-column:span 3} .c2{grid-column:span 3}
+      .kv{ grid-template-columns:max-content 1fr; }
+    }
+    @media (max-width: 620px){
+      .grid12{ grid-template-columns:1fr }
+      .c1,.c2,.c3,.c4,.c5,.c6,.c7,.c8,.c9,.c10,.c11,.c12{ grid-column:1/-1 }
+      .titulo{font-size:1.8em} .subtitulo{font-size:1.1em}
+    }
+  </style>
+</head> 
+
+
+
+
+
+
+<body>
+  <header>
+    <p class="titulo">AÇÕES DE VIGILÂNCIA E CONTROLE DE HYMENOPTERA</p>
+    <p class="subtitulo">Unidade de Vigilância em Saúde - M’ Boi Mirim</p>
+  </header>
+
+  <nav>
+    <a class="nav-button" href="welcome_sigva.html">Home</a>
+    
+    <a class="nav-button" href="Cadastramento_OrdemServico.html">Gestão OS</a>
+    
+    <a class="nav-button" href="ficha_OS.html">Ficha OS</a>
+    <a class="nav-button" href="login_senha.html">Logout</a>
+   
+
+  </nav>
+
+  <main class="formulario">
+    <div class="form-title">Formulário de campo</div>
+
+    <div class="form-body">
+      <!-- REGISTRO (mesmo do Aedes) -->
+      <h3 class="section-title">Registro</h3>
+      <section class="grid12">
+        <div class="c12">
+          <dl class="kv">
+            <dt>Nº OS:</dt>                 <dd id="r-os">—</dd>
+            <dt>Origem da solicitação:</dt> <dd id="r-origem">—</dd>
+            <dt>Protocolo:</dt>             <dd id="r-protocolo">—</dd>
+            <dt>Data da notificação:</dt>   <dd id="r-dn">—</dd>
+            <dt>Data do recebimento:</dt>   <dd id="r-dr">—</dd>
+            <dt>Ocorrência:</dt>            <dd id="r-ocorrencia">Himenoptero</dd>
+  
+            <dt>Solicitante:</dt>           <dd id="r-sol">—</dd>
+            <dt>Paciente:</dt>              <dd id="r-paciente">—</dd>
+
+            <dt>Telefones:</dt>             <dd id="r-tels">—</dd>
+            <dt>Endereço:</dt>              <dd id="r-endereco">—</dd>
+            <dt>DA:</dt>                    <dd id="r-da">—</dd>
+            <dt>UBS:</dt>                   <dd id="r-ubs">—</dd>
+            <dt>Descrição da Solicitação:</dt> <dd id="r-desc">—</dd>
+
+          </dl>
+        </div>
+
+
+         <!-- Histórico de Atendimento -->
+        <div class="c12">
+          <label for="obs-registro">Observações do registro</label>
+          <textarea id="obs-registro" placeholder="Ex.: complemento de endereço, correção de nome, etc."></textarea>
+        </div>
+      </section>
+
+      <!-- FORMULÁRIO DE CAMPO -->
+      <h3 class="section-title">Formulário de campo</h3>
+      <section class="grid12">
+        
+        <div class="c4">
+          <label for="dt_v1">Data da 1ª visita</label>
+          <input id="dt_v1" type="date">
+        </div>
+        
+        <div class="c4">
+          <label for="dt_v2">Data da 2ª visita</label>
+          <input id="dt_v2" type="date">
+        </div>
+        <div class="c4">
+          <label for="dt_v3">Data da 3ª visita</label>
+          <input id="dt_v3" type="date">
+        </div>
+      </section>
+
+      <!-- HISTÓRICO DE ATENDIMENTO -->
+      <h3 class="section-title">Histórico de Atendimento</h3>
+      
+      <section class="grid12">
+      
+        <div class="c4">
+          <label for="tipo-imovel">Tipo de imóvel</label>
+          <select id="tipo-imovel"></select>
+        </div>
+       
+        <div class="c4">
+          <label for="situacao-imovel">Situação do imóvel</label>
+          <select id="situacao-imovel"></select>
+        </div>
+
+        <div class="c12">
+          <label>Grupo de inseto</label>
+          <div class="grid12">
+            <label class="c3"><input type="checkbox" id="g-afric"> Africanizada</label>
+            <label class="c3"><input type="checkbox" id="g-vespa"> Vespa e Marimbondo</label>
+            <label class="c3"><input type="checkbox" id="g-arapua"> Arapuá</label>
+            <label class="c3"><input type="checkbox" id="g-jatai"> Jataí</label>
+            <label class="c3"><input type="checkbox" id="g-outra"> Outra espécie nativa</label>
+          </div>
+        </div>
+
+        <div class="c6">
+          <label>Evento</label>
+          <label style="font-weight:600; margin-right:16px"><input type="radio" name="evento" value="enxame"> Enxame</label>
+          <label style="font-weight:600"><input type="radio" name="evento" value="abrigo"> Abrigo</label>
+        </div>
+
+        <div class="c6">
+          <label>Localização do ninho — Área</label>
+          <label style="font-weight:600; margin-right:16px"><input type="radio" name="area_ninho" value="interna"> Interna</label>
+          <label style="font-weight:600"><input type="radio" name="area_ninho" value="externa"> Externa</label>
+        </div>
+
+        <div class="c6">
+          <label for="loc-ninho">Localização do ninho — Local</label>
+          <select id="loc-ninho" data-open="#loc-outros-wrap">
+            <option value="Telhado / Forro">Telhado / Forro</option>
+            <option value="Fresta / Parede">Fresta / Parede</option>
+            <option value="Rede – água/luz">Rede – água/luz</option>
+            <option value="Interior de poste">Interior de poste</option>
+            <option value="Objeto">Objeto</option>
+            <option value="Tubulação / Esgoto">Tubulação / Esgoto</option>
+            <option value="Solo">Solo</option>
+            <option value="Árvore">Árvore</option>
+            <option value="Outros">Outros</option>
+          </select>
+        </div>
+       
+        <div class="c6" id="loc-outros-wrap" style="display:none">
+          <label for="loc-outros">*Outros</label>
+          <textarea id="loc-outros" placeholder="Descreva o local"></textarea>
+        </div>
+
+        <div class="c12">
+          <label>Altura estimada</label>
+          <div class="grid12">
+            <div class="c6">
+              <div style="font-weight:700; margin-bottom:6px">Altura de uma casa térrea</div>
+              <label style="font-weight:600; margin-right:12px"><input type="radio" name="altura_terrea" value="1m"> 1M</label>
+              <label style="font-weight:600; margin-right:12px"><input type="radio" name="altura_terrea" value="2m"> 2M</label>
+              <label style="font-weight:600; margin-right:12px"><input type="radio" name="altura_terrea" value="3m"> 3M</label>
+              <label style="font-weight:600"><input type="radio" name="alt-terrea" value="4m"> 4M</label>
+            </div>
+            <div class="c6">
+              <div style="font-weight:700; margin-bottom:6px">Altura de um sobrado</div>
+              <label style="font-weight:600; margin-right:12px"><input type="radio" name="altura_sobrado" value="2m"> 2M</label>
+              <label style="font-weight:600; margin-right:12px"><input type="radio" name="altura_sobrado" value="3m"> 3M</label>
+              <label style="font-weight:600; margin-right:12px"><input type="radio" name="altura_sobrado" value="8m"> 8M</label>
+              <label style="font-weight:600"><input type="radio" name="alt-sobrado" value="9m+"> Acima de 9M</label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MEDIDAS ADOTADAS -->
+      <h3 class="section-title">Medidas adotadas</h3>
+      <section class="grid12">
+        <div class="c6">
+          <label for="medida-adotada">Medidas adotadas</label>
+          <select id="medida-adotada" data-open="#motivo-nao-wrap">
+            <option value="Eliminação">Eliminação</option>
+            <option value="Remoção (Parceria com apicultor)">Remoção (Parceria com apicultor)</option>
+            <option value="Cancelado pelo solicitante">Cancelado pelo solicitante (ligação ou presencial)</option>
+            <option value="Não realizado">Não realizado</option>
+          </select>
+        </div>
+        
+        <div class="c6" id="motivo-nao-wrap" style="display:none">
+          <label for="motivo-nao">Motivo da Não realização</label>
+          <select id="motivo-nao">
+            <option value="Apenas orientação">Apenas orientação</option>
+            <option value="Não autorizado">Não autorizado</option>
+            <option value="Acesso inviável">Acesso inviável</option>
+            <option value="Espécie protegida">Espécie protegida</option>
+            <option value="Improcedente">Improcedente</option>
+            <option value="Não confirmado">Não confirmado</option>
+            <option value="Problema não localizado">Problema não localizado</option>
+            <option value="Enxame retirou-se">Enxame retirou-se</option>
+            <option value="Nº/solicitante não localizado">Nº e/ou solicitante não localizado</option>
+          </select>
+        </div>
+     
+      </section>
+
+      <!-- DADOS CLÍNICOS -->
+      <h3 class="section-title">Dados Clínicos</h3>
+      <section class="grid12">
+        <div class="c4">
+          <label for="himenopterismo">Himenopterismo</label>
+        
+          <select id="himenopterismo" data-open="#unidade-medica-wrap">
+            <option value="selecione">selecione</option>
+            <option value="sim">sim</option>
+            <option value="nao">não</option>
+          </select>
+        
+        </div>
+        
+        <div class="c8" id="unidade-medica-wrap" style="display:none">
+          <label for="unidade-medica">Unidade Médica</label>
+          <textarea id="unidade-medica"></textarea>
+        </div>
+
+        <div class="c6">
+          <label>Controle</label>
+          <label style="font-weight:600; margin-right:16px"><input type="radio" name="controle" value="mecanico"> Mecânico</label>
+          <label style="font-weight:600"><input type="radio" name="controle" value="quimico"> Químico</label>
+        </div>
+       
+        <div class="c6">
+          <label for="produto-quantidade">Qual produto e quantidade (L)</label>
+          <textarea id="produto-quantidade" placeholder="Produto e quantidade em litros"></textarea>
+        </div>
+      
+      </section>
+
+      <!-- RELATÓRIO -->
+      <h3 class="section-title">Relatório de campo</h3>
+      <section class="grid12">
+        <div class="c12">
+          <textarea id="relatorio-campo" placeholder="Descreva o que foi feito, orientações, pendências..."></textarea>
+        </div>
+      </section>
+
+      <!-- IDENTIFICAÇÃO -->
+      <h3 class="section-title">Identificação</h3>
+      <section class="grid12">
+        <div class="c6">
+          <label for="nome-municipe">Nome do Munícipe</label>
+          <textarea id="nome-municipe"></textarea>
+        </div>
+        <div class="c3">
+          <label for="cpf">CPF</label>
+          <input id="cpf" type="text" placeholder="000.000.000-00" inputmode="numeric" maxlength="14">
+        </div>
+        <div class="c3">
+          <label for="telefone">Telefone</label>
+          <input id="telefone" type="tel" placeholder="(00) 00000-0000" inputmode="tel" maxlength="15">
+        </div>
+
+        <div class="c12">
+          <label for="equipe">Equipe</label>
+          <textarea id="equipe" placeholder="Nomes da equipe e funções"></textarea>
+        </div>
+      </section>
+
+      <!-- BOTÕES (padrão) -->
+      <div class="form-buttons">
+        <button class="command-button" type="button">Salvar OS</button>
+        <button class="command-button" type="button" id="btn-limpar">Limpar Campos</button>
+      </div>
+    </div>
+  </main>
+</body>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+/* ==================== CONFIGURAÇÃO SUPABASE ==================== */
+const SUPABASE_URL = "https://vepnalrpyaxhpklicqrb.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlcG5hbHJweWF4aHBrbGljcXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5MDgxNzIsImV4cCI6MjA3NzQ4NDE3Mn0.-9_J-RE4IWdaGISGZgAXe6S2MLStG9lVm50suQKr7jY";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentOSId = null;
+const TABELA_DETALHES = 'detalhes_abelha'; // tabela específica de detalhes
+
+
+// ESSE TRECHO SE REFERE A EXIBIR OS DADOS DA TABELA Pincipal 
+const PRINCIPAL_FIELD_MAP = {
+           
+            'obs_registro': 'obs_registro', 
+
+            'dt_v1': 'data_visita_1',
+            
+            'dt_v2': 'data_visita_2',
+            
+            'dt_v3': 'data_visita_3',
+ 
+            'area_monitorada': 'area_monitorada',
+
+            
+                        
+          };
+
+
+// ESSE TRECHO SE REFERE A EXIBIR OS DADOS DA TABELA detalhes_abelha 
+const DETALHES_FIELD_MAP = {
+  
+
+  "tipo-imovel": "tipo_imovel",
+  "situacao-imovel": "situacao_imovel",
+  "area_ninho":"area_ninho",
+  "loc-ninho": "loc_ninho",
+  "loc-outros": "loc_outros",
+  "medida-adotada": "medida_adotada",
+  "motivo-nao": "motivo_nao",
+  "himenopterismo": "himenopterismo",
+  "unidade-medica": "unidade_medica",
+  "produto-quantidade": "produto_quantidade",
+  "relatorio-campo": "relatorio_campo",
+  "nome-municipe": "nome_municipe",
+  "cpf": "cpf",
+  "telefone": "telefone",
+  "equipe": "equipe",
+  "obs-registro": "obs_registro",
+};
+
+
+/* ==================== LISTAS ==================== */
+const ANEXO6_TIPOS_IMOVEL = ["Residencial","Comercial","Terreno baldio","Equipamento público","Área verde"];
+const ANEXO6_SITUACOES_IMOVEL = ["Trabalhado","Fechado","Desabitado","Recusa","Ausente"];
+
+/* ==================== FUNÇÕES AUXILIARES ==================== */
+function popularSelect(id, lista, incluirSelecione = true){
+    const sel = document.getElementById(id);
+    if(!sel) return;
+    sel.innerHTML = '';
+    if(incluirSelecione){
+        const opt = document.createElement('option');
+        opt.value = 'selecione'; opt.textContent = 'selecione';
+        sel.appendChild(opt);
+    }
+    lista.forEach(txt=>{
+        const o = document.createElement('option');
+        o.value = txt; o.textContent = txt;
+        sel.appendChild(o);
+    });
+}
+
+function bindConditionalOpens(){
+    document.querySelectorAll('select[data-open]').forEach(sel=>{
+        const target = document.querySelector(sel.getAttribute('data-open'));
+        if(!target) return;
+        const update = () => {
+            const show = (sel.value === 'sim') || (sel.value === 'Outros');
+            target.style.display = show ? '' : 'none';
+        };
+        sel.addEventListener('change', update);
+        update();
+    });
+}
+
+function maskCPF(v){
+    v = v.replace(/\D/g,'').slice(0,11);
+    if(v.length>9)  v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/,'$1.$2.$3-$4');
+    else if(v.length>6) v = v.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1.$2.$3');
+    else if(v.length>3) v = v.replace(/(\d{3})(\d{0,3})/,'$1.$2');
+    return v;
+}
+
+function maskPhone(v){
+    v = v.replace(/\D/g,'').slice(0,11);
+    if(v.length>10){ v = v.replace(/(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3'); }
+    else{ v = v.replace(/(\d{2})(\d{4})(\d{0,4})/,'($1) $2-$3'); }
+    return v;
+}
+
+
+//=======================        LIMPEZA DE DADOS   ======================================================//
+
+function LimparDados() {
+    const ALL_FIELDS = { ...PRINCIPAL_FIELD_MAP, ...DETALHES_FIELD_MAP };
+
+    for (const id in ALL_FIELDS) {
+        const element = document.getElementById(id);
+        if (!element) continue;
+
+        if (element.type === 'checkbox' || element.type === 'radio') {
+            element.checked = false;
+        } else {
+            element.value = '';
+        }
+
+        element.dispatchEvent(new Event('change')); // atualiza binds condicionais
+    }
+
+    // Limpar radios separados (evento, area-ninho, controle, alt-terrea, alt-sobrado)
+    ['evento','area_ninho','controle','altura_terrea','altura_sobrado'].forEach(name => {
+        document.querySelectorAll(`input[name='${name}']`).forEach(radio => radio.checked = false);
+    });
+
+    alert('✅ Todos os campos foram limpos!');
+}
+
+// Exemplo de ligação ao botão
+document.getElementById('btn-limpar')?.addEventListener('click', LimparDados);
+
+
+
+// =========================================================================================================
+function LerIDdaURL() {
+            const params = new URLSearchParams(window.location.search);
+            const osId = params.get('osid');
+            if (!osId) {
+                document.getElementById('r-os').textContent = 'ERRO';
+                alert('Erro: ID da Ordem de Serviço não encontrado na URL.');
+                return null;
+            }
+            return parseInt(osId);
+        }
+
+ window.onload = function() {
+            // Ajusta alturas do header/nav para cálculo da área de scroll
+            (function(){
+                function setHeights(){
+                    const h = document.querySelector('header');
+                    const n = document.querySelector('nav');
+                    document.documentElement.style.setProperty('--header-h', (h?.offsetHeight||0)+'px');
+                    document.documentElement.style.setProperty('--nav-h',    (n?.offsetHeight||0)+'px');
+                   // document.querySelector('.form-buttons .command-button:first-child').onclick = SalvarFichaEscorpiao;
+
+              //  document.querySelector('.form-buttons .command-button:first-child').onclick = SalvarFichaAbelha;      
+
+                }
+                setHeights(); window.addEventListener('resize', setHeights);
+            })();
+            
+            currentOSId = LerIDdaURL();
+            if (currentOSId) {
+                CarregarFichaAbelha(currentOSId);
+            }
+            
+            // Liga o botão Salvar à função correta
+            //document.querySelector('.form-buttons .command-button:first-child').onclick = SalvarFichaEscorpiao;
+
+             document.querySelector('.form-buttons .command-button:first-child').onclick = SalvarFichaAbelha;
+        };
+
+
+
+
+function formatarDataBR(data){
+    if(!data) return '—';
+    const d = new Date(data);
+    return d.toLocaleDateString('pt-BR');
+}
+
+/* ==================== INICIALIZAÇÃO ==================== */
+(function init(){
+    // Popular selects
+    popularSelect('tipo-imovel', ANEXO6_TIPOS_IMOVEL);
+    popularSelect('situacao-imovel', ANEXO6_SITUACOES_IMOVEL);
+    bindConditionalOpens();
+
+    // Máscaras CPF e telefone
+    document.getElementById('cpf')?.addEventListener('input', e=> e.target.value = maskCPF(e.target.value));
+    document.getElementById('telefone')?.addEventListener('input', e=> e.target.value = maskPhone(e.target.value));
+
+    // Medida adotada -> motivo não
+    const medida = document.getElementById('medida-adotada');
+    const motivoWrap = document.getElementById('motivo-nao-wrap');
+    if(medida && motivoWrap){
+        const upd = ()=> motivoWrap.style.display = (medida.value === 'Não realizado') ? '' : 'none';
+        medida.addEventListener('change', upd); upd();
+    }
+
+    // Carregar OS
+    currentOSId = LerIDdaURL();
+    if(currentOSId) CarregarFichaAbelha(currentOSId);
+
+})();
+  
+
+
+async function CarregarFichaAbelha(osId) {
+    try {
+        // 1️⃣ Busca na tabela Principal
+        // PARA CARREGAR AQUI DEVE SER .maybeSingle
+        const { data, error } = await supabase
+            .from('Principal')
+            .select(`*, ${TABELA_DETALHES} (*)`)
+            .eq('id', osId)
+            .maybeSingle();
+
+        if (error) throw error;
+        if (!data) throw new Error("OS não encontrada.");
+
+        const os = data;
+
+        // Carrega detalhes_abelha separadamente
+        const { data: detalhes, error: err2 } = await supabase
+            .from('detalhes_abelha')
+            .select('*')
+            .eq('os_id', osId)
+            .maybeSingle();
+
+        if (err2) throw err2;
+
+        console.log("📋 Principal:", os);
+        console.log("🐝 Detalhes:", detalhes);
+
+        // 3️⃣ Preenchimento do cabeçalho (dados cadastrais do solicitante)
+        document.getElementById('r-os').textContent = os.nextosnumber || '—';
+        document.getElementById("r-origem").textContent = os.origem || '—';
+        document.getElementById("r-protocolo").textContent = os.protocolo || '—';
+        document.getElementById('r-dn').textContent = formatarDataBR(os.datanotificacao);
+        document.getElementById('r-dr').textContent = formatarDataBR(os.datarecebimento);
+        document.getElementById('r-desc').textContent = os.descricao || '—';
+        document.getElementById('r-sol').textContent = os.paciente || '—';
+        document.getElementById('r-paciente').textContent = os.paciente || '—';
+        document.getElementById('r-tels').textContent = [os.tel1, os.tel2].filter(Boolean).join(', ');
+        document.getElementById('r-endereco').textContent = `${os.logradouro||''}, ${os.numero||'S/N'} — ${os.bairro||'—'}`; 
+        document.getElementById('r-da').textContent = os.da || '—';
+        document.getElementById('r-ubs').textContent = os.ubs || '—';
+
+        
+
+
+        // 6️⃣ Preenchimento de checkboxes (grupo_inseto)
+        let grupos = detalhes?.grupo_inseto ?? {};
+        document.getElementById("g-afric").checked = !!grupos.africanizada;
+        document.getElementById("g-vespa").checked = !!grupos.vespa_marimbondo;
+        document.getElementById("g-arapua").checked = !!grupos.arapua;
+        document.getElementById("g-jatai").checked = !!grupos.jatai;
+        document.getElementById("g-outra").checked = !!grupos.outra;
+
+        // 4️⃣ Preenchimento automático dos inputs
+        const ALL_FIELDS = { ...PRINCIPAL_FIELD_MAP, ...DETALHES_FIELD_MAP };
+
+        for (const id in ALL_FIELDS) {
+            const element = document.getElementById(id);
+            if (!element) continue;
+
+            const campoBD = ALL_FIELDS[id];
+            let valor;
+
+            if (id in PRINCIPAL_FIELD_MAP) {
+                valor = os[campoBD];
+            } else if (id in DETALHES_FIELD_MAP) {
+                valor = detalhes ? detalhes[campoBD] : null;
+            }
+
+            if (valor !== null && valor !== undefined) {
+                if (element.type === 'date') {
+                    valor = valor.substring(0, 10);
+                }
+                element.value = valor;
+            } else {
+                element.value = '';
+            }
+
+            element.dispatchEvent(new Event('change')); // para binds condicionais
+        }
+
+        // Preencher os radios (evento, area-ninho, etc)
+        ['evento','area_ninho','controle','altura_terrea','altura_sobrado'].forEach(name => {
+            const value = detalhes?.[name];
+            if (value !== undefined && value !== null) {
+                const radio = document.querySelector(`input[name='${name}'][value='${value}']`);
+                if (radio) radio.checked = true;
+            }
+        });
+
+        console.log("✨ Ficha carregada com sucesso");
+        console.log("✨ Carregamento concluído");
+
+    } catch (err) {
+        console.error('Erro ao carregar ficha:', err);
+        document.getElementById('r-os').textContent = 'ERRO DE CARREGAMENTO';
+        alert(`Não foi possível carregar a ficha (ID: ${osId}). Erro: ${err.message}`);
+    }
+}
+
+
+async function SalvarFichaAbelha() {
+
+    if(!currentOSId) currentOSId = LerIDdaURL();
+    if(!currentOSId) return;
+
+    // TODOS OS DADOS ESTÃO SENDO SALVOS na tabela  detalhes_abelha do supabase
+    // AS COLUNAS DEVEM TER OS NOMES IDENTICOS AS VARIAVEIS 
+    
+     
+    const detalhesData = {
+    
+        os_id: currentOSId,
+        obs_registro: document.getElementById("obs-registro").value || null,
+       
+        dt_v1: document.getElementById("dt_v1").value || null,
+        dt_v2: document.getElementById("dt_v2").value || null,
+        dt_v3: document.getElementById("dt_v3").value || null,
+       
+       
+        tipo_imovel: document.getElementById("tipo-imovel").value,
+        situacao_imovel: document.getElementById("situacao-imovel").value,
+
+
+        grupo_inseto: {
+            africanizada: document.getElementById("g-afric").checked,
+            vespa_marimbondo: document.getElementById("g-vespa").checked,
+            arapua: document.getElementById("g-arapua").checked,
+            jatai: document.getElementById("g-jatai").checked,
+            outra: document.getElementById("g-outra").checked
+        },
+        
+        
+        evento: document.querySelector("input[name='evento']:checked")?.value || null,
+        area_ninho: document.querySelector("input[name='area_ninho']:checked")?.value || null,
+        loc_ninho: document.getElementById("loc-ninho").value,
+        loc_outros: document.getElementById("loc-outros").value,
+        altura_terrea: document.querySelector("input[name='altura_terrea']:checked")?.value || null,
+        altura_sobrado: document.querySelector("input[name='altura_sobrado']:checked")?.value || null,
+        medida_adotada: document.getElementById("medida-adotada").value,
+        motivo_nao: document.getElementById("motivo-nao").value,
+        himenopterismo: document.getElementById("himenopterismo").value,
+        unidade_medica: document.getElementById("unidade-medica").value,
+        controle: document.querySelector("input[name='controle']:checked")?.value || null,
+        produto_quantidade: document.getElementById("produto-quantidade").value,
+        relatorio_campo: document.getElementById("relatorio-campo").value,
+        nome_municipe: document.getElementById("nome-municipe").value,
+        cpf: document.getElementById("cpf").value,
+        telefone: document.getElementById("telefone").value,
+        equipe: document.getElementById("equipe").value
+    };
+
+    
+
+   // 1️⃣ Salvar na tabela detalhes_abelha
+    const { error: e1 } = await supabase
+        .from('detalhes_abelha')
+        .upsert(detalhesData, { onConflict: 'os_id' });
+
+    if (e1) {
+        alert("❌ Erro ao salvar detalhes: " + e1.message);
+        return;
+    }
+
+    // 2️⃣ Atualizar datas na tabela Principal
+    const principalUpdate = {
+        data_visita_1: detalhesData.dt_v1,
+        data_visita_2: detalhesData.dt_v2,
+        data_visita_3: detalhesData.dt_v3
+    };
+
+    const { error: e2 } = await supabase
+        .from('Principal')
+        .update(principalUpdate)
+        .eq('id', currentOSId);
+
+    if (e2) {
+        alert("❌ Erro ao atualizar tabela Principal: " + e2.message);
+        return;
+    }
+
+    // Tudo certo!
+    alert("✅ OS salva com sucesso!");
+ 
+
+
+  } 
+//================================================================================================================//
+//================================================================================================================// 
+
+</script>
+
+
+
+
+

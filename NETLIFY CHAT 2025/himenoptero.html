@@ -1,0 +1,498 @@
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AÇÕES DE VIGILÂNCIA E CONTROLE DE HYMENOPTERA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --azul-escuro:#003562;
+            --azul-claro:#b0cbe9;
+            --cinza-card:#e0e0e0;
+            --borda:#888;
+            --borda-input:#ccc;
+            --shadow:0 4px 10px rgba(0,0,0,.2);
+            --radius:12px;
+            --bg:#f0f4f8;
+            --header-h:0px; --nav-h:0px;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        body{
+            margin:0; font-family:Roboto, sans-serif; background:var(--bg);
+            display:grid; grid-template-rows:auto auto 1fr; min-height:100vh;
+        }
+
+        header{
+            background:var(--azul-escuro); color:#fff; text-align:center; padding:20px;
+            box-shadow:0 4px 8px rgba(0,0,0,.2); position:sticky; top:0; z-index:1000;
+        }
+        .titulo{font-size:2.2em; font-weight:700; margin:0}
+        .subtitulo{font-size:1.2em; font-weight:600; margin:0}
+
+        nav{
+            background:var(--azul-claro); padding:14px 10px; text-align:center; box-shadow:var(--shadow);
+            position:sticky; top:var(--header-h); z-index:950; margin-bottom:16px;
+        }
+        .nav-button{
+            display:inline-block; text-decoration:none; background:var(--azul-claro); color:#000; font-weight:700;
+            border:1px solid var(--borda); padding:10px 20px; border-radius:var(--radius);
+            box-shadow:2px 2px 5px rgba(0,0,0,.2); font-size:16px; margin:0 6px; cursor:pointer; transition:transform .2s;
+        }
+        .nav-button:hover{ transform:scale(1.05) }
+
+        .formulario{
+            background:var(--cinza-card); width:92%; max-width:1100px;
+            margin:0 auto; padding:24px; border-radius:10px; box-shadow:var(--shadow);
+            display:flex; flex-direction:column; min-height:0;
+            height: calc(100vh - var(--header-h) - var(--nav-h) - 32px);
+            overflow:hidden;
+        }
+        .form-title{
+            position:sticky; top:0; z-index:10;
+            background:var(--cinza-card); color:var(--azul-escuro);
+            font-weight:800; letter-spacing:.3px; font-size:1.1rem;
+            margin:0 0 14px 0; padding:8px 10px; border-bottom:1px solid #d8d8d8;
+        }
+        .form-body{
+            flex:1 1 auto; min-height:0; overflow-y:auto;
+            padding-inline-end:14px; scrollbar-gutter:stable;
+        }
+
+        .section-title{ color:var(--azul-escuro); font-weight:800; font-size:1.05rem; margin:10px 0 8px; }
+        label{display:block; font-weight:700; color:#000; margin-bottom:6px}
+
+        input[type="text"], input[type="number"], input[type="date"], input[type="tel"], select, textarea{
+            width:100%; background:#fff; padding:10px; border:1px solid var(--borda-input);
+            border-radius:6px; font-size:1rem; box-shadow:0 2px 5px rgba(0,0,0,.2)
+        }
+        textarea{min-height:70px; resize:vertical}
+
+        .grid12{display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:16px}
+        .c1{grid-column:span 1}.c2{grid-column:span 2}.c3{grid-column:span 3}
+        .c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}
+        .c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}
+        .c10{grid-column:span 10}.c11{grid-column:span 11}.c12{grid-column:span 12}
+
+        .kv{
+            display:grid; grid-template-columns:max-content 1fr max-content 1fr;
+            gap:8px 18px; padding:12px; background:var(--cinza-card); border-radius:8px;
+        }
+        .kv dt{margin:0; font-weight:700; color:#000;}
+        .kv dd{margin:0; color:#111}
+        .kv .full{grid-column:1/-1}
+
+        .form-buttons{display:flex; gap:12px; justify-content:flex-end; flex-wrap:wrap; margin-top:18px}
+        .command-button{
+            background:#e0e0e0; color:#000; font-weight:700; border:1px solid var(--borda);
+            padding:12px 20px; border-radius:12px; box-shadow:2px 2px 5px rgba(0,0,0,.2);
+            cursor:pointer; font-size:16px; transition:transform .15s; min-width:160px;
+        }
+        .command-button:hover{ transform:scale(1.03) }
+
+        @media (max-width: 980px){
+            .grid12{ grid-template-columns:repeat(6, minmax(0,1fr)) }
+            .c8{grid-column:span 6} .c6{grid-column:span 6} .c4{grid-column:span 3} .c3{grid-column:span 3} .c2{grid-column:span 3}
+            .kv{ grid-template-columns:max-content 1fr; }
+        }
+        @media (max-width: 620px){
+            .grid12{ grid-template-columns:1fr }
+            .c1,.c2,.c3,.c4,.c5,.c6,.c7,.c8,.c9,.c10,.c11,.c12{ grid-column:1/-1 }
+            .titulo{font-size:1.8em} .subtitulo{font-size:1.1em}
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <p class="titulo">AÇÕES DE VIGILÂNCIA E CONTROLE DE HYMENOPTERA</p>
+        <p class="subtitulo">Unidade de Vigilância em Saúde - M’ Boi Mirim</p>
+    </header>
+
+    <nav>
+        <a class="nav-button" href="login.html">Login</a>
+        <a class="nav-button" href="fichaOS.html">Ficha OS</a>
+    </nav>
+
+    <main class="formulario">
+        <div class="form-title">Formulário de campo</div>
+        <form id="formAbelha" class="form-body">
+            <h3 class="section-title">Registro</h3>
+            <section class="grid12">
+                <div class="c12">
+                    <dl class="kv">
+                        <dt>Nº OS:</dt> <dd id="r-os">—</dd>
+                        <dt>Origem da solicitação:</dt> <dd id="r-origem">—</dd>
+                        <dt>Protocolo:</dt> <dd id="r-protocolo">—</dd>
+                        <dt>Data da notificação:</dt> <dd id="r-dn">—</dd>
+                        <dt>Data do recebimento:</dt> <dd id="r-dr">—</dd>
+                        <dt>Ocorrência:</dt> <dd id="r-ocorrencia">Hymenoptera</dd>
+                        <dt class="full">Descrição da Solicitação:</dt>
+                        <dd class="full" id="r-desc">—</dd>
+                        <dt>Solicitante:</dt> <dd id="r-sol">—</dd>
+                        <dt>Paciente:</dt> <dd id="r-paciente">—</dd>
+                        <dt>Telefones:</dt> <dd id="r-tels">—</dd>
+                        <dt>Endereço:</dt> <dd id="r-endereco">—</dd>
+                        <dt>DA:</dt> <dd id="r-da">—</dd>
+                        <dt>UBS:</dt> <dd id="r-ubs">—</dd>
+                    </dl>
+                </div>
+
+                <div class="c12">
+                    <label for="obs-registro">Observações do registro</label>
+                    <textarea id="obs-registro" name="Obs_Reg" placeholder="Ex.: complemento de endereço, correção de nome, etc."></textarea>
+                </div>
+            </section>
+
+            <h3 class="section-title">Formulário de campo</h3>
+            <section class="grid12">
+                <div class="c4">
+                    <label for="dt_v1">Data da 1ª visita</label>
+                    <input id="dt_v1" name="Data_da_1_visita" type="date">
+                </div>
+                <div class="c4">
+                    <label for="dt_v2">Data da 2ª visita</label>
+                    <input id="dt_v2" name="Data_da_2_visita" type="date">
+                </div>
+                <div class="c4">
+                    <label for="dt_v3">Data da 3ª visita</label>
+                    <input id="dt_v3" name="Data_da_3_visita" type="date">
+                </div>
+            </section>
+
+            <h3 class="section-title">Histórico de Atendimento</h3>
+            <section class="grid12">
+                <div class="c4">
+                    <label for="tipo-imovel">Tipo de imóvel</label>
+                    <select id="tipo-imovel" name="Tipo_de_imovel"></select>
+                </div>
+                <div class="c4">
+                    <label for="situacao-imovel">Situação do imóvel</label>
+                    <select id="situacao-imovel" name="Situacao_do_imovel"></select>
+                </div>
+
+                <div class="c12">
+                    <label>Grupo de inseto</label>
+                    <div class="grid12">
+                        <label class="c3"><input type="checkbox" name="Grupo_de_inseto" value="Africanizada"> Africanizada</label>
+                        <label class="c3"><input type="checkbox" name="Grupo_de_inseto" value="Vespa e Marimbondo"> Vespa e Marimbondo</label>
+                        <label class="c3"><input type="checkbox" name="Grupo_de_inseto" value="Arapua"> Arapuá</label>
+                        <label class="c3"><input type="checkbox" name="Grupo_de_inseto" value="Jatai"> Jataí</label>
+                        <label class="c3"><input type="checkbox" name="Grupo_de_inseto" value="Outra"> Outra espécie nativa</label>
+                    </div>
+                </div>
+
+                <div class="c6">
+                    <label>Evento</label>
+                    <label style="font-weight:600; margin-right:16px"><input type="radio" name="Evento" value="Enxame"> Enxame</label>
+                    <label style="font-weight:600"><input type="radio" name="Evento" value="Abrigo"> Abrigo</label>
+                </div>
+
+                <div class="c6">
+                    <label>Localização do ninho — Área</label>
+                    <label style="font-weight:600; margin-right:16px"><input type="radio" name="Localizacao_do_ninho_Area" value="Interna"> Interna</label>
+                    <label style="font-weight:600"><input type="radio" name="Localizacao_do_ninho_Area" value="Externa"> Externa</label>
+                </div>
+
+                <div class="c6">
+                    <label for="loc-ninho">Localização do ninho — Local</label>
+                    <select id="loc-ninho" name="Localizacao_do_ninho_Local" data-open="#loc-outros-wrap">
+                        <option value="Telhado / Forro">Telhado / Forro</option>
+                        <option value="Fresta / Parede">Fresta / Parede</option>
+                        <option value="Rede – agua/luz">Rede – água/luz</option>
+                        <option value="Interior de poste">Interior de poste</option>
+                        <option value="Objeto">Objeto</option>
+                        <option value="Tubulacao / Esgoto">Tubulação / Esgoto</option>
+                        <option value="Solo">Solo</option>
+                        <option value="Arvore">Árvore</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+                <div class="c6" id="loc-outros-wrap" style="display:none">
+                    <label for="loc-outros">*Outros</label>
+                    <textarea id="loc-outros" name="Localizacao_do_ninho_Local_Outros" placeholder="Descreva o local"></textarea>
+                </div>
+
+                <div class="c12">
+                    <label>Altura estimada</label>
+                    <div class="grid12">
+                        <div class="c6">
+                            <div style="font-weight:700; margin-bottom:6px">Altura de uma casa térrea</div>
+                            <label style="font-weight:600; margin-right:12px"><input type="radio" name="Altura_de_uma_casa" value="1M"> 1M</label>
+                            <label style="font-weight:600; margin-right:12px"><input type="radio" name="Altura_de_uma_casa" value="2M"> 2M</label>
+                            <label style="font-weight:600; margin-right:12px"><input type="radio" name="Altura_de_uma_casa" value="3M"> 3M</label>
+                            <label style="font-weight:600"><input type="radio" name="Altura" value="4M"> 4M</label>
+                        </div>
+                        <div class="c6">
+                            <div style="font-weight:700; margin-bottom:6px">Altura de um sobrado</div>
+                            <label style="font-weight:600; margin-right:12px"><input type="radio" name="Altura_de_um_sobrado" value="2M"> 2M</label>
+                            <label style="font-weight:600; margin-right:12px"><input type="radio" name="Altura_de_um_sobrado" value="3M"> 3M</label>
+                            <label style="font-weight:600; margin-right:12px"><input type="radio" name="Altura_de_um_sobrado" value="8M"> 8M</label>
+                            <label style="font-weight:600"><input type="radio" name="Altura_de_um_sobrado" value="9M+"> Acima de 9M</label>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <h3 class="section-title">Medidas adotadas</h3>
+            <section class="grid12">
+                <div class="c6">
+                    <label for="medida-adotada">Medidas adotadas</label>
+                    <select id="medida-adotada" name="Medidas_adotadas" data-open="#motivo-nao-wrap">
+                        <option value="Eliminacao">Eliminação</option>
+                        <option value="Remocao (Parceria com apicultor)">Remoção (Parceria com apicultor)</option>
+                        <option value="Cancelado pelo solicitante">Cancelado pelo solicitante (ligação ou presencial)</option>
+                        <option value="Nao realizado">Não realizado</option>
+                    </select>
+                </div>
+                <div class="c6" id="motivo-nao-wrap" style="display:none">
+                    <label for="motivo-nao">Motivo da Não realização</label>
+                    <select id="motivo-nao" name="Motivo_nao_realizacao">
+                        <option value="Apenas orientacao">Apenas orientação</option>
+                        <option value="Nao autorizado">Não autorizado</option>
+                        <option value="Acesso inviavel">Acesso inviável</option>
+                        <option value="Especie protegida">Espécie protegida</option>
+                        <option value="Improcedente">Improcedente</option>
+                        <option value="Nao confirmado">Não confirmado</option>
+                        <option value="Problema nao localizado">Problema não localizado</option>
+                        <option value="Enxame retirou-se">Enxame retirou-se</option>
+                        <option value="Nro/solicitante nao localizado">Nº e/ou solicitante não localizado</option>
+                    </select>
+                </div>
+            </section>
+
+            <h3 class="section-title">Dados Clínicos</h3>
+            <section class="grid12">
+                <div class="c4">
+                    <label for="himenopterismo">Himenopterismo</label>
+                    <select id="himenopterismo" name="Himenopterismo_sim" data-open="#unidade-medica-wrap">
+                        <option value="selecione">selecione</option>
+                        <option value="sim">sim</option>
+                        <option value="nao">não</option>
+                    </select>
+                </div>
+                <div class="c8" id="unidade-medica-wrap" style="display:none">
+                    <label for="unidade-medica">Unidade Médica</label>
+                    <textarea id="unidade-medica" name="Unidade_medica"></textarea>
+                </div>
+
+                <div class="c6">
+                    <label>Controle</label>
+                    <label style="font-weight:600; margin-right:16px"><input type="radio" name="Tipo_controle" value="Mecanico"> Mecânico</label>
+                    <label style="font-weight:600"><input type="radio" name="Tipo_controle" value="Quimico"> Químico</label>
+                </div>
+                <div class="c6">
+                    <label for="produto-quantidade">Qual produto e quantidade (L)</label>
+                    <textarea id="produto-quantidade" name="Produto_quantidade" placeholder="Produto e quantidade em litros"></textarea>
+                </div>
+            </section>
+
+            <h3 class="section-title">Relatório de campo</h3>
+            <section class="grid12">
+                <div class="c12">
+                    <textarea id="relatorio-campo" name="Relatorio" placeholder="Descreva o que foi feito, orientações, pendências..."></textarea>
+                </div>
+            </section>
+
+            <h3 class="section-title">Identificação</h3>
+            <section class="grid12">
+                <div class="c6">
+                    <label for="nome-municipe">Nome do Munícipe</label>
+                    <textarea id="nome-municipe" name="Nome_do_Munc_pe"></textarea>
+                </div>
+                <div class="c3">
+                    <label for="cpf">CPF</label>
+                    <input id="cpf" name="CPF" type="text" placeholder="000.000.000-00" inputmode="numeric" maxlength="14">
+                </div>
+                <div class="c3">
+                    <label for="telefone">Telefone</label>
+                    <input id="telefone" name="Telefone" type="tel" placeholder="(00) 00000-0000" inputmode="tel" maxlength="15">
+                </div>
+
+                <div class="c12">
+                    <label for="equipe">Equipe</label>
+                    <textarea id="equipe" name="Equipe" placeholder="Nomes da equipe e funções"></textarea>
+                </div>
+            </section>
+            
+            <div id="statusMessage" style="margin-top: 20px; text-align: center; font-weight: bold;"></div>
+
+            <div class="form-buttons">
+                <button class="command-button" type="submit">Salvar OS</button>
+                <button class="command-button" type="button" id="btnLimpar">Limpar Campos</button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        /* Alturas para sticky */
+        (function(){
+            function setHeights(){
+                const h = document.querySelector('header');
+                const n = document.querySelector('nav');
+                document.documentElement.style.setProperty('--header-h', (h?.offsetHeight||0)+'px');
+                document.documentElement.style.setProperty('--nav-h',    (n?.offsetHeight||0)+'px');
+            }
+            setHeights(); window.addEventListener('resize', setHeights);
+        })();
+
+        /* Listas Anexo 6 (preencha com a lista oficial se quiser) */
+        const ANEXO6_TIPOS_IMOVEL = ["Residencial","Comercial","Terreno baldio","Equipamento público","Área verde"];
+        const ANEXO6_SITUACOES_IMOVEL = ["Trabalhado","Fechado","Desabitado","Recusa","Ausente"];
+
+        function popularSelect(id, lista, incluirSelecione=true){
+            const sel = document.getElementById(id);
+            if(!sel) return;
+            sel.innerHTML = '';
+            if(incluirSelecione){
+                const opt = document.createElement('option');
+                opt.value = ''; opt.textContent = 'selecione';
+                sel.appendChild(opt);
+            }
+            lista.forEach(txt=>{
+                const o = document.createElement('option');
+                o.value = txt; o.textContent = txt;
+                sel.appendChild(o);
+            });
+        }
+
+        /* Abre/fecha campos condicionais */
+        function bindConditionalOpens(){
+            document.querySelectorAll('select[data-open]').forEach(sel=>{
+                const target = document.querySelector(sel.getAttribute('data-open'));
+                const update = ()=>{
+                    if(!target) return;
+                    const show = (sel.value === 'sim') || (sel.value === 'Outros');
+                    target.style.display = show ? '' : 'none';
+                };
+                sel.addEventListener('change', update);
+                update();
+            });
+        }
+
+        /* Máscaras CPF/Telefone */
+        function maskCPF(v){
+            v = v.replace(/\D/g,'').slice(0,11);
+            if(v.length>9)  v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/,'$1.$2.$3-$4');
+            else if(v.length>6) v = v.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1.$2.$3');
+            else if(v.length>3) v = v.replace(/(\d{3})(\d{0,3})/,'$1.$2');
+            return v;
+        }
+        function maskPhone(v){
+            v = v.replace(/\D/g,'').slice(0,11);
+            if(v.length>10){ v = v.replace(/(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3'); }
+            else{            v = v.replace(/(\d{2})(\d{4})(\d{0,4})/,'($1) $2-$3'); }
+            return v;
+        }
+        (function(){
+            const cpf = document.getElementById('cpf');
+            const tel = document.getElementById('telefone');
+            cpf?.addEventListener('input', e=> e.target.value = maskCPF(e.target.value));
+            tel?.addEventListener('input', e=> e.target.value = maskPhone(e.target.value));
+        })();
+
+        /* Regras específicas */
+        (function init(){
+            popularSelect('tipo-imovel', ANEXO6_TIPOS_IMOVEL);
+            popularSelect('situacao-imovel', ANEXO6_SITUACOES_IMOVEL);
+            bindConditionalOpens();
+
+            const medida = document.getElementById('medida-adotada');
+            const motivoWrap = document.getElementById('motivo-nao-wrap');
+            if(medida && motivoWrap){
+                const upd = ()=> motivoWrap.style.display = (medida.value === 'Nao realizado') ? '' : 'none';
+                medida.addEventListener('change', upd); upd();
+            }
+        })();
+
+        /* Limpar */
+        document.getElementById('btnLimpar')?.addEventListener('click', ()=>{
+            document.querySelectorAll('#formAbelha input, #formAbelha textarea').forEach(el=>{
+                if(el.type==='button' || el.type==='submit') return;
+                if(el.type==='radio' || el.type==='checkbox'){ el.checked=false; return; }
+                el.value='';
+            });
+            document.querySelectorAll('#formAbelha select').forEach(sel=>{
+                sel.selectedIndex = 0;
+                sel.dispatchEvent(new Event('change'));
+            });
+            const statusMessage = document.getElementById('statusMessage');
+            if (statusMessage) statusMessage.textContent = '';
+        });
+
+        /* Envio do formulário via fetch */
+        document.getElementById('formAbelha').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const statusMessage = document.getElementById('statusMessage');
+
+            // URL DA SUA WEB APP AQUI
+            const url = 'https://script.google.com/macros/s/AKfycbxJoyAxVBGl0OgyEBeox8rwuSHAOpIvhsoaeLNhCRhHUVAPUQsF2q7-Ac7Ugcke84Mk/exec'; 
+            
+            
+
+
+            // Corrige o problema do FormData com checkboxes e radio buttons
+            const data = new URLSearchParams(new FormData(form)).toString();
+            
+            statusMessage.textContent = 'Enviando...';
+            statusMessage.style.color = '#003562';
+
+            fetch(url, {
+                method: 'POST',
+                body: data,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    statusMessage.textContent = data.message;
+                    statusMessage.style.color = 'green';
+                    form.reset();
+                } else {
+                    statusMessage.textContent = 'Erro: ' + data.message;
+                    statusMessage.style.color = 'red';
+                }
+            })
+            .catch(error => {
+                console.error('Erro na requisição:', error);
+                statusMessage.textContent = 'Erro ao conectar com o servidor.';
+                statusMessage.style.color = 'red';
+            });
+        });
+    </script>
+
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const registroStr = localStorage.getItem('gestao');
+            if (!registroStr) return; // nada a preencher
+
+            const r = JSON.parse(registroStr);
+
+            document.getElementById('r-os').textContent = r.os || '—';
+            document.getElementById('r-origem').textContent = r.origem || '—';
+            document.getElementById('r-protocolo').textContent = r.protocolo || '—';
+            document.getElementById('r-dn').textContent = r.dn || '—';
+            document.getElementById('r-dr').textContent = r.dr || '—';
+            document.getElementById('r-ocorrencia').textContent = r.ocorrencia || 'Hymenoptera';
+            document.getElementById('r-desc').textContent = r.descricao || '—';
+            document.getElementById('r-sol').textContent = r.solicitante || '—';
+            document.getElementById('r-paciente').textContent = r.paciente || '—';
+            document.getElementById('r-tels').textContent = r.tels || '—';
+            document.getElementById('r-endereco').textContent = r.endereco || '—';
+            document.getElementById('r-da').textContent = r.da || '—';
+            document.getElementById('r-ubs').textContent = r.ubs || '—';
+
+            // Se quiser apagar os dados depois de carregar
+            // localStorage.removeItem('registroSelecionado');
+        });
+    </script>
+
+</body>
+</html>

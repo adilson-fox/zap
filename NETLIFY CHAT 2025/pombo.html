@@ -1,0 +1,656 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ações de Vigilância e Controle de Pombos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --azul-escuro:#003562;
+      --azul-claro:#b0cbe9;
+      --cinza-card:#e0e0e0;
+      --borda:#888;
+      --borda-input:#ccc;
+      --shadow:0 4px 10px rgba(0,0,0,.2);
+      --radius:12px;
+      --bg:#f0f4f8;
+      --header-h:0px; --nav-h:0px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Roboto, sans-serif; background:var(--bg);
+      display:grid; grid-template-rows:auto auto 1fr; min-height:100vh;
+    }
+
+    header{
+      background:var(--azul-escuro); color:#fff; text-align:center; padding:20px;
+      box-shadow:0 4px 8px rgba(0,0,0,.2); position:sticky; top:0; z-index:1000;
+    }
+    .titulo{font-size:2.2em; font-weight:700; margin:0}
+    .subtitulo{font-size:1.2em; font-weight:600; margin:0}
+
+    nav{
+      background:var(--azul-claro); padding:14px 10px; text-align:center; box-shadow:var(--shadow);
+      position:sticky; top:var(--header-h); z-index:950; margin-bottom:16px;
+    }
+    .nav-button{
+      display:inline-block; text-decoration:none; background:var(--azul-claro); color:#000; font-weight:700;
+      border:1px solid var(--borda); padding:10px 20px; border-radius:var(--radius);
+      box-shadow:2px 2px 5px rgba(0,0,0,.2); font-size:16px; margin:0 6px; cursor:pointer; transition:transform .2s;
+    }
+    .nav-button:hover{ transform:scale(1.05) }
+
+    .formulario{
+      background:var(--cinza-card); width:92%; max-width:1100px;
+      margin:0 auto; padding:24px; border-radius:10px; box-shadow:var(--shadow);
+      display:flex; flex-direction:column; min-height:0;
+      height: calc(100vh - var(--header-h) - var(--nav-h) - 32px);
+      overflow:hidden;
+    }
+    .form-title{
+      position:sticky; top:0; z-index:10;
+      background:var(--cinza-card); color:var(--azul-escuro);
+      font-weight:800; letter-spacing:.3px; font-size:1.1rem;
+      margin:0 0 14px 0; padding:8px 10px; border-bottom:1px solid #d8d8d8;
+    }
+    .form-body{
+      flex:1 1 auto; min-height:0; overflow-y:auto;
+      padding-inline-end:14px; scrollbar-gutter:stable;
+    }
+
+    .section-title{ color:var(--azul-escuro); font-weight:800; font-size:1.05rem; margin:10px 0 8px; }
+    label{display:block; font-weight:700; color:#000; margin-bottom:6px}
+
+    input[type="text"], input[type="number"], input[type="date"], input[type="tel"], select, textarea{
+      width:100%; background:#fff; padding:10px; border:1px solid var(--borda-input);
+      border-radius:6px; font-size:1rem; box-shadow:0 2px 5px rgba(0,0,0,.2)
+    }
+    textarea{min-height:60px; resize:vertical}
+
+    .grid12{display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:16px}
+    .c1{grid-column:span 1}.c2{grid-column:span 2}.c3{grid-column:span 3}
+    .c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}
+    .c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}
+    .c10{grid-column:span 10}.c11{grid-column:span 11}.c12{grid-column:span 12}
+
+    .kv{
+      display:grid; grid-template-columns:max-content 1fr max-content 1fr;
+      gap:8px 18px; padding:12px; background:var(--cinza-card); border-radius:8px;
+    }
+    .kv dt{margin:0; font-weight:700; color:#000;}
+    .kv dd{margin:0; color:#111}
+    .kv .full{grid-column:1/-1}
+
+    .inline-checks{ display:flex; gap:16px; flex-wrap:wrap; }
+    .inline-checks label{ white-space:nowrap }
+
+    .muted{ font-weight:600; color:#222 }
+
+    .form-buttons{display:flex; gap:12px; justify-content:flex-end; flex-wrap:wrap; margin-top:18px}
+    .command-button{
+      background:#e0e0e0; color:#000; font-weight:700; border:1px solid var(--borda);
+      padding:12px 20px; border-radius:12px; box-shadow:2px 2px 5px rgba(0,0,0,.2);
+      cursor:pointer; font-size:16px; transition:transform .15s; min-width:160px;
+    }
+    .command-button:hover{ transform:scale(1.03) }
+
+    @media (max-width: 980px){
+      .grid12{ grid-template-columns:repeat(6, minmax(0,1fr)) }
+      .c8{grid-column:span 6} .c6{grid-column:span 6} .c4{grid-column:span 3} .c3{grid-column:span 3} .c2{grid-column:span 3}
+      .kv{ grid-template-columns:max-content 1fr; }
+    }
+    @media (max-width: 620px){
+      .grid12{ grid-template-columns:1fr }
+      .c1,.c2,.c3,.c4,.c5,.c6,.c7,.c8,.c9,.c10,.c11,.c12{ grid-column:1/-1 }
+      .titulo{font-size:1.8em} .subtitulo{font-size:1.1em}
+    }
+
+    /* utilitário para abrir/fechar campos condicionais */
+    .hide{ display:none }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="titulo">AÇÕES DE VIGILÂNCIA E CONTROLE DE POMBOS</p>
+    <p class="subtitulo">Unidade de Vigilância em Saúde - M’ Boi Mirim</p>
+  </header>
+
+  <nav>
+    <a class="nav-button" href="ficha_OS.html">Ficha de Campo</a>
+    <a class="nav-button" href="login_senha.html">Login</a>
+  </nav>
+
+  <main class="formulario">
+    <div class="form-title">Formulário de campo</div>
+
+    <div class="form-body">
+      <!-- REGISTRO -->
+      <h3 class="section-title">Registro</h3>
+      <section class="grid12">
+        <div class="c12">
+          <dl class="kv">
+            <dt>Nº OS:</dt>                 <dd id="r-os">—</dd>
+            <dt>Origem da solicitação:</dt> <dd id="r-origem">—</dd>
+            <dt>Protocolo:</dt>             <dd id="r-protocolo">—</dd>
+            <dt>Data da notificação:</dt>   <dd id="r-dn">—</dd>
+            <dt>Data do recebimento:</dt>   <dd id="r-dr">—</dd>
+            <dt>Ocorrência:</dt>            <dd id="r-ocorrencia">Pombos</dd>
+
+            <dt class="full">Descrição da Solicitação:</dt>
+            <dd class="full" id="r-desc">—</dd>
+
+            <dt>Solicitante:</dt>           <dd id="r-sol">—</dd>
+            <dt>Paciente:</dt>              <dd id="r-paciente">—</dd>
+
+            <dt>Telefones:</dt>             <dd id="r-tels">—</dd>
+            <dt>Endereço:</dt>              <dd id="r-endereco">—</dd>
+            <dt>DA:</dt>                    <dd id="r-da">—</dd>
+            <dt>UBS:</dt>                   <dd id="r-ubs">—</dd>
+          </dl>
+        </div>
+
+        <div class="c12">
+          <label for="obs-registro">Observações do registro</label>
+          <textarea id="obs-registro" placeholder="Ex.: complemento de endereço, correção de nome, etc."></textarea>
+        </div>
+      </section>
+
+      <!-- FORMULÁRIO DE CAMPO -->
+      <h3 class="section-title">Formulário de campo</h3>
+      <section class="grid12">
+        <div class="c4">
+          <label for="dt_v1">Data da 1ª visita</label>
+          <input id="dt_v1" type="date">
+        </div>
+        <div class="c4">
+          <label for="dt_v2">Data da 2ª visita</label>
+          <input id="dt_v2" type="date">
+        </div>
+        <div class="c4">
+          <label for="dt_v3">Data da 3ª visita</label>
+          <input id="dt_v3" type="date">
+        </div>
+      </section>
+
+      <!-- HISTÓRICO DE ATENDIMENTO -->
+      <h3 class="section-title">Histórico de Atendimento</h3>
+      <section class="grid12">
+        <div class="c4">
+          <label for="tipo-imovel">Tipo de imóvel</label>
+          <select id="tipo-imovel"></select>
+        </div>
+        <div class="c4">
+          <label for="situacao-imovel">Situação do imóvel</label>
+          <select id="situacao-imovel"></select>
+        </div>
+      </section>
+
+      <!-- CONDIÇÕES AMBIENTAIS -->
+      <h3 class="section-title">Condições ambientais</h3>
+      <section class="grid12">
+        <div class="c3">
+          <label for="presenca-pombos">Presença de pombos no local</label>
+          <select id="presenca-pombos">
+            <option value="selecione">selecione</option>
+            <option value="sim">sim</option>
+            <option value="nao">não</option>
+          </select>
+        </div>
+
+        <div class="c3">
+          <label for="estimativa-qtd">Estimativa aproximada (nº)</label>
+          <input id="estimativa-qtd" type="number" min="0" placeholder="ex.: 10">
+        </div>
+
+        <div class="c3">
+          <label for="nidificacao">Nidificação observada?</label>
+          <select id="nidificacao" data-open="#nid-local-wrap">
+            <option value="selecione">selecione</option>
+            <option value="sim">sim</option>
+            <option value="nao">não</option>
+          </select>
+        </div>
+        <div class="c3 hide" id="nid-local-wrap">
+          <label for="nid-local">Localização da nidificação</label>
+          <textarea id="nid-local" placeholder="Ex.: forro, viga, telhado, beiral..."></textarea>
+        </div>
+
+        <div class="c3">
+          <label for="fezes_qtd">Fezes de pombos (quantidade)</label>
+          <select id="fezes_qtd" data-open="#fezes-local-wrap">
+            <option value="selecione">selecione</option>
+            <option value="pouca">pouca</option>
+            <option value="media">média</option>
+            <option value="grande">grande acúmulo</option>
+            <option value="nao-observado">não observado</option>
+          </select>
+        </div>
+        <div class="c9 hide" id="fezes-local-wrap">
+          <label for="fezes-local">Localização das fezes</label>
+          <textarea id="fezes-local" placeholder="Ex.: forro, piso, calha, beiral, janela..."></textarea>
+        </div>
+
+        <div class="c12">
+          <label>Condições favoráveis</label>
+          <div class="inline-checks">
+            <label><input type="checkbox"> Acesso a alimento</label>
+            <label><input type="checkbox"> Pontos de abrigo (forros, vãos, telhados, beirais, calhas)</label>
+            <label><input type="checkbox"> Estruturas para pouso/permanência (beirais, esculturas, ar-condicionado, etc.)</label>
+            <label><input type="checkbox"> Oferta de água</label>
+            <label><input type="checkbox"> Alimentação voluntária por pessoas</label>
+            <label><input type="checkbox"> Falta de barreira física / telamento</label>
+          </div>
+        </div>
+      </section>
+
+      <!-- AÇÕES RECOMENDADAS -->
+      <h3 class="section-title">Ações Recomendadas</h3>
+      <section class="grid12">
+        <div class="c12 inline-checks">
+          <label><input type="checkbox"> Remoção/limpeza das fezes com segurança (EPI, umedecer previamente)</label>
+          <label><input type="checkbox"> Fechamento de vãos/janelas com telas ou barreiras</label>
+          <label><input type="checkbox"> Evitar alimentação de pombos</label>
+          <label><input type="checkbox"> Acondicionamento adequado de resíduos</label>
+          <label><input type="checkbox"> Manter limpeza e descartar restos alimentares</label>
+        </div>
+        <div class="c12">
+          <label for="acoes-outras">Outras (especificar)</label>
+          <textarea id="acoes-outras"></textarea>
+        </div>
+      </section>
+
+      <!-- RELATÓRIO -->
+      <h3 class="section-title">Relatório de campo</h3>
+      <section class="grid12">
+        <div class="c12"><textarea id="relatorio-campo" placeholder="Descreva o que foi feito, orientações, pendências..."></textarea></div>
+      </section>
+
+      <!-- IDENTIFICAÇÃO -->
+      <h3 class="section-title">Identificação</h3>
+      <section class="grid12">
+        <div class="c6">
+          <label for="nome-municipe">Nome do Munícipe</label>
+          <textarea id="nome-municipe"></textarea>
+        </div>
+        <div class="c3">
+          <label for="cpf">CPF</label>
+          <input id="cpf" type="text" placeholder="000.000.000-00" inputmode="numeric" maxlength="14">
+        </div>
+        <div class="c3">
+          <label for="telefone">Telefone</label>
+          <input id="telefone" type="tel" placeholder="(00) 00000-0000" inputmode="tel" maxlength="15">
+        </div>
+
+        <div class="c12">
+          <label for="equipe">Equipe</label>
+          <textarea id="equipe" placeholder="Nomes da equipe e funções"></textarea>
+        </div>
+      </section>
+
+      <!-- BOTÕES -->
+      <div class="form-buttons">
+        <button class="command-button" type="button">Salvar OS</button>
+        <button class="command-button" type="button" id="btnLimpar">Limpar Campos</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+
+// === CONFIGURAÇÃO DO SUPABASE ===
+        // SISTEMA DE GESTAO: DESENVOLVIDO POR: ADILSON CEARÁ - ADS -14 Nov. 2025(backend) - Todos os direitos Reservados
+        const SUPABASE_URL = 'https://vepnalrpyaxhpklicqrb.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlcG5hbHJweWF4aHBrbGljcXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5MDgxNzIsImV4cCI6MjA3NzQ4NDE3Mn0.-9_J-RE4IWdaGISGZgAXe6S2MLStG9lVm50suQKr7jY';
+        const { createClient } = window.supabase;
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let currentOSId = null; 
+        
+        // NOME DA TABELA DE DETALHES ESPECÍFICA
+        const TABELA_DETALHES = 'detalhes_pombo'; 
+
+        // Mapeamento de IDs HTML para colunas da TABELA: Principal
+         // Esses dados serão salvos lá
+        const PRINCIPAL_FIELD_MAP = {
+            'obs-registro': 'obs_registro',
+            'dt_v1': 'data_visita_1',
+            'dt_v2': 'data_visita_2',
+            'dt_v3': 'data_visita_3',
+             'area_monitorada': 'area_monitorada',
+                        
+          };
+
+        // Mapeamento de IDs HTML para colunas da TABELA: DETALHES_ESCORPIAO
+        // Esses dados serão salvos lá
+        const DETALHES_FIELD_MAP = {
+            //'area-monitorada': 'area_monitorada',
+            'tipo_imovel': 'tipo_imovel',
+            'situacao-imovel': 'situacao_imovel',
+            'presenca_pombos': 'presenca_pombos',
+            'estimativa_qtd': 'estimativa_qtd',
+            'nidificacao': 'nidificacao',
+            'fezes_qdt': 'fezes_qdt',
+            'local_fezes': 'local_fezes', 
+            'condicoes_favoraveis': 'condicoes_favoraveis', 
+            'remocao_fezes': 'remocao_fezes'
+        };
+        
+        // ================== FUNÇÕES DE UTILIDADE ==================
+
+        function formatarDataBR(dataISO) {
+            if (!dataISO) return '—'; 
+            const dataString = dataISO.substring(0, 10); 
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(dataString)) return 'Data Inválida';
+            const [ano, mes, dia] = dataString.split('-');
+            return `${dia}/${mes}/${ano}`; 
+        }
+
+        function LerIDdaURL() {
+            const params = new URLSearchParams(window.location.search);
+            const osId = params.get('osid');
+            if (!osId) {
+                document.getElementById('r-os').textContent = 'ERRO';
+                alert('Erro: ID da Ordem de Serviço não encontrado na URL.');
+                return null;
+            }
+            return parseInt(osId);
+        }
+
+        // ================== CARREGAMENTO ==================
+
+     window.onload = function() {
+            // Ajusta alturas do header/nav para cálculo da área de scroll
+
+      /* Alturas para sticky */
+      (function(){
+        function setHeights(){
+          const h = document.querySelector('header');
+          const n = document.querySelector('nav');
+          document.documentElement.style.setProperty('--header-h', (h?.offsetHeight||0)+'px');
+          document.documentElement.style.setProperty('--nav-h',    (n?.offsetHeight||0)+'px');
+        }
+        setHeights(); window.addEventListener('resize', setHeights);
+      })();
+
+      currentOSId = LerIDdaURL();
+             if (currentOSId) {
+                 CarregarFichaPombos(currentOSId);
+              }
+                
+               // Liga o botão Salvar à função correta
+                document.querySelector('.form-buttons .command-button:first-child').onclick = SalvarFichaPombos;
+          };
+        
+
+     async function CarregarFichaPombos(osId) {
+            try {
+        // Consulta Principal + Detalhes_Escorpiao (JOIN implícito)
+        const { data, error } = await supabase
+            .from('Principal')
+            .select(`
+                *, ${TABELA_DETALHES} (*)
+            `)
+            .eq('id', osId)
+            .single();
+
+        if (error) throw error;
+        if (!data) throw new Error("OS não encontrada.");
+
+        const os = data;
+
+        // Carrega detalhes_pombos separadamente
+        const { data: detalhes, error: err2 } = await supabase
+            .from('detalhes_pombo')
+            .select('*')
+            .eq('os_id', osId)
+            .maybeSingle();
+
+        if (err2) throw err2;
+
+        console.log("📋 Principal:", os);
+
+        console.log("🦂 detalhes_pombo:", detalhes);
+
+        // PREENCHIMENTO DO BLOCO DE REGISTRO
+        document.getElementById('r-os').textContent = os.nextosnumber || '—';
+        document.getElementById('r-origem').textContent = os.origem || '—';
+        document.getElementById('r-protocolo').textContent = os.protocolo || '—';
+        document.getElementById('r-dn').textContent = formatarDataBR(os.datanotificacao);
+        document.getElementById('r-dr').textContent = formatarDataBR(os.datarecebimento);
+        document.getElementById('r-ocorrencia').textContent = os.tipoocorrencia || '—';
+        document.getElementById('r-desc').textContent = os.descricao || '—';
+        document.getElementById('r-sol').textContent = os.paciente || '—';
+        document.getElementById('r-paciente').textContent = os.paciente || '—';
+        document.getElementById('r-tels').textContent = `${os.tel1 || ''}, ${os.tel2 || ''}`;
+        document.getElementById('r-da').textContent = os.da || '—';
+        document.getElementById('r-ubs').textContent = os.ubs || '—';
+        document.getElementById('r-endereco').textContent = `${os.logradouro || ''}, ${os.numero || 'S/N'} — ${os.bairro || '—'}`;
+
+        // PREENCHIMENTO AUTOMÁTICO DOS INPUTS
+        const ALL_FIELDS = { ...PRINCIPAL_FIELD_MAP, ...DETALHES_FIELD_MAP };
+
+        for (const id in ALL_FIELDS) {
+            const element = document.getElementById(id);
+            const campoBD = ALL_FIELDS[id];
+
+            if (!element) continue;
+
+            if (id in PRINCIPAL_FIELD_MAP) {
+                if (os[campoBD] !== null && os[campoBD] !== undefined) {
+                    element.value = (element.type === "date")
+                        ? os[campoBD].substring(0, 10)
+                        : os[campoBD];
+                }
+
+            } else if (id in DETALHES_FIELD_MAP) {
+                let valor = detalhes ? detalhes[campoBD] : null;
+
+                if (valor !== null && valor !== undefined) {
+                    element.value = (element.type === "date")
+                        ? valor.substring(0, 10)
+                        : valor;
+                }
+            }
+        }
+   
+
+      
+        // CHECKBOXES - Logradouros monitorados
+        if (detalhes && detalhes.logradouros_monit) {
+            let logradouros = detalhes.logradouros_monit;
+
+            if (typeof logradouros === 'string') {
+                try {
+                    logradouros = JSON.parse(logradouros);
+                } catch (e) {
+                    logradouros = [];
+                }
+            }
+
+            document.querySelectorAll('.grid12 label input[type="checkbox"]').forEach(checkbox => {
+                const labelText = checkbox.parentNode.textContent.trim();
+                checkbox.checked = logradouros.includes(labelText);
+            });
+        }
+
+        console.log("✨ Carregamento concluído");
+
+    } catch (err) {
+        console.error('Erro ao carregar ficha:', err);
+        document.getElementById('r-os').textContent = 'ERRO DE CARREGAMENTO';
+        alert(`Não foi possível carregar a ficha (ID: ${osId}). Erro: ${err.message}`);
+    }
+}
+
+// ================== FUNÇÃO PARA TRAÇAR ROTA (CORRIGIDA) ==================
+
+function tracarRota() {
+    // Busca o texto do endereço completo da seção de registro (somente leitura)
+    const enderecoCompletoElement = document.getElementById('r-endereco');
+    
+    // Verifica se o elemento existe (medida de segurança)
+    if (!enderecoCompletoElement) {
+        alert('Erro: Elemento do endereço de registro (id="r-endereco") não encontrado.');
+        return;
+    }
+    
+    // Pega o endereço de registro, que já está formatado como: Rua Exemplo, 123 – Vila Prel
+    const destinoCompleto = enderecoCompletoElement.textContent.trim();
+    
+    // Verifica se o endereço está vazio
+    if (destinoCompleto === '—' || destinoCompleto === '') {
+        alert('O endereço da OS não foi carregado. Impossível traçar a rota.');
+        return;
+    }
+
+    // Adiciona a cidade/estado para geolocalização mais precisa
+    const destinoAjustado = destinoCompleto + ", São Paulo, SP";
+    
+    // Codificar o endereço é crucial para URLs
+    const destinoCodificado = encodeURIComponent(destinoAjustado);
+
+    // Cria a URL de Rotas no Google Maps
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destinoCodificado}`;
+    
+    // Abre em uma nova aba
+    window.open(mapsUrl, '_blank');
+    
+    console.log("Abrindo Google Maps para traçar rota até:", destinoAjustado);
+}
+
+
+        // ================== SALVAMENTO ==================
+
+        async function SalvarFichaPombos() {
+            if (!currentOSId) {
+                alert('Impossível salvar: ID da OS não está definido.');
+                return;
+            }
+            
+            const button = event.currentTarget;
+            button.disabled = true;
+            button.textContent = 'Salvando...';
+
+            const dataPrincipal = {};
+            const dataDetalhes = { os_id: currentOSId }; 
+            
+            // Coleta e separa os dados
+            const ALL_FIELDS = { ...PRINCIPAL_FIELD_MAP, ...DETALHES_FIELD_MAP };
+
+            for (const id in ALL_FIELDS) {
+                const element = document.getElementById(id);
+                if (element) {
+                    const fieldName = ALL_FIELDS[id];
+                    let valor = element.value.trim();
+
+                    // Define como NULL se estiver vazio ou com valor padrão de seleção
+                    if (valor === "" || valor === "Selecione" || valor === "—") {
+                        valor = null;
+                    }
+                    
+                    if (id in PRINCIPAL_FIELD_MAP) {
+                        dataPrincipal[fieldName] = valor;
+                    } else if (id in DETALHES_FIELD_MAP) {
+                        dataDetalhes[fieldName] = valor;
+                    }
+                }
+            }
+            
+            // Coleta dados dos CHECKBOXES
+            const logradourosSelecionados = [];
+            document.querySelectorAll('.grid12 label input[type="checkbox"]:checked').forEach(checkbox => {
+                logradourosSelecionados.push(checkbox.parentNode.textContent.trim());
+            });
+            // Salva como JSON string
+            dataDetalhes['logradouros_monit'] = JSON.stringify(logradourosSelecionados);
+
+            try {
+                // 1. Atualiza a tabela PRINCIPAL (Campos Comuns)
+                const { error: errPrincipal } = await supabase
+                    .from('Principal')
+                    .update(dataPrincipal)
+                    .eq('id', currentOSId);
+
+                if (errPrincipal) throw errPrincipal;
+
+                // 2. Atualiza/Insere na tabela DETALHES_ESCORPIAO (Campos Específicos)
+                const { error: errDetalhes } = await supabase
+                    .from(TABELA_DETALHES)
+                    .upsert(dataDetalhes, { onConflict: 'os_id' }); 
+
+                if (errDetalhes) throw errDetalhes;
+
+                alert('Ficha de Pombos salva (Principal e Detalhes) com sucesso!');
+                await CarregarFichaPombos(currentOSId); 
+
+            } catch (err) {
+                console.error('Erro ao salvar ficha:', err);
+                alert(`Erro ao salvar no banco de dados. Verifique permissões e nomes das colunas.`);
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Salvar';
+            }
+        }
+        
+        // ================== FUNÇÃO LIMPAR CAMPOS ==================
+
+        function limparCampos(){
+            document.querySelectorAll('input, textarea, select').forEach(el=>{
+                // Não limpa o bloco de Registro (kv)
+                if (el.closest('.kv')) return;    
+                
+                if (el.type === 'checkbox') el.checked = false; 
+                else if (el.tagName==='SELECT') el.selectedIndex = 0;
+                else if (el.type!=='button') el.value = '';
+            });
+            alert("Campos de visita limpos. O bloco de Registro (topo) não foi alterado.");
+        }
+
+    </script>
+
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+
+</script>
+</body>
+</html>
+

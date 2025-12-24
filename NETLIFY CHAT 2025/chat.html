@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Chat SIGVA</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+/* ===================== RESET ===================== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ===================== BODY ===================== */
+body {
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: #e5ddd5;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  
+
+}
+
+/* ===================== TOPO ===================== */
+.topo {
+  background: #075e54;
+  color: white;
+  padding: 14px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* ===================== CHAT ===================== */
+
+
+#chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 600px;  /* altura total do chat */
+  max-width: 420px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: #e5ddd5;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+#chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 7%; /* Espaçamento lateral para respirar como no Web */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); /* Fundo padrão opcional */
+  background-color: #e5ddd5;
+}
+
+
+.msg {
+  max-width: 65%;
+  padding: 6px 7px 8px 9px;
+  border-radius: 7.5px;
+  font-size: 14.2px;
+  line-height: 19px;
+  position: relative;
+  box-shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+  margin-bottom: 2px;
+  word-wrap: break-word;
+  
+
+}
+
+/* Garante que o balão se ajuste à imagem */
+.msg img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+/* Mensagem Enviada (Verde) */
+.msg.minha {
+  background: #dcf8c6;
+  align-self: flex-end;
+  border-top-right-radius: 0; /* Efeito do canto do balão */
+}
+
+
+/* Mensagem Recebida (Branca) */
+.msg.outra {
+  background: #ffffff;
+  align-self: flex-start;
+  border-top-left-radius: 0; /* Efeito do canto do balão */
+}
+
+/* Ajuste do Texto e Hora dentro do bloco */
+.msg .conteudo {
+  display: inline-block;
+  margin-right: 30px; /* Espaço para a hora não sobrepor o texto */
+}
+
+.hora {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.45);
+  position: absolute;
+  right: 7px;
+  bottom: 5px;
+  text-align: right;
+}
+
+
+/* Nome do usuário (para grupos, como na sua imagem) */
+.nome-usuario {
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  display: block;
+}
+
+
+chat {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #e5ddd5;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  max-height: calc(100% - 80px); /* espaço para input-area */
+  max-width: 100%;
+  margin: 0;
+}
+
+
+/* Área de input — fica fixa no rodapé do container do chat */
+.input-area {
+  background: #f0f0f0;
+  padding: 8px 10px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: nowrap;
+  border-top: 1px solid #ccc;
+  border-radius: 0 0 10px 10px;
+  flex-shrink: 0;
+  position: relative; /* importante para z-index */
+  z-index: 10;
+
+
+}
+
+/* Input ocupa todo espaço possível */
+.input-area input[type=text] {
+  padding: 10px 16px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  outline: none;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+/* Botões com tamanho fixo e espaçamento consistente */
+.input-area button {
+  border: none;
+  background: #075e54;
+  color: white;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Preview container para arquivos */
+#preview-container {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  max-width: 80px;
+  overflow: hidden;
+}
+
+
+/* ===================== chat flutuante  ===================== */
+
+
+
+
+
+
+
+/* ===================== AVATAR ===================== */
+.avatar {
+  width: 30px;
+  height: 30px;
+  background: #128c7e;
+  color: white;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+/* ===================== TEXTO ===================== */
+.nome {
+  font-size: 11px;
+  font-weight: bold;
+  color: #075e54;
+}
+
+.hora {
+  font-size: 10px;
+  color: #666;
+  text-align: right;
+  margin-top: 2px;
+}
+
+.status {
+  font-size: 10px;
+  color: #4f4f4f;
+  text-align: right;
+}
+
+/* ===================== DIGITANDO ===================== */
+.digitando {
+  font-size: 12px;
+  color: #555;
+  margin: 5px;
+}
+
+
+
+.preview-item {
+  position: relative;
+  display: inline-block;
+}
+
+.preview-item img {
+  max-height: 80px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.preview-item button {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* ===================== BOTÕES ===================== */
+button {
+  border: none;
+  background: #075e54;
+  color: white;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+#btn-limpar {
+  background: red;
+  color: white;
+  border-radius: 25px;
+  padding: 2px 1px;  
+  margin-left: 2px; 
+
+  cursor: pointer;
+}
+
+
+
+
+/* Container que segura tudo: Topo, Mensagens e Input */
+#chat-popup {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Ocupa a altura total da tela sem criar scroll no body */
+  width: 100%;
+  overflow: hidden; /* Impede scroll lateral indesejado */
+  background-color: #e5ddd5;
+}
+
+/* Área central onde as mensagens aparecem */
+#mensagens {
+  flex: 1;              /* Ocupa todo o espaço que sobrar */
+  overflow-y: auto;     /* A barra de rolagem vertical só aparece aqui */
+  overflow-x: hidden;    /* Remove a barra horizontal que aparece na sua foto */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+}
+
+/* ÁREA DE INPUT CONGELADA (Rodapé) */
+.input-area {
+  flex-shrink: 0;       /* Garante que esta área nunca "encolha" ou suma */
+  background: #f0f0f0;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid #ccc;
+  width: 100%;
+}
+
+/* Ajuste do campo de texto para não quebrar o layout */
+.input-area input[type=text] {
+  flex: 1;
+  padding: 12px 15px;
+  border-radius: 25px;
+  border: 1px solid #fff;
+  outline: none;
+  font-size: 15px;
+  min-width: 0; /* Importante para o flexbox não estourar a largura */
+}
+
+.msg {
+  animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.emoji-picker {
+  position: absolute;
+  bottom: 60px;
+  right: 10px;
+  width: 260px;
+  max-height: 200px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,.25);
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+  overflow-y: auto;
+  z-index: 999;
+}
+
+.emoji-picker span {
+  font-size: 22px;
+  cursor: pointer;
+  text-align: center;
+  transition: transform .1s;
+}
+
+.emoji-picker span:hover {
+  transform: scale(1.2);
+}
+
+.hidden {
+  display: none;
+}
+
+
+
+</style>
+</head>
+
+<body>
+
+<div id="chat-popup">
+
+    <div class="topo">Chat Interno • SIGVA</div>
+
+    <div id="mensagens" class="chat"></div>
+    <div id="digitando" class="digitando"></div>
+
+    <div class="input-area">
+      <input type="text" id="campo-msg" placeholder="Digite uma mensagem">
+      <div id="preview-container"></div>
+      <button id="btn-enviar" type="button">➤</button>
+      <input type="file" id="arquivo" hidden>
+      <button id="btn-arquivo" type="button" title="Anexar arquivo">📎</button> 
+
+      <button id="btn-emoji" type="button">😊</button>
+      <div id="emoji-picker" class="emoji-picker hidden"></div>
+
+      
+
+
+    <button id="btn-limpar" title="Limpar conversa" style="background:rgb(113, 139, 16); color:white; border-radius:5px; padding:2px 6px; margin-left: auto;">🗑 </button>
+
+
+</div>
+
+</div>
+
+<script>
+ const SUPABASE_URL = "https://vepnalrpyaxhpklicqrb.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlcG5hbHJweWF4aHBrbGljcXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5MDgxNzIsImV4cCI6MjA3NzQ4NDE3Mn0.-9_J-RE4IWdaGISGZgAXe6S2MLStG9lVm50suQKr7jY";
+
+const supabaseChat = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* ===================== ELEMENTOS ===================== */
+const chat = document.getElementById('mensagens');
+const campoMsg = document.getElementById('campo-msg');
+const btnEnviar = document.getElementById('btn-enviar');
+const digitandoDiv = document.getElementById('digitando'); 
+const inputArquivo = document.getElementById('arquivo');
+const btnArquivo = document.getElementById('btn-arquivo');
+const previewContainer = document.getElementById('preview-container');
+
+btnArquivo.onclick = () => inputArquivo.click();
+
+
+/* ===================== EMOJI ===================== */
+const emojis = [
+  // Expressões e Rostos
+  '😀', '😁', '😂', '🤣', '😃', '😄', '😅', '😆', '😉', '😊', '😋', '😎', 
+  '😍', '😘', '🥰', '😗', '😙', '😚', '☺️', '🙂', '🤗', '🤩', '🤔', '🤨', 
+  '😐', '😑', '😶', '🙄', '😏', '😣', '😥', '😮', '🤐', '😯', '😪', '😫', 
+  '🥱', '😴', '😌', '😛', '😜', '😝', '🤤', '😒', '😓', '😔', '😕', '🙃', 
+  '🤑', '😲', '☹️', '🙁', '😖', '😞', '😟', '😤', '😢', '😭', '😦', '😧', 
+  '😨', '😩', '🤯', '😬', '😰', '😱', '🥵', '🥶', '😳', '🤪', '😵', '🥴', 
+  '😠', '😡', '🤬', '😷', '🤒', '🤕', '🤢', '🤮', '🤧', '😇', '🥳', '🥺',
+
+  // Gestos e Corpo
+  '👍', '👎', '👊', '✊', '🤛', '🤜', '🤞', '✌️', '🤟', '🤘', '👌', '🤌', 
+  '🤏', '👈', '👉', '👆', '👇', '✋', '🤚', '🖐️', '🖖', '👋', '🤙', '💪', 
+  '🦾', '🖕', '✍️', '🙏', '🦶', '🦵', '👂', '🦻', '👃', '🧠', '🦷', '🦴', 
+  '👀', '👁️', '👅', '👄', '💋', '🩸',
+
+  // Corações e Símbolos
+  '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', 
+  '💞', '💓', '💗', '💖', '💘', '💝', '💟', '🔥', '✨', '⭐', '🌟', '💥', 
+  '💯', '💢', '💨', '💦', '💤'
+];
+
+document.getElementById('btn-emoji').onclick = () => {
+  campoMsg.value += emojis[Math.floor(Math.random()*emojis.length)];
+  campoMsg.focus();
+};
+
+
+const emojiPicker = document.getElementById('emoji-picker');
+const btnEmoji = document.getElementById('btn-emoji');
+
+emojiPicker.innerHTML = emojis.map(e => `<span>${e}</span>`).join('');
+
+/* ===================== CLIQUE NO EMOJI ===================== */
+btnEmoji.onclick = () => {
+  emojiPicker.classList.toggle('hidden');
+};
+
+emojiPicker.addEventListener('click', e => {
+  if (e.target.tagName === 'SPAN') {
+    campoMsg.value += e.target.innerText;
+    campoMsg.focus();
+  }
+});
+
+
+document.addEventListener('click', e => {
+  if (!emojiPicker.contains(e.target) && e.target !== btnEmoji) {
+    emojiPicker.classList.add('hidden');
+  }
+});
+
+
+
+
+/* ===================== USUÁRIO ===================== */
+
+let usuario = localStorage.getItem('usuario') ;
+if (!usuario) {
+  usuario = prompt("Digite seu nome:");
+  localStorage.setItem('usuario', usuario);
+}
+
+
+//let usuario = localStorage.getItem('usuario') || prompt("Digite seu nome:");
+//localStorage.setItem('usuario', usuario);
+
+let clientId = localStorage.getItem('clientid');
+if (!clientId) {
+  clientId = crypto.randomUUID();
+  localStorage.setItem('clientid', clientId);
+}
+
+
+// Sala fixa (todos entram juntos)
+const sala = 'chat-geral';
+
+
+
+//let clientId = localStorage.getItem('clientid') || crypto.randomUUID();
+//localStorage.setItem('clientid', clientId);
+
+/* ===================== PREVIEW DE ARQUIVO ===================== */
+let selectedFile = null;
+
+inputArquivo.addEventListener('change', () => {
+  const file = inputArquivo.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { alert('Arquivo muito grande (máx. 5MB)'); return; }
+  selectedFile = file;
+
+  if (file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      previewContainer.innerHTML = `
+        <div class="preview-item">
+          <img src="${e.target.result}">
+          <button class="remove-preview">×</button>
+        </div>
+      `;
+      document.querySelector('.remove-preview').onclick = () => {
+        previewContainer.innerHTML = '';
+        inputArquivo.value = '';
+        selectedFile = null;
+      };
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+/* ===================== FUNÇÕES ===================== */
+function iniciais(nome) { return nome.split(' ').map(p=>p[0]).join('').toUpperCase(); }
+function horaAtual(data) { return new Date(data).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+
+function exibirMensagem(msg) {
+  const div = document.createElement('div');
+  div.className = `msg ${msg.usuario === usuario ? 'minha' : 'outra'}`;
+  
+  let conteudoHTML = '';
+
+  // Lógica para renderizar Imagem ou Arquivo
+  if (msg.tipo === 'imagem' && msg.arquivo_url) {
+    conteudoHTML = `
+      <div style="margin-bottom: 5px;">
+        <img src="${msg.arquivo_url}" style="max-width:100%; border-radius:5px; display:block; cursor:pointer;" onclick="window.open(this.src)">
+      </div>`;
+  } else if (msg.tipo === 'arquivo' && msg.arquivo_url) {
+    conteudoHTML = `<a href="${msg.arquivo_url}" target="_blank" style="display:block; margin-bottom:5px; color:#075e54; font-weight:bold;">📎 Documento</a>`;
+  } else {
+    conteudoHTML = `<div class="conteudo">${msg.conteudo || ''}</div>`;
+  }
+
+  // Montagem do Balão
+  div.innerHTML = `
+    ${msg.usuario !== usuario ? `<span class="nome-usuario">${msg.usuario}</span>` : ''}
+    ${conteudoHTML}
+    <span class="hora">${horaAtual(msg.criado_em || msg.created_at)}</span>
+  `;
+
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight; // Garante que desça para ver a foto nova
+}
+
+/* ===================== CARREGAR HISTÓRICO ===================== */
+async function carregar(){
+  const {data,error} = await supabaseChat
+  .from('mensagens_chat')
+  .select('*')
+  .order('criado_em',{ascending:true});
+  
+  if(error){ 
+       console.error('Erro carregar:',error);
+       return;
+       }
+       data.forEach(exibirMensagem);
+
+}
+
+/* ===================== USUARIOS ONLINE /OFF LINE  ===================== */
+async function marcarOnline() {
+  await supabaseChat
+    .from('usuarios_online')
+    .upsert({
+      id: clientId,
+      usuario: usuario,
+      ultima_atividade: new Date().toISOString()
+    });
+}
+
+marcarOnline();
+
+
+/* ===================== ENVIAR ARQUIVO ===================== */
+
+async function enviarArquivo() {
+  if (!selectedFile) return;
+  const file = selectedFile;
+  const extensao = file.name.split('.').pop();
+  const nomeArquivo = `${clientId}-${Date.now()}.${extensao}`;
+
+  // 1. Faz o Upload
+  const { error: uploadError } = await supabaseChat.storage.from('chat-files').upload(nomeArquivo, file);
+  if(uploadError){ console.error('Erro upload:', uploadError); alert('Erro ao enviar arquivo'); return; }
+
+  // 2. Pega a URL Pública
+  const { data } = supabaseChat.storage.from('chat-files').getPublicUrl(nomeArquivo);
+
+  // 3. Monta o objeto (PADRONIZANDO client_id com underline)
+  const msgObj = {
+    usuario: usuario,
+    tipo: file.type.startsWith('image/') ? 'imagem' : 'arquivo',
+    arquivo_url: data.publicUrl,
+    conteudo: '',
+    criado_em: new Date().toISOString(),
+    status: '✓',
+    client_id: clientId // Corrigido para bater com o enviarTexto
+  };
+
+  // 4. Insere no Banco (O Realtime vai cuidar de exibir para o outro)
+  const { error: insertError } = await supabaseChat.from('mensagens_chat').insert([msgObj]);
+  
+  if (insertError) {
+    console.error('Erro ao salvar no banco:', insertError);
+  } else {
+    // Só exibe localmente se salvou com sucesso no banco
+    exibirMensagem(msgObj);
+    previewContainer.innerHTML = '';
+    inputArquivo.value = '';
+    selectedFile = null;
+  }
+}
+
+
+/* ===================== ENVIAR TEXTO ===================== */
+async function enviarTexto() {
+  const texto = campoMsg.value.trim();
+  if(!texto) return;
+  const msgObj = {
+    usuario,
+    conteudo: texto,
+    tipo: 'texto',
+    criado_em: new Date().toISOString(),
+    status: '✓',
+    client_id: clientId
+  };
+      
+      const { error } = await supabaseChat.from('mensagens_chat').insert([msgObj]);
+
+    if (!error) {
+      exibirMensagem(msgObj); // exibe só se inseriu com sucesso
+    }
+
+
+
+ // exibirMensagem(msgObj);
+  
+ // await supabaseChat
+ // .from('mensagens_chat')
+ // .insert([msgObj]);
+  
+ // campoMsg.value = '';
+}
+
+/* ===================== FUNÇÃO UNIFICADA ===================== */
+//async function enviarMensagem() {
+ // const texto = campoMsg.value.trim();
+ // if(texto) {
+ //   await enviarTexto();
+ // } else if(selectedFile) {
+ //   await enviarArquivo();
+//  }
+//}
+
+
+
+//*===================== FUNÇÃO MANTER AS CONVERSAS TEMPORARIAMENTE ===================== */
+
+async function manterUltimasMensagens(maxMensagens = 200) {
+  // Pega todas as mensagens ordenadas pelo mais antigo
+  const { data, error } = await supabaseChat
+    .from('mensagens_chat')
+    .select('id')
+    .order('criado_em', { ascending: true });
+  
+  if (error) {
+    console.error('Erro ao buscar mensagens:', error);
+    return;
+  }
+
+  // Se passar do limite, apaga as mais antigas
+  if (data.length > maxMensagens) {
+    const idsParaApagar = data.slice(0, data.length - maxMensagens).map(msg => msg.id);
+    const { error: delError } = await supabaseChat
+      .from('mensagens_chat')
+      .delete()
+      .in('id', idsParaApagar);
+
+    if (delError) console.error('Erro ao apagar mensagens antigas:', delError);
+  }
+}
+
+
+/* ===================== APAGAR MENSAGENS ANTIGAS  ===================== */
+async function apagarMensagensAntigas(dias = 30) {
+  const dataLimite = new Date();
+  dataLimite.setDate(dataLimite.getDate() - dias);
+
+  const { error } = await supabaseChat
+    .from('mensagens_chat')
+    .delete()
+    .lt('criado_em', dataLimite.toISOString());
+
+  if (error) console.error('Erro ao apagar mensagens antigas:', error);
+}
+
+
+
+/* ===================== FUNÇÃO UNIFICADA CORRIGIDA ===================== */
+async function enviarMensagem() {
+  const texto = campoMsg.value.trim();
+  
+  // Prioridade 1: Se houver imagem/arquivo no preview
+  if (selectedFile) {
+    await enviarArquivo();
+    // Se também houver texto junto com a imagem, você pode enviar o texto logo após
+    if (texto) {
+      await enviarTexto();
+    }
+  } 
+  // Prioridade 2: Se houver apenas texto
+  else if (texto) {
+    await enviarTexto();
+  } 
+
+   marcarOnline();
+
+
+}
+
+/* ===================== ATUALIZAR ON-LINE  ===================== */
+async function atualizarOnline() {
+  const limite = new Date(Date.now() - 30000).toISOString(); // 30s
+  const { data } = await supabaseChat
+    .from('usuarios_online')
+    .select('usuario')
+    .gte('ultima_atividade', limite);
+
+  document.querySelector('.topo').innerText =
+    `Chat Interno • Online: ${data.length}`;
+}
+
+setInterval(atualizarOnline, 5000);
+
+
+
+
+
+/* ===================== LIMPAR CONVERSA ===================== */
+const btnLimpar = document.getElementById('btn-limpar');
+btnLimpar.onclick = limparConversa;
+
+async function limparConversa() {
+  if(!confirm('Deseja realmente apagar todas as mensagens?')) return;
+
+  try {
+    // Deleta apenas as mensagens deste clientId
+    const { error } = await supabaseChat
+      .from('mensagens_chat')
+      .delete()
+      .eq('client_id', clientId); // usar clientId, não client_id
+
+    if(error){
+      console.error('Erro ao limpar chat:', error);
+      alert('Não foi possível limpar o chat.');
+      return;
+    }
+
+    // Limpa visualmente o chat
+    chat.innerHTML = '';
+  } catch (err) {
+    console.error('Erro inesperado:', err);
+  }
+}
+
+
+// btnLimpar.onclick = limparConversa;
+
+
+
+/* ===================== REALTIME ===================== */
+//supabaseChat.channel('chat-geral')
+//  .on('postgres_changes', { event:'INSERT', schema:'public', table:'mensagens_chat' }, payload => {
+//    if (payload.new.client_id === clientId) return; // filtro funcionando
+//    exibirMensagem(payload.new);
+//  })
+//  .subscribe();
+
+
+/* ===================== REALTIME digitando ...  ===================== */
+supabaseChat
+  .channel('digitando')
+  .on('postgres_changes', {
+    event: '*',
+    schema: 'public',
+    table: 'digitando'
+  }, payload => {
+    if (payload.new.usuario !== usuario) {
+      digitandoDiv.innerText = `${payload.new.usuario} digitando...`;
+      setTimeout(() => digitandoDiv.innerText = '', 1500);
+    }
+  }).subscribe();
+
+
+
+
+/* ===================== DIGITANDO ===================== */
+//campoMsg.addEventListener('input',()=> {
+//  digitandoDiv.innerText = `${usuario} digitando...`;
+//  setTimeout(()=> digitandoDiv.innerText='',1000);
+// });
+
+/* ===================== REAL MSG DE DIGITACAO  ===================== */
+campoMsg.addEventListener('input', async () => {
+  await supabaseChat.from('digitando').upsert({
+    usuario,
+    atualizado_em: new Date().toISOString()
+  });
+});
+
+
+
+
+
+/* ===================== EVENTOS ===================== */
+btnEnviar.onclick = enviarMensagem;
+campoMsg.addEventListener('keypress', e => { if(e.key==='Enter') enviarMensagem(); });
+
+/* ===================== INÍCIO ===================== */
+carregar();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Arboviroses — Registro de Bloqueios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --azul-escuro:#003562;
+            --azul-claro:#b0cbe9;
+            --cinza-card:#e0e0e0;
+            --borda:#888;
+            --borda-input:#ccc;
+            --shadow-strong:0 4px 10px rgba(0,0,0,0.2);
+            --shadow-soft:0 2px 5px rgba(0,0,0,0.2);
+            --radius:12px;
+            --bg:#f7f9fb;
+        }
+
+        *{box-sizing:border-box}
+        body{
+            font-family:'Roboto',sans-serif;
+            margin:0; background:var(--bg);
+            display:grid; grid-template-rows:auto auto 1fr; min-height:100vh;
+        }
+
+        header{ background:var(--azul-escuro); color:#fff; text-align:center; padding:20px; box-shadow:0 4px 8px rgba(0,0,0,0.2); position:sticky; top:0; z-index:1000; }
+        .titulo{font-size:2.2em;font-weight:800;margin:0}
+        .subtitulo{font-size:1.1em;font-weight:700;margin:0}
+
+        nav{ background:var(--azul-claro); padding:15px 10px; display:flex; justify-content:center; gap:15px; flex-wrap:wrap; box-shadow:var(--shadow-strong); position:sticky; top: 0; z-index:950; margin-bottom:16px; }
+        .nav-button{ background:var(--azul-claro); color:#000; font-weight:700; border:1px solid var(--borda); padding:10px 20px; border-radius:var(--radius); cursor:pointer; text-decoration: none; transition:transform .2s }
+        .nav-button:hover{transform:scale(1.05)}
+
+        .formulario{ background:var(--cinza-card); width:92%; max-width:1100px; margin:0 auto; padding:30px; border-radius:10px; box-shadow:var(--shadow-strong); overflow-y: auto; height: auto; }
+        .form-title{ color:var(--azul-escuro); font-weight:800; font-size:1.3rem; margin-bottom: 20px; border-bottom:1px solid #d8d8d8; padding-bottom: 10px;}
+        
+        .section-title{ color:var(--azul-escuro); font-weight:800; font-size:1.05rem; margin:22px 0 12px; border-left: 4px solid var(--azul-escuro); padding-left: 10px; }
+
+        label{display:block; font-weight:700; color:#000; margin-bottom:8px}
+        input, select, textarea{ width:100%; padding:10px; border:1px solid var(--borda-input); border-radius:6px; font-size:1rem; }
+
+        .grid12{display:grid; grid-template-columns:repeat(12, 1fr); gap:18px}
+        .c3{grid-column:span 3} .c4{grid-column:span 4} .c6{grid-column:span 6} .c12{grid-column:span 12}
+
+        .kv{ display:grid; grid-template-columns:max-content 1fr max-content 1fr; gap:8px 18px; padding:12px; background:#f0f0f0; border-radius:8px; border: 1px dashed #bbb; }
+        .kv dt{ font-weight:700; color: var(--azul-escuro); }
+        .kv dd{ margin:0; font-weight: 500; }
+
+        .form-buttons{display:flex; gap:12px; justify-content:flex-end; margin-top:24px}
+        .command-button{ background:var(--azul-escuro); color:#fff; font-weight:700; border:none; padding:12px 20px; border-radius:var(--radius); cursor:pointer; min-width:160px; }
+
+        /* SIDEBAR */
+        .sidebar { position: fixed; top: 0; left: 0; width: 240px; height: 100vh; background: var(--azul-escuro); color: #fff; transform: translateX(-240px); transition: 0.3s ease; z-index: 9999; padding-top: 60px; }
+        .sidebar.open { transform: translateX(0); }
+        .sidebar a { display: block; padding: 12px 20px; color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .menu-toggle { position: fixed; top: 18px; left: 16px; background: #fff; color: var(--azul-escuro); border: none; padding: 10px; border-radius: 6px; cursor: pointer; z-index: 10000; font-weight: bold; }
+        
+        @media (max-width: 768px){ .grid12{display:block} .c3,.c4,.c6,.c12{width:100%; margin-bottom:15px} .kv{grid-template-columns: 1fr} }
+    </style>
+</head>
+
+<body> 
+    <button class="menu-toggle" id="btnMenu">☰ MENU</button>
+
+    <div class="sidebar" id="sidebar">
+        <h2 style="text-align: center; font-size: 1rem;">SIGVA</h2>
+        <a href="welcome_sigva.html">Página Inicial</a>
+        <a href="ficha_OS.html">Ficha OS (Consulta)</a>
+        <a href="acessoOS.html">Ordem de Serviço</a>
+    </div>
+
+    <header>
+        <p class="titulo">Ações de Vigilância e Controle de Escorpiões</p>
+        <p class="subtitulo">Unidade de Vigilância em Saúde - M’ Boi Mirim</p>
+    </header>
+
+    <nav>
+        <a class="nav-button" href="welcome_sigva.html">Home</a> 
+        <a class="nav-button" href="ficha_OS.html">Voltar para Ficha OS</a>
+    </nav>
+
+    <main class="formulario" id="content">
+        <div class="form-title">Visualizando: <span id="r-os">Carregando...</span></div>
+
+        <div class="form-body">
+            <h3 class="section-title">Dados do Registro</h3>
+            <section class="grid12">
+                <div class="c12">
+                    <dl class="kv">
+                        <dt>Origem:</dt> <dd id="r-origem">...</dd>
+                        <dt>Protocolo:</dt> <dd id="r-protocolo">...</dd>
+                        <dt>Paciente:</dt> <dd id="r-paciente">...</dd>
+                        <dt>Endereço:</dt> <dd id="r-endereco">...</dd>
+                        <dt>UBS:</dt> <dd id="r-ubs">...</dd>
+                        <dt>Ocorrência:</dt> <dd id="r-ocorrencia">...</dd>
+                    </dl>
+                </div>
+                <div class="c12">
+                    <label for="obs-registro">Observações do Registro</label>
+                    <textarea id="obs-registro"></textarea>
+                </div>
+            </section>
+
+            <h3 class="section-title">Histórico e Inspeção</h3>
+            <section class="grid12">
+                <div class="c4"><label>Data 1ª Visita</label><input id="dt_v1" type="date"></div>
+                <div class="c4"><label>Data 2ª Visita</label><input id="dt_v2" type="date"></div>
+                <div class="c4"><label>Data 3ª Visita</label><input id="dt_v3" type="date"></div>
+                
+                <div class="c4">
+                    <label>Situação do Imóvel</label>
+                    <select id="situacao-imovel">
+                        <option value="Trabalhado">Trabalhado</option>
+                        <option value="Fechado">Fechado</option>
+                        <option value="Desabitado">Desabitado</option>
+                    </select>
+                </div>
+                <div class="c8">
+                    <label>Relatório da Equipe</label>
+                    <textarea id="relatorio-equipe" placeholder="Descreva as ações..."></textarea>
+                </div>
+            </section>
+
+            <div class="form-buttons">
+                <button class="command-button" onclick="SalvarFichaEscorpiao()">Salvar Alterações</button>
+                <button class="command-button" style="background:#555" onclick="tracarRota()">Ver no Mapa</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // 1. Inicialização Supabase (Segura)
+        const SB_URL = 'https://vepnalrpyaxhpklicqrb.supabase.co'; 
+        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlcG5hbHJweWF4aHBrbGljcXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5MDgxNzIsImV4cCI6MjA3NzQ4NDE3Mn0.-9_J-RE4IWdaGISGZgAXe6S2MLStG9lVm50suQKr7jY';
+        const supabaseClient = window.supabase.createClient(SB_URL, SB_KEY);
+
+        // Captura o ID da OS da URL
+        let currentOSId = new URLSearchParams(window.location.search).get('osid');
+
+        // 2. Lógica do Menu (Protegida)
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('btnMenu');
+            const sidebar = document.getElementById('sidebar');
+            if(btn) {
+                btn.addEventListener('click', () => sidebar.classList.toggle('open'));
+            }
+            
+            if(currentOSId) {
+                CarregarDados(currentOSId);
+            } else {
+                alert("Nenhuma OS selecionada!");
+            }
+        });
+
+        // 3. Carregar Dados
+        async function CarregarDados(id) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('Principal')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+
+                // Preenche os dados de leitura
+                document.getElementById('r-os').textContent = data.nextosnumber || id;
+                document.getElementById('r-origem').textContent = data.origem || '—';
+                document.getElementById('r-protocolo').textContent = data.protocolo || '—';
+                document.getElementById('r-paciente').textContent = data.paciente || '—';
+                document.getElementById('r-ubs').textContent = data.ubs || '—';
+                document.getElementById('r-ocorrencia').textContent = data.tipoocorrencia || '—';
+                document.getElementById('r-endereco').textContent = `${data.logradouro}, ${data.numero}`;
+
+                // Preenche os inputs para edição
+                if(data.data_visita_1) document.getElementById('dt_v1').value = data.data_visita_1.substring(0,10);
+                document.getElementById('obs-registro').value = data.obs_registro || ''; 
+                if(data.data_visita_2) document.getElementById('dt_v2').value = data.data_visita_2.substring(0,10);
+                if(data.data_visita_3) document.getElementById('dt_v3').value = data.data_visita_3.substring(0,10);
+                
+
+            // Se houver erro, dispara o alerta  
+            } catch (err) {
+                console.error("Erro:", err);
+                alert("Erro ao buscar dados da OS.");
+            }
+        }
+
+        // 4. Salvar
+        
+         async function SalvarFichaEscorpiao() {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.textContent = "Salvando...";
+
+    try {
+        // --- PARTE 1: ATUALIZA TABELA PRINCIPAL ---
+        const updatesPrincipal = {
+            obs_registro: document.getElementById('obs-registro').value,
+            data_visita_1: document.getElementById('dt_v1').value || null,
+            data_visita_2: document.getElementById('dt_v2').value || null,
+            data_visita_3: document.getElementById('dt_v3').value || null,
+        };
+
+        const { error: errPrincipal } = await supabaseClient
+            .from('Principal')
+            .update(updatesPrincipal)
+            .eq('id', currentOSId); // Vincula pelo ID da OS
+
+        if (errPrincipal) throw errPrincipal;
+
+        // --- PARTE 2: ATUALIZA/INSERE NA TABELA DETALHES_ESCORPIAO ---
+        const updatesDetalhes = {
+            os_id: currentOSId, // O VÍNCULO: diz que esses detalhes são desta OS
+            situacao_imovel: document.getElementById('situacao-imovel').value,
+            relatorio_equipe: document.getElementById('relatorio-equipe').value
+            // adicione aqui outros campos (ex: tipo_imovel, qtd_vistoriados)
+        };
+
+        const { error: errDetalhes } = await supabaseClient
+            .from('Detalhes_Escorpiao')
+            .upsert(updatesDetalhes, { onConflict: 'os_id' }); 
+            // O 'onConflict' garante que se já existir um registro para essa OS, ele apenas atualize.
+
+        if (errDetalhes) throw errDetalhes;
+
+        alert("Tudo pronto! Dados salvos na OS e na Tabela de Detalhes.");
+
+    } catch (err) {
+        console.error("Erro no processo de salvamento:", err);
+        alert("Erro ao salvar: " + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "Salvar Alterações";
+    }
+}
+        // 5. Traçar Rota no Google Maps
+        function tracarRota() {
+            const end = document.getElementById('r-endereco').textContent;
+            window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(end + ", São Paulo")}`, '_blank');
+        }
+    </script>
+</body>
+</html>

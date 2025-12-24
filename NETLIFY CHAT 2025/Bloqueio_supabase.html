@@ -1,0 +1,812 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Arboviroses — Registro de Bloqueios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --azul-escuro:#003562;
+      --azul-claro:#b0cbe9;
+      --cinza-card:#e0e0e0;
+      --borda:#888;
+      --borda-input:#ccc;
+      --shadow-strong:0 4px 10px rgba(0,0,0,0.2);
+      --shadow-soft:0 2px 5px rgba(0,0,0,0.2);
+      --radius:12px;
+      --bg:#f7f9fb;
+      --header-height: 0px; /* preenchidos via JS */
+      --nav-height: 0px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      font-family:'Roboto',sans-serif;
+      margin:0; background:var(--bg);
+      display:grid; grid-template-rows:auto auto 1fr; min-height:100vh;
+    }
+
+    /* Cabeçalho fixo */
+    header{
+      background:var(--azul-escuro); color:#fff; text-align:center; padding:20px;
+      box-shadow:0 4px 8px rgba(0,0,0,0.2); position:sticky; top:0; z-index:1000;
+    }
+    .titulo{font-size:2.2em;font-weight:800;margin:0}
+    .subtitulo{font-size:1.1em;font-weight:700;margin:0}
+
+    /* Navegação (fixa logo abaixo do header) */
+    nav{
+      background:var(--azul-claro); padding:15px 10px;
+      display:flex; justify-content:center; gap:15px; flex-wrap:wrap;
+      box-shadow:var(--shadow-strong);
+      position:sticky;
+      /* COSTURA header + nav, eliminando a “faixa” */
+      top: calc(var(--header-height) - 1px);
+      z-index:950;
+      margin-bottom:16px;
+    }
+    .nav-button{
+      background:var(--azul-claro); color:#000; font-weight:700;
+      border:1px solid var(--borda); padding:10px 20px; border-radius:var(--radius);
+      box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; transition:transform .2s
+    }
+    .nav-button:hover{transform:scale(1.05)}
+
+    /* Card do formulário (título fixo + corpo rolável) */
+    .formulario{
+      background:var(--cinza-card); width:92%; max-width:1100px;
+      margin:0 auto; padding:30px; border-radius:10px; box-shadow:var(--shadow-strong);
+      display:flex; flex-direction:column; min-height:0;
+      height: calc(100vh - var(--header-height) - var(--nav-height) - 32px);
+      overflow:hidden; /* scroll fica na .form-body */
+    }
+    .form-title{
+      color:var(--azul-escuro); font-weight:800; font-size:1.3rem;
+      margin:0 0 14px 0; flex:0 0 auto;
+      background:var(--cinza-card); padding:6px 8px; border-bottom:1px solid #d8d8d8;
+    }
+    .form-body{flex:1 1 auto; min-height:0; overflow-y:auto; padding-top:4px;}
+
+    /* Seções */
+    .section-title{
+      color:var(--azul-escuro); font-weight:800; font-size:1.05rem; margin:12px 0 8px;
+    }
+
+    /* Campos */
+    label{display:block; font-weight:700; color:#000; margin-bottom:6px}
+    input[type="text"], input[type="number"], input[type="date"], input[type="tel"],
+    input[type="email"], select, textarea{
+      width:100%; background:#fff; padding:10px; border:1px solid var(--borda-input);
+      border-radius:6px; font-size:1rem; box-shadow:var(--shadow-soft)
+    }
+    textarea{min-height:86px; resize:vertical}
+    .radio-group{display:flex; gap:24px; align-items:center; margin-top:6px}
+    .muted{color:#444; font-weight:500}
+
+    /* GRID 12 colunas */
+    .grid12{display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:18px}
+    .c1{grid-column:span 1}.c2{grid-column:span 2}.c3{grid-column:span 3}
+    .c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}
+    .c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}
+    .c10{grid-column:span 10}.c11{grid-column:span 11}.c12{grid-column:span 12}
+
+    /* Lista rótulo/valor (se um dia usar modo descritivo) */
+    .kv{
+      display:grid;
+      grid-template-columns:max-content 1fr max-content 1fr;
+      gap:8px 18px; padding:12px; background:var(--cinza-card); border-radius:8px;
+    }
+    .kv dt{margin:0; font-weight:700; color:#000}
+    .kv dd{margin:0; color:#000}
+    .kv .full{grid-column:1/-1}
+
+    /* Botões */
+    .form-buttons{display:flex; flex-wrap:wrap; gap:12px; justify-content:flex-end; margin-top:24px}
+    .command-button{
+      background:var(--cinza-card); color:#000; font-weight:700; border:1px solid var(--borda);
+      padding:12px 20px; border-radius:var(--radius); box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; min-width:160px; transition:transform .15s
+    }
+    .command-button:hover{transform:scale(1.03)}
+
+    /* Responsividade */
+    @media (max-width: 980px){
+      .grid12{grid-template-columns:repeat(6, minmax(0,1fr))}
+      .c8{grid-column:span 6} .c9{grid-column:span 6} .c6{grid-column:span 6}
+      .c4{grid-column:span 3} .c3{grid-column:span 3} .c2{grid-column:span 3}
+    }
+    @media (max-width: 620px){
+      .grid12{grid-template-columns:1fr}
+      .c1,.c2,.c3,.c4,.c5,.c6,.c7,.c8,.c9,.c10,.c11,.c12{grid-column:1/-1}
+      .titulo{font-size:2em} .subtitulo{font-size:1.1em}
+    }
+/* + espaço entre conteúdo e a barra de rolagem */
+.form-body{
+  /* top | right | bottom | left */
+  padding: 8px 16px 14px 8px;      /* aumenta a “folga” do lado da barra */
+  scrollbar-gutter: stable both-edges; /* reserva um “canal” p/ a barra (onde suportado) */
+}
+
+
+/* Campos */
+    label{display:block; font-weight:bold; color:#000; margin-bottom:6px}
+    input[type="text"], input[type="number"], input[type="date"], input[type="tel"],
+    input[type="email"], select, textarea{
+      width:100%; background:#fff; padding:10px; border:1px solid var(--borda-input);
+      border-radius:6px; font-size:1em; box-shadow:var(--shadow-soft)
+    }
+    textarea{min-height:86px; resize:vertical}
+    .radio-group{display:flex; gap:24px; align-items:center; margin-top:6px}
+    .muted{color:#444; font-weight:500}
+    .auto-generated{background-color:#f8f9fa; color:#666;}
+ 
+
+
+    .form-buttons {
+        clear: both;                     /* garantir que fique abaixo de qualquer elemento flutuante anterior */
+        margin-top: 0;                   /* zera margem superior se houver */
+        position: relative;              /* mantê-lo no fluxo */
+        z-index: 1;                       /* botões ficam “atrás” da mensagem, se necessário */
+      }
+   .status-container {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 20px; /* ajusta conforme espaço */
+      width: calc(100% - 40px);
+      margin: 0 auto;
+    }
+
+    .status-success{background:var(--success); color:white; display:block;}
+    .status-error{background:var(--error); color:white; display:block;}
+    .status-warning{background:var(--warning); color:black; display:block;}
+
+    /* Loading spinner */
+    .spinner {
+      border: 4px solid rgba(0,0,0,0.1);
+      border-radius: 50%;
+      border-top: 4px solid var(--azul-escuro);
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsividade */
+    @media (max-width: 980px){
+      .grid12{grid-template-columns:repeat(6, minmax(0,1fr))}
+      .c8{grid-column:span 6} .c9{grid-column:span 6} .c6{grid-column:span 6}
+      .c4{grid-column:span 3} .c3{grid-column:span 3} .c2{grid-column:span 3}
+    }
+    @media (max-width: 620px){
+      .grid12{grid-template-columns:1fr}
+      .c1,.c2,.c3,.c4,.c5,.c6,.c7,.c8,.c9,.c10,.c11,.c12{grid-column:1/-1}
+      .titulo{font-size:2em} .subtitulo{font-size:1.2em}
+      .form-buttons{flex-direction:column}
+      .command-button{min-width:100%}
+    } 
+
+    /* === SIDEBAR (DASHBOARD LATERAL) ================================== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  background: var(--azul-escuro);
+  color: #fff;
+  padding: 20px 0;
+  transform: translateX(-240px);
+  transition: 0.3s ease;
+  z-index: 9999;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.sidebar a {
+  display: block;
+  padding: 12px 22px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.sidebar a:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Botão que abre e fecha o menu */
+.menu-toggle {
+  position: fixed;
+  top: 18px;
+  left: 16px;
+  background: var(--azul-escuro);
+  color: #fff;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 10000;
+  font-size: 18px;
+  transition: background 0.2s;
+}
+
+.menu-toggle:hover {
+  background: #022d52;
+}
+
+/* Empurra o conteúdo quando o menu abre */
+.content.shift {
+  margin-left: 240px;
+  transition: margin-left 0.3s ease;
+}
+
+.alerta {
+    font-size: 14px;
+    color: red;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+
+
+
+
+
+/* + espaço vertical entre os campos (linhas do grid) */
+.grid12{
+  row-gap: 22px;  /* antes era 18px; ajuste se quiser mais/menos */
+}
+
+/* rótulo um pouquinho mais afastado do input */
+label{
+  margin-bottom: 8px; /* antes 6px */
+}
+
+/* (opcional) mais respiro entre as seções/títulos */
+.section-title{
+  margin: 16px 0 10px; /* um pouco mais de espaço acima e abaixo */
+}
+
+  </style>
+</head>
+
+
+
+
+<body> 
+
+    <!-- MENU SIDEBAR -->
+
+<script>
+document.querySelector('.menu-toggle').addEventListener('click', function () {
+    const sidebar = document.getElementById('sidebar');
+    const content = document.querySelector('main'); // ou .content se você usar
+
+    sidebar.classList.toggle('open');
+
+    // Empurra conteúdo se quiser
+    if (content) {
+        content.classList.toggle('shift');
+    }
+});
+</script>
+
+
+
+<button class="menu-toggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <h2>      >-------          SIGVA - Acesso Rápido</h2>
+
+
+  <a href="welcome_sigva.html">Página Inicial</a>
+
+  <a href="pesquisa_os_v2.html">Pesquisar OS</a> >
+
+  <a href="Bloqueio_supabase.html">Bloqueios - Cadastro</a> 
+  
+  <a href="Ficha_Bloqueio.html">Bloqueios - Consulta</a>  >    
+  
+  <a href="Bloqueio_supabase.html">Arbovirores - Ficha Cadastral</a> 
+  
+  
+  <a href="Escorpiao.html">Escorpião</a>
+
+  <a href="himenoptero.html">Himenopteros - Abelhas</a>
+  
+  <a href="identificacao_sorologia.html">Identificação e Sorologia</a>
+  
+  <a href="materialapoio.html">Material de Apoio</a>
+  
+  <a href="monitoramento.html">Monitoramento</a>
+  
+  <a href="acessoOS.html">Ordem de Serviço</a>
+  
+  <a href="zoosanitaria.html">Zoosanitária</a>
+</div>
+
+...
+<script>
+// (Seu código supabase...)
+</script>
+
+<script>
+document.querySelector('.menu-toggle').addEventListener('click', function () {
+    const sidebar = document.getElementById('sidebar');
+    const content = document.querySelector('main');
+
+    sidebar.classList.toggle('open');
+    if (content) content.classList.toggle('shift');
+});
+</script>
+
+</body>
+</html>
+
+
+
+  <!-- Cabeçalho -->
+
+  <header>
+    <p class="titulo">ARBOVIROSES</p>
+    <p class="subtitulo">Unidade de Vigilância em Saúde — M’ Boi Mirim</p>
+  </header>
+
+  <!-- Navegação -->
+  <nav>
+
+    
+    <button class="nav-button" onclick="window.location.href=('welcome_sigva.html')">Home</button>
+    <button class="nav-button" onclick="window.location.href=('gestao')">Gestão</button>
+    <button class="nav-button" onclick="window.location.href=('fichaBL')">Ficha de campo</button>
+    <button class="nav-button" onclick="window.location.href=('Bloqueio_Consulta.html')">Pesquisa de Bloqueios</button>
+    <button class="nav-button" onclick="window.location.href=('login')">Logout</button>
+  </nav>
+
+  <!-- Formulário -->
+  <main class="formulario">
+    <div class="form-title">Registro de Bloqueios</div>
+
+    <div class="form-body">
+      <form id="form-bl" onsubmit="event.preventDefault(); salvarBL();">
+        <!-- ===== REGISTRO ===== -->
+       
+        <section class="grid12">
+          <!-- 1) Nº Bloqueio, Nº SINAN, Doença (OK) -->
+          <div class="c4">
+            <label for="numeroBL">Nº do Bloqueio</label>
+            <input id="numeroBL" name="numeroBL" type="text" inputmode="numeric" placeholder="0001">
+          </div>
+          <div class="c4">
+            <label for="numeroSINAN">Nº SINAN</label>
+            <input id="numeroSINAN" name="numeroSINAN" type="text" placeholder="Ex.: 2025-000000">
+          </div>
+          <div class="c4">
+            <label for="doenca">Doença</label>
+            <select id="doenca" name="doenca">
+              <option value="" selected>Selecione</option>
+              <option>Dengue</option>
+              <option>Zika</option>
+              <option>Chikungunya</option>
+              <option>Febre Amarela</option>
+            </select>
+          </div>
+
+          <!-- 2) Datas (OK) -->
+          <div class="c4">
+            <label for="dataRecebUvis">Data de Recebimento UVIS</label>
+            <input id="dataRecebUvis" name="dataRecebUvis" type="date">
+          </div>
+          <div class="c4">
+            <label for="dataRecebAmbiental">Data de Recebimento Ambiental</label>
+            <input id="dataRecebAmbiental" name="dataRecebAmbiental" type="date">
+          </div>
+          <div class="c4">
+            <label for="dataNotificacao">Data da Notificação</label>
+            <input id="dataNotificacao" name="dataNotificacao" type="date">
+          </div>
+
+          <!-- 3) Unidades + DA (mesma linha) -->
+<div class="c4">
+  <label for="unidadeNotificante">Unidade Notificante (UBS)</label>
+  <input id="unidadeNotificante" name="unidadeNotificante" type="text" placeholder="Digite o nome da Unidade Notificante">
+</div>
+
+
+
+<div class="c4">
+  <label>DA</label>
+  <div class="radio-group">
+              <label class="muted"><input type="radio" name="da" value="42"> 42</label>
+              <label class="muted"><input type="radio" name="da" value="45"> 45</label>
+            </div>
+</div>
+
+
+<div class="c4">
+  <label for="ubs">Unidade de Origem (UBS)</label>
+  <select id="ubs" name="ubs">
+     <option value="">Selecione o DA primeiro</option>
+    <!-- opções serão inseridas via JS -->
+  </select>
+</div> 
+
+
+          <!-- 4) Paciente, Idade, Nome da mãe (sempre visível) -->
+          <div class="c4">
+            <label for="paciente">Paciente</label>
+            <input id="paciente" name="paciente" type="text" placeholder="Nome completo">
+          </div>
+          <div class="c4">
+            <label for="idade">Idade</label>
+            <input id="idade" name="idade" type="number" min="0" step="1" placeholder="Anos">
+          </div>
+          <div class="c4">
+            <label for="nomeMae">Nome da mãe</label>
+            <input id="nomeMae" name="nomeMae" type="text" placeholder="Se aplicável">
+          </div>
+
+          <!-- 5) Telefones -->
+         <div class="c6">
+            <label for="telefone">Telefone 1</label>
+            <input id="telefone" name="telefone" type="text" placeholder="(XX) XXXXX-XXXX">
+          </div>
+          <div class="c6">
+            <label for="tel2">Telefone 2</label>
+            <input id="telefone2" name="telefone2" type="tel" placeholder="(XX) XXXXX-XXXX">
+
+          </div>
+
+          <!-- 6) Endereço: Tipo (3) + Endereço (7) + Nº (2) | (Bairro removido) -->
+          <div class="c3">
+            <label for="tipoLogradouro">Tipo</label>
+            <select id="tipoLogradouro" name="tipoLogradouro">
+              <option value="" selected>Selecione</option>
+              <option>Rua</option><option>Avenida</option><option>Travessa</option>
+              <option>Praça</option><option>Estrada</option>
+            </select>
+          </div>
+          <div class="c7">
+            <label for="logradouro">Endereço</label>
+            <input id="logradouro" name="logradouro" type="text" placeholder="Ex.: Bento de Souza">
+          </div>
+          <div class="c2">
+            <label for="numero">Nº</label>
+            <input id="numero" name="numero" type="text" inputmode="numeric" placeholder="000">
+          </div>
+        </section>
+
+        <!-- ===== EXAMES (mantido) ===== -->
+        <h3 class="section-title">Exames</h3>
+        <section class="grid12">
+          <div class="c3">
+            <label for="data1Sintoma">Data 1º Sintoma</label>
+            <input id="data1Sintoma" name="data1Sintoma" type="date">
+          </div>
+
+          <div class="c3">
+            <label for="trIgm">TR IgM</label>
+            <select id="trIgm" name="trIgm">
+              <option value="" selected>Selecione</option>
+              <option>Reagente</option>
+              <option>Não reagente</option>
+              <option>Inconclusivo</option>
+              <option>Não realizado</option>
+            </select>
+          </div>
+          <div class="c3">
+            <label for="dataTR">Data TR</label>
+            <input id="dataTR" name="dataTR" type="date">
+          </div>
+
+          <div class="c3">
+            <label for="sorologiaIgm">Sorologia IgM</label>
+            <select id="sorologiaIgm" name="sorologiaIgm">
+              <option value="" selected>Selecione</option>
+              <option>Reagente</option>
+              <option>Não reagente</option>
+              <option>Inconclusivo</option>
+              <option>Não realizado</option>
+            </select>
+          </div>
+          <div class="c3">
+            <label for="dataSorologiaIgm">Data Sorologia IgM</label>
+            <input id="dataSorologiaIgm" name="dataSorologiaIgm" type="date">
+          </div>
+
+          <div class="c3">
+            <label for="sorologiaNs1">Sorologia NS1</label>
+            <select id="sorologiaNs1" name="sorologiaNs1">
+              <option value="" selected>Selecione</option>
+              <option>Reagente</option>
+              <option>Não reagente</option>
+              <option>Inconclusivo</option>
+              <option>Não realizado</option>
+            </select>
+          </div>
+          <div class="c3">
+            <label for="dataSorologiaNs1">Data Sorologia NS1</label>
+            <input id="dataSorologiaNs1" name="dataSorologiaNs1" type="date">
+          </div>
+
+          <div class="c3">
+            <label for="lpi">LPI</label>
+            <input id="lpi" name="lpi" type="text" placeholder="Local Provável de Infecção">
+          </div>
+        </section>
+
+        <!-- Botões -->
+        <div class="form-buttons">
+          
+          <button type="button" class="command-button" onclick="tracarRota();">Ver End. no Mapa</button>
+
+          
+          <button type="submit" class="command-button">Consultar Dados</button>
+          <button type="submit" class="command-button">Salvar</button>
+          <button type="button" class="command-button" onclick="document.getElementById('form-bl').reset();">Limpar</button>
+       
+       
+        </div>
+      </form>
+    </div><!-- /.form-body -->
+  </main>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = 'https://vepnalrpyaxhpklicqrb.supabase.co'; 
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlcG5hbHJweWF4aHBrbGljcXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5MDgxNzIsImV4cCI6MjA3NzQ4NDE3Mn0.-9_J-RE4IWdaGISGZgAXe6S2MLStG9lVm50suQKr7jY';
+const { createClient } = window.supabase;
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const TABELA_BLOQUEIO_PRINCIPAL = 'Detalhes_Bloqueio'; 
+
+// Mapeamento de IDs HTML para Colunas na Tabela Principal (para INSERÇÃO)
+const PRINCIPAL_INSERT_MAP = {
+    'doenca': 'tipoocorrencia',
+    'paciente': 'nome_solicitante',
+    'logradouro': 'logradouro',
+    'numero': 'numero',
+    // dataRecebUvis, dataRecebAmbiental e dataNotificacao podem ser mapeadas na Principal ou apenas nos Detalhes
+};
+
+
+/* === UBS por DA === */
+const UBS_BY_DA = {
+    "42": [
+        "Alto do Riviera","Aracati","Caiçara","Capela","Chácara Santa Maria",
+        "Coimbra","Guarujá","Herculano","Horizonte Azul","Kagohara","Nakamura",
+        "Paranapanema","Parque do Lago","Parque Novo Santo Amaro",
+        "Santa Lúcia","Santa Margarida","Vera Cruz"
+    ],
+    "45": [
+        "Jardim Alfredo","Jardim Souza","Jardim Thomas","Novo Jardim",
+        "Parque Figueira Grande","Parque Santo Antônio","Parque Santo Antônio II",
+        "Vila das Belezas","Zumbi dos Palmares"
+    ]
+};
+
+
+function updateUBS() {
+      const da = (document.querySelector('input[name="da"]:checked') || {}).value;
+      const sel = document.getElementById('ubs');
+      sel.innerHTML = "";
+
+      if (!da || !UBS_BY_DA[da]) {
+        sel.disabled = true;
+        sel.appendChild(new Option("Selecione a DA primeiro", ""));
+        return;
+      }
+
+      sel.disabled = false;
+      sel.appendChild(new Option("Selecione a UBS", ""));
+      UBS_BY_DA[da].forEach(nome => sel.appendChild(new Option(nome, nome)));
+    }
+
+    // Liga os eventos e inicializa
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('input[name="da"]').forEach(r =>
+        r.addEventListener('change', updateUBS)
+      );
+      updateUBS();
+    });
+
+
+// ================== FUNÇÃO DE PREENCHIMENTO ==================
+
+function loadUbsOptions() {
+    const selectNotificante = document.getElementById('unidadeNotificante');
+    const selectOrigem = document.getElementById('ubs');
+    
+    // Armazena a opção selecionada atual, se houver, para manter após o repreenchimento
+    const selectedNotificante = selectNotificante.value;
+    const selectedOrigem = selectOrigem.value;
+    
+    // Limpa as opções existentes
+    selectNotificante.innerHTML = '<option value="">Selecione</option>';
+    selectOrigem.innerHTML = '<option value="">Selecione</option>';
+    
+    // Pega todos os nomes de UBS, achatando o objeto UBS_BY_DA
+    const allUbs = new Set();
+    for (const da in UBS_BY_DA) {
+        UBS_BY_DA[da].forEach(ubs => allUbs.add(ubs));
+    }
+    
+    
+    // Restaura a seleção anterior (se aplicável)
+    if (selectedNotificante) selectNotificante.value = selectedNotificante;
+    if (selectedOrigem) selectOrigem.value = selectedOrigem;
+}
+
+// Chame a função de carregamento no início da página
+window.onload = function() {
+    // ... (Seu código existente de ajuste de altura e roteador) ...
+
+    loadUbsOptions(); // <--- CHAMA A FUNÇÃO AQUI!
+    
+    // (Mantenha o código da função 'salvarBL' corrigida aqui)
+};
+
+
+//FUNCAO PARA MOSTRAR O STATUS
+  /* Função para mostrar mensagens de status */
+    function mostrarStatus(mensagem, tipo) {
+      const statusEl = document.getElementById('statusMessage');
+      statusEl.textContent = mensagem;
+      statusEl.className = 'status-message';
+      
+      if (mostrar) {
+        spinner.style.display = 'block';
+        btnSalvar.disabled = true;
+        btnSalvar.textContent = 'Salvando...';
+      } else {
+        spinner.style.display = 'none';
+        btnSalvar.disabled = false;
+        btnSalvar.textContent = 'Salvar OS';
+      }
+    }
+
+
+// ================== FUNÇÃO PARA VER NO MAPA (CORRIGIDA) ==================
+
+// ================== FUNÇÃO PARA TRAÇAR ROTA (CORRIGIDA DEFINITIVAMENTE) ==================
+
+function tracarRota() {
+    const tipo = document.getElementById('tipoLogradouro').value;
+    const logradouro = document.getElementById('logradouro').value.trim();
+    const numero = document.getElementById('numero').value.trim();
+    
+    // 1. Validação mínima
+    if (!logradouro || !numero) {
+        mostrarStatus('Por favor, preencha o Endereço e o Número para traçar a rota.','warning');
+        return;
+    }
+
+    // 2. Definir o Destino (Endereço do Bloqueio)
+    // Manter São Paulo, SP ajuda a geolocalização.
+    const destinoCompleto = `${tipo} ${logradouro}, ${numero}, São Paulo, SP`;
+    
+    // Codificar o endereço é crucial para URLs
+    const destinoCodificado = encodeURIComponent(destinoCompleto);
+
+    // 3. Criar a URL de Rotas no Google Maps (Usando a sintaxe correta do Maps API)
+    // Parâmetros: 
+    // - api=1 (Sintaxe moderna de URL)
+    // - destination= (O endereço do bloqueio)
+    // O Maps usará o GPS do dispositivo como ponto de partida (saddr).
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destinoCodificado}`;
+    
+    // 4. Abrir em uma nova aba
+    window.open(mapsUrl, '_blank');
+    
+    console.log("Abrindo Google Maps para traçar rota até:", destinoCompleto);
+}
+// ================== FUNÇÃO DE CADASTRO (salvarBL) ==================
+
+async function salvarBL() {
+  event.preventDefault();
+
+  const button = document.querySelector('.command-button[type="submit"]');
+
+  const dados = {
+    numero_bl: document.getElementById('numeroBL').value.trim(),
+    numero_sinan: document.getElementById('numeroSINAN').value.trim(),
+    doenca: document.getElementById('doenca').value,
+
+    data_receb_uvis: document.getElementById('dataRecebUvis').value || null,
+    data_receb_ambiental: document.getElementById('dataRecebAmbiental').value || null,
+    data_notificacao: document.getElementById('dataNotificacao').value || null,
+
+    unidade_notificante: document.getElementById('unidadeNotificante').value,
+    unidade_origem: document.getElementById('ubs').value.trim(),
+    da: (document.querySelector('input[name="da"]:checked') || {}).value || null,
+
+    paciente: document.getElementById('paciente').value.trim(),
+    idade: document.getElementById('idade').value || null,
+    nome_mae: document.getElementById('nomeMae').value.trim(),
+
+    telefone: document.getElementById('telefone').value.trim(),
+    telefone2: document.getElementById('telefone2').value.trim(),
+
+    tipo_logradouro: document.getElementById('tipoLogradouro').value,
+    logradouro: document.getElementById('logradouro').value.trim(),
+    numero: document.getElementById('numero').value.trim(),
+
+    // ✅ NOVOS CAMPOS SALVANDO DIRETO NAS COLUNAS
+    data_1_sintoma: document.getElementById('data1Sintoma').value || null,
+    tr_igm: document.getElementById('trIgm').value,
+    data_tr: document.getElementById('dataTR').value || null,
+    sorologia_igm: document.getElementById('sorologiaIgm').value,
+    data_sorolog_igm: document.getElementById('dataSorologiaIgm').value || null,
+    sorologia_ns1: document.getElementById('sorologiaNs1').value,
+    data_sorolog_ns1: document.getElementById('dataSorologiaNs1').value || null,
+    lpi: document.getElementById('lpi').value.trim()
+  };
+
+  // ✅ VALIDAÇÕES
+  if (!dados.doenca) {
+    alert('Por favor, selecione a Doença.');
+    return;
+  }
+
+  if (!dados.paciente) {
+    alert('Por favor, preencha o nome do Paciente.');
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = 'Cadastrando...';
+
+  try {
+    const { data, error } = await supabase
+      .from(TABELA_BLOQUEIO_PRINCIPAL)
+      .insert([dados])
+      .select('id')
+      .single();
+
+    if (error) throw error;
+
+    alert(`✅ Bloqueio cadastrado com sucesso! ID: ${data.id}`);
+    document.getElementById('form-bl').reset();
+
+  } catch (err) {
+    console.error('Erro ao cadastrar Bloqueio:', err);
+
+    if (err.code === '42501') {
+      alert('Erro de permissão (RLS). Tente novamente em aba anônima.');
+    } else {
+      alert(`Erro ao salvar: ${err.message}`);
+    }
+
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Salvar';
+  }
+}
+
+
+</script>
+</body>
+</html>
+

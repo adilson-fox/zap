@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SIGVA — Acesso</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --azul-escuro:#003562;
+      --azul-claro:#b0cbe9;
+      --azul-claro-2:#9bbbe0;
+      --cinza-card:#e0e0e0;
+      --borda:#8aa4c6;
+      --bg:#f7f9fb;
+      --radius:14px;
+      --shadow-strong:0 10px 18px rgba(0,0,0,.22);
+      --shadow-soft:0 4px 10px rgba(0,0,0,.16);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial,sans-serif;
+      background:var(--bg);
+    }
+
+   /* Cabeçalho colado na faixa azul-clara */
+header{
+  background: var(--azul-escuro);
+  color: #fff;
+  text-align: center;
+  padding: 28px 16px 26px;
+  font-weight: 800;
+  margin: 0;             /* remove qualquer espaço */
+  box-shadow: none;      /* sombra só na faixa clara */
+  border-bottom: 0;      /* garante que não há filete */
+}
+
+/* Faixa azul-clara, imediatamente abaixo do header */
+.top-band{
+  background: linear-gradient(180deg, var(--azul-claro) 0%, var(--azul-claro-2) 100%);
+  padding: 20px 12px 22px;
+  margin-top: 0;         /* cola na borda do header */
+  box-shadow: var(--shadow-strong);
+}
+
+/* Caso ainda apareça 1px de “filete” em algum navegador */
+header + .top-band{ margin-top: -1px; }
+
+
+/* === GRID: 5 cards por linha em desktop === */
+.modules{
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(170px, 1fr)); /* força 5 colunas */
+  gap: 12px;
+}
+
+/* em telas menores, volta a auto-fit (quebra em 2–3 por linha) */
+@media (max-width: 1100px){
+  .modules{
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+}
+
+/* cards mais compactos e clicáveis */
+.mod-card{
+  background:#fff;
+  border:1px solid var(--borda);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  padding:14px 12px;
+  text-align:center;
+
+  /* torna o card um link bonito */
+  display:block;            /* <a> em bloco */
+  text-decoration:none;     /* sem sublinhado */
+  color:inherit;            /* usa as cores do texto normal */
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.mod-card:hover,
+.mod-card:focus{
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,.18);
+  outline:none;
+}
+
+.mod-title{ font-weight:800; font-size:.98rem; margin:2px 0 4px; }
+.mod-desc{  color:#233; line-height:1.35; font-size:.90rem; min-height:2.8em; margin:0; }
+
+
+    /* Corpo: boas-vindas + foto */
+    main{
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 18px 36px;
+    }
+    .welcome{
+      background:#fff;
+      border:1px solid #d7dde6;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+      padding: 22px 16px;
+      text-align:center;
+      margin-bottom: 18px;
+    }
+    .welcome h2{
+      margin:0; color:#214a78; font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      font-weight:800;
+    }
+
+    .photo{
+      background:#fff;
+      border:1px solid #d7dde6;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+      padding: 14px;
+      min-height: 280px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .photo img{
+      max-width:100%; height:auto; display:block; border-radius:10px;
+    }
+    .photo .placeholder{
+      color:#9aa6b2; font-size:1.05rem;
+    }
+
+    @media (max-width:560px){
+      .mod-desc{min-height:auto}
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1 class="titulo">SISTEMA DE GESTÃO VIGILÂNCIA AMBIENTAL MBM — SIGVA</h1>
+    <p class="subtitulo">UNIDADE DE VIGILÂNCIA EM SAÚDE — M’ Boi Mirim</p>
+  </header>
+
+  <!-- Faixa azul-clara colada no header -->
+ <div class="top-band">
+  <div class="modules">
+    <a class="mod-card" href="login_senha.html">
+      <h3 class="mod-title">Arboviroses</h3>
+      <p class="mod-desc">Registro de bloqueio, controle químico e biológico, PE, IE e Drone.</p>
+    </a>
+
+    <a class="mod-card" href="Cadastramento_OrdemServico.html">
+      <h3 class="mod-title">Ordem de Serviço</h3>
+      <p class="mod-desc">Atendimento 156.</p>
+    </a>
+
+    <a class="mod-card" href="monitoramento.html">
+      <h3 class="mod-title">Monitoramento</h3>
+      <p class="mod-desc">Área Programa, Controle de Escorpião e Barbeiro.</p>
+    </a>
+
+    <a class="mod-card" href="identificacao_sorologia.html">
+      <h3 class="mod-title">Identificação e Sorologia</h3>
+      <p class="mod-desc">Registros de entrega/coletas de animais e resultados laboratoriais.</p>
+    </a>
+
+    <a class="mod-card" href="zoo.html">
+      <h3 class="mod-title">Zoosanitária</h3>
+      <p class="mod-desc">Controle de esporotricose.</p>
+    </a>
+
+
+</div>
+</div>
+
+
+  <main>
+    
+
+    <section class="photo">
+      <!-- Substitua pelo caminho real da sua foto institucional -->
+      <!-- <img src="imgs/foto-institucional.jpg" alt="Foto institucional"> -->
+      <div class="placeholder">foto institucional</div>
+    </section>
+  </main>
+
+  <script>
+    function loadPage(key){
+      const routes = {
+        arboviroses:    'arboviroses.html',
+        ordemservico:   'acessoOS.html',
+        monitoramento:  'monitoramento.html',
+        identificacao:  'identificacao_sorologia.html',
+        zoosanitaria:   'zoosanitaria.html'
+      };
+      const url = routes[key] || '#';
+      if(url !== '#') window.location.href = url;
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+    const nome = localStorage.getItem("usuarioNome");
+    if (nome) {
+      document.querySelector(".welcome h2").textContent = "Bem-vindo, " + nome + "!";
+    }
+  });
+
+
+
+
+  </script>
+
+
+
+</body>
+</html>
+

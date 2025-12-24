@@ -1,0 +1,519 @@
+
+
+<!DOCTYPE html> 
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Ficha de Campo da Ordem de Serviço</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+   
+   <style>
+       
+        :root{
+      --azul-escuro:#003562;
+      --azul-claro:#b0cbe9;
+      --cinza-card:#e0e0e0;
+      --borda:#888;
+      --borda-input:#ccc;
+      --shadow-strong:0 4px 10px rgba(0,0,0,0.2);
+      --shadow-soft:0 2px 5px rgba(0,0,0,0.2);
+      --radius:12px;
+      --bg:#f7f9fb;
+      --header-height:0px;
+      --nav-height:0px;
+      --success:#28a745;
+      --error:#dc3545;
+      --warning:#ffc107;
+    }
+       
+       
+        *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      font-family:'Roboto',sans-serif;
+      margin:0; background:var(--bg);
+      display:grid; grid-template-rows:auto auto 1fr; min-height:100vh;
+    }
+       
+       /* Cabeçalho (fixo) */
+    header{
+      background:var(--azul-escuro); color:#fff; text-align:center; padding:20px;
+      box-shadow:0 4px 8px rgba(0,0,0,0.2); position:sticky; top:0; z-index:1000;
+    }
+    .titulo{font-size:2.4em;font-weight:bold;margin:0}
+    .subtitulo{font-size:1.4em;font-weight:bold;margin:0}
+
+
+     /* Navegação (fixa) */
+    nav{
+      background:var(--azul-claro); padding:15px 10px;
+      display:flex; justify-content:center; gap:15px;
+      box-shadow:var(--shadow-strong);
+      position:sticky; top:var(--header-height,0px); z-index:950;
+      margin-bottom:16px;
+    }
+
+    .nav-button{
+      background:var(--azul-claro); color:#000; font-weight:bold;
+      border:1px solid var(--borda); padding:10px 20px; border-radius:var(--radius);
+      box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; transition:transform .2s;
+    }
+
+   .nav-button:hover{ transform:scale(1.05) }
+
+    /* Card do formulário (título fixo + corpo rolável) */
+    .formulario{
+      background:var(--cinza-card); width:92%; max-width:1100px;
+      margin:0 auto; padding:30px; border-radius:10px; box-shadow:var(--shadow-strong);
+      display:flex; flex-direction:column; min-height:0;
+      height: calc(100vh - var(--header-height) - var(--nav-height) - 32px);
+      overflow:hidden;
+    }
+
+    .form-title{
+      color:var(--azul-escuro); font-weight:bold; font-size:1.6em;
+      margin:0 0 14px 0; flex:0 0 auto;
+      background:var(--cinza-card); padding:6px 8px; border-bottom:1px solid #d8d8d8;
+    }
+
+   .form-body{
+      flex:1 1 auto; min-height:0; overflow-y:auto;
+      padding-inline-end:14px;
+      scrollbar-gutter:stable;
+    }
+       
+       /* [Seu CSS foi mantido] */
+        body{
+            font-family:'Roboto',sans-serif;
+            margin:0; background:var(--bg);
+            display:grid; grid-template-rows:auto auto 1fr; min-height:100vh;
+                }
+
+        
+        header {
+            background-color: #003562;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .titulo { font-size: 2.4em; font-weight: bold; margin: 0; }
+        .subtitulo { font-size: 1.4em; font-weight: bold; margin: 0; }
+
+        nav {
+            background-color: #b0cbe9;
+            padding: 15px 10px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-button {
+            background-color: #b0cbe9;
+            color: black;
+            font-weight: bold;
+            border: 1px solid #888888;
+            padding: 10px 20px;
+            border-radius: 12px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .formulario {
+            background-color: #e0e0e0;
+            padding: 30px;
+            margin: 40px auto;
+            width: 90%;
+            max-width: 1100px;
+            border-radius: 10px;
+        }
+
+        .form-title {
+            color: #003562;
+            font-weight: bold;
+            font-size: 1.6em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #000000;
+        }
+
+        select {
+            background-color: #ffffff;
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+            font-weight: normal;
+        }
+
+        /* ===== NOVO: dois campos lado a lado ===== */
+        .inline-fields{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            align-items: end; /* alinha as caixas pela base */
+            margin-bottom: 10px;
+        }
+        .inline-fields label{ margin-top: 0; } /* evita espaço extra no topo */
+
+        .tabela-container {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 300px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 1000px; /* Ajustado para caber o conteúdo */
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+
+        /* ===== NOVO: cabeçalho azul escuro com texto branco ===== */
+        th {
+            background-color: #003562;
+            color: #fff;
+        }
+
+        .form-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .command-button {
+            background-color: #e0e0e0;
+            color: black;
+            font-weight: bold;
+            border: 1px solid #888888;
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+            font-size: 16px;
+            width: fit-content;
+            margin: 0 auto;
+        }
+
+        .command-button:hover { transform: scale(1.05); }
+
+        @media (max-width: 768px) {
+            .form-buttons { flex-direction: column; }
+            .command-button { width: 100%; }
+            .titulo { font-size: 1.8em; }
+            .subtitulo { font-size: 1.1em; }
+
+            /* Em telas pequenas, os dois campos empilham */
+            .inline-fields{ grid-template-columns: 1fr; }
+        }
+
+        /* === SIDEBAR (DASHBOARD LATERAL) ================================== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  background: var(--azul-escuro);
+  color: #fff;
+  padding: 20px 0;
+  transform: translateX(-240px);
+  transition: 0.3s ease;
+  z-index: 9999;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.sidebar a {
+  display: block;
+  padding: 12px 22px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.sidebar a:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Botão que abre e fecha o menu */
+.menu-toggle {
+  position: fixed;
+  top: 18px;
+  left: 16px;
+  background: var(--azul-escuro);
+  color: #fff;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 10000;
+  font-size: 18px;
+  transition: background 0.2s;
+}
+
+.menu-toggle:hover {
+  background: #022d52;
+}
+
+/* Empurra o conteúdo quando o menu abre */
+.content.shift {
+  margin-left: 240px;
+  transition: margin-left 0.3s ease;
+}
+  </style>
+</head>
+
+<script>
+  // const para abrir e fechar o menu 
+  
+  document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.querySelector(".menu-toggle");
+  const sidebar   = document.getElementById("sidebar");
+  const content   = document.getElementById("content");
+
+  toggleBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("open");
+    content.classList.toggle("shift");
+  });
+});
+
+</script>
+
+
+    </style>
+
+
+
+</head> 
+
+
+ 
+<body> 
+
+
+      <button class="menu-toggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <h2>      >--------          SIGVA - Acesso Rápido</h2>
+
+
+  <a href="welcome_sigva.html">Página Inicial</a>
+
+  <a href="pesquisa_os_v2.html">Pesquisar OS</a>
+
+  <a href="dengue.html">Dengue</a>
+  
+  
+  <a href="Escorpiao.html">Escorpião</a>
+  <a href="himenoptero.html">Himenopteros - Abelhas</a>
+  <a href="identificacao_sorologia.html">Identificação e Sorologia</a>
+  <a href="materialapoio.html">Material de Apoio</a>
+  <a href="monitoramento.html">Monitoramento</a>
+  <a href="acessoOS.html">Ordem de Serviço</a>
+  <a href="zoosanitaria.html">Zoosanitária</a>
+</div>
+
+<div class="content" id="content">
+
+    
+    <header>
+        <p class="titulo">Sistema de Gestão de Ordens de Serviço</p>
+        <p class="subtitulo">Unidade de Vigilância em Saúde - M’ Boi Mirim</p>
+    </header>
+
+    <nav>
+        <button class="nav-button" onclick="location.href='welcome_sigva.html'">Home</button>
+        <button class="nav-button" onclick="window.location.href='gestao_os_supabase.html'">Gestão OS</button>
+        <button class="nav-button" onclick="window.location.href='Cadastramento_OrdemServico.html'">Registro OS</button>
+        <button class="nav-button" onclick="window.location.href='Cadastramento_OrdemServico.html'">Página Anterior</button>
+      
+    
+    </nav>
+
+    <div class="formulario">
+        <div class="form-title">Ficha de Campo de Ordem de Serviços</div>
+
+        <div class="inline-fields">
+            <div class="field">
+                <label for="tecnico">Selecionar Técnico:</label>
+                <select id="tecnico" onchange="CarregarFichas()">
+                    <option value="">Selecione</option>
+                    <option>Ana Vieira da Costa</option>
+                    <option>Isabela Pereira Ricci Rocha</option>
+                    <option>Juliana Blanco Bovino</option>
+                    <option>Leandro Cesar Pompeu</option>
+                    <option>Rosely Therezinha de Conti Cannavó</option>
+                    <option>Samuel Paulo Gioia Guizze</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="integrante">Integrante da Equipe:</label>
+                <select id="integrante" onchange="CarregarFichas()">
+                    <option value="">Selecione</option>
+                    <option>Ana Paula</option>
+                    <option>Nelson</option>
+                    <option>Francisco</option>
+                    <option>Josemar</option>
+                    <option>Marcos Antonio</option>
+                    <option>Cicero</option>
+                    <option>Felipe</option>
+                    <option>Adriana Lucas</option>
+                    <option>Marcos José</option>
+                    <option>Gustavo</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="tabela-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nº da OS</th>
+                        <th>Endereço</th>
+                        <th>DA</th>
+                        <th>UBS</th>
+                        <th>Tipo de Ocorrência</th>
+                        <th>Descrição da Solicitação</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="fichas-table-body">
+                    <tr>
+                        <td colspan="7">Selecione um técnico ou agente para visualizar as OSs atribuídas.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="form-buttons">
+            <button class="command-button" onclick="alert('Funcionalidade de Mapa em desenvolvimento')">Visualizar Mapas</button>
+        </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    // Configurações Globais
+    const SB_URL = 'https://vepnalrpyaxhpklicqrb.supabase.co'; 
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlcG5hbHJweWF4aHBrbGljcXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5MDgxNzIsImV4cCI6MjA3NzQ4NDE3Mn0.-9_J-RE4IWdaGISGZgAXe6S2MLStG9lVm50suQKr7jY';
+
+    // Inicializa o cliente uma única vez
+    const supabaseClient = window.supabase.createClient(SB_URL, SB_KEY);
+
+    const MAPPING_OCORRENCIA = {
+        'Escorpião': 'Escorpiao.html',
+        'Aedes aegypti': 'Ficha_Aedes.html',
+        'Roedores': 'Roedores.html',
+        'Febre maculosa': 'febremaculosa3.html',
+        'Himenoptero': 'abelha.html',
+        'Pombos': 'pombo.html',
+        'default': 'Ficha_Geral.html'
+    };
+
+    // A função PRECISA estar no escopo global para o onchange encontrar
+    async function CarregarFichas() {
+        console.log("Iniciando busca de fichas..."); // Para debug
+        const tbody = document.getElementById('fichas-table-body');
+        const tecnico = document.getElementById('tecnico').value;
+        const agente = document.getElementById('integrante').value;
+
+        if (!tecnico && !agente) {
+            tbody.innerHTML = `<tr><td colspan="7">Selecione um Técnico ou Integrante.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = `<tr><td colspan="7">Carregando dados...</td></tr>`;
+
+        try {
+            let query = supabaseClient.from('Principal').select('*');
+            let filtros = [];
+
+            if (tecnico) filtros.push(`tecnico_responsavel.eq."${tecnico}"`);
+            if (agente) {
+                filtros.push(`agente_1.eq."${agente}"`);
+                filtros.push(`agente_2.eq."${agente}"`);
+                filtros.push(`agente_3.eq."${agente}"`);
+            }
+
+            if (filtros.length > 0) {
+                query = query.or(filtros.join(','));
+            }
+
+            const { data, error } = await query.neq('statusos', 'Arquivada').order('id', { ascending: false });
+
+            if (error) throw error;
+
+            tbody.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7">Nenhuma OS encontrada para os critérios.</td></tr>`;
+                return;
+            }
+
+            data.forEach(os => {
+                const row = tbody.insertRow();
+                const arquivo = MAPPING_OCORRENCIA[os.tipoocorrencia] || MAPPING_OCORRENCIA['default'];
+                
+                row.innerHTML = `
+                    <td>${os.nextosnumber || ''}</td>
+                    <td>${os.logradouro || ''}, ${os.numero || ''}</td>
+                    <td>${os.da || ''}</td>
+                    <td>${os.ubs || ''}</td>
+                    <td>${os.tipoocorrencia || ''}</td>
+                    <td>${os.descricao || ''}</td>
+                    <td><button class="command-button" onclick="window.location.href='${arquivo}?osid=${os.id}'">Abrir OS</button></td>
+                `;
+            });
+
+        } catch (err) {
+            console.error("Erro na busca:", err);
+            tbody.innerHTML = `<tr><td colspan="7" style="color:red">Erro ao carregar: ${err.message}</td></tr>`;
+        }
+    }
+
+    // Sidebar Logic
+    document.addEventListener("DOMContentLoaded", () => {
+        const toggleBtn = document.querySelector(".menu-toggle");
+        if (toggleBtn) {
+            toggleBtn.addEventListener("click", () => {
+                document.getElementById("sidebar").classList.toggle("open");
+                document.getElementById("content").classList.toggle("shift");
+            });
+        }
+    });
+</script>
+
+ 
+
+
+</body>

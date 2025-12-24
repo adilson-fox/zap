@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Arboviroses — Registro de Bloqueios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --azul-escuro:#003562;
+      --azul-claro:#b0cbe9;
+      --cinza-card:#e0e0e0;
+      --borda:#888;
+      --borda-input:#ccc;
+      --shadow-strong:0 4px 10px rgba(0,0,0,0.2);
+      --shadow-soft:0 2px 5px rgba(0,0,0,0.2);
+      --radius:12px;
+      --bg:#f7f9fb;
+      --header-height: 0px; /* preenchidos via JS */
+      --nav-height: 0px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      font-family:'Roboto',sans-serif;
+      margin:0; background:var(--bg);
+      display:grid; grid-template-rows:auto auto 1fr; min-height:100vh;
+    }
+
+    /* Cabeçalho fixo */
+    header{
+      background:var(--azul-escuro); color:#fff; text-align:center; padding:20px;
+      box-shadow:0 4px 8px rgba(0,0,0,0.2); position:sticky; top:0; z-index:1000;
+    }
+    .titulo{font-size:2.2em;font-weight:800;margin:0}
+    .subtitulo{font-size:1.1em;font-weight:700;margin:0}
+
+    /* Navegação (fixa logo abaixo do header) */
+    nav{
+      background:var(--azul-claro); padding:15px 10px;
+      display:flex; justify-content:center; gap:15px; flex-wrap:wrap;
+      box-shadow:var(--shadow-strong);
+      position:sticky;
+      /* COSTURA header + nav, eliminando a “faixa” */
+      top: calc(var(--header-height) - 1px);
+      z-index:950;
+      margin-bottom:16px;
+    }
+    .nav-button{
+      background:var(--azul-claro); color:#000; font-weight:700;
+      border:1px solid var(--borda); padding:10px 20px; border-radius:var(--radius);
+      box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; transition:transform .2s
+    }
+    .nav-button:hover{transform:scale(1.05)}
+
+    /* Card do formulário (título fixo + corpo rolável) */
+    .formulario{
+      background:var(--cinza-card); width:92%; max-width:1100px;
+      margin:0 auto; padding:30px; border-radius:10px; box-shadow:var(--shadow-strong);
+      display:flex; flex-direction:column; min-height:0;
+      height: calc(100vh - var(--header-height) - var(--nav-height) - 32px);
+      overflow:hidden; /* scroll fica na .form-body */
+    }
+    .form-title{
+      color:var(--azul-escuro); font-weight:800; font-size:1.3rem;
+      margin:0 0 14px 0; flex:0 0 auto;
+      background:var(--cinza-card); padding:6px 8px; border-bottom:1px solid #d8d8d8;
+    }
+    .form-body{flex:1 1 auto; min-height:0; overflow-y:auto; padding-top:4px;}
+
+    /* Seções */
+    .section-title{
+      color:var(--azul-escuro); font-weight:800; font-size:1.05rem; margin:12px 0 8px;
+    }
+
+    /* Campos */
+    label{display:block; font-weight:700; color:#000; margin-bottom:6px}
+    input[type="text"], input[type="number"], input[type="date"], input[type="tel"],
+    input[type="email"], select, textarea{
+      width:100%; background:#fff; padding:10px; border:1px solid var(--borda-input);
+      border-radius:6px; font-size:1rem; box-shadow:var(--shadow-soft)
+    }
+    textarea{min-height:86px; resize:vertical}
+    .radio-group{display:flex; gap:24px; align-items:center; margin-top:6px}
+    .muted{color:#444; font-weight:500}
+
+    /* GRID 12 colunas */
+    .grid12{display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:18px}
+    .c1{grid-column:span 1}.c2{grid-column:span 2}.c3{grid-column:span 3}
+    .c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}
+    .c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}
+    .c10{grid-column:span 10}.c11{grid-column:span 11}.c12{grid-column:span 12}
+
+    /* Lista rótulo/valor (se um dia usar modo descritivo) */
+    .kv{
+      display:grid;
+      grid-template-columns:max-content 1fr max-content 1fr;
+      gap:8px 18px; padding:12px; background:var(--cinza-card); border-radius:8px;
+    }
+    .kv dt{margin:0; font-weight:700; color:#000}
+    .kv dd{margin:0; color:#000}
+    .kv .full{grid-column:1/-1}
+
+    /* Botões */
+    .form-buttons{display:flex; flex-wrap:wrap; gap:12px; justify-content:flex-end; margin-top:24px}
+    .command-button{
+      background:var(--cinza-card); color:#000; font-weight:700; border:1px solid var(--borda);
+      padding:12px 20px; border-radius:var(--radius); box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; min-width:160px; transition:transform .15s
+    }
+    .command-button:hover{transform:scale(1.03)}
+
+    /* Responsividade */
+    @media (max-width: 980px){
+      .grid12{grid-template-columns:repeat(6, minmax(0,1fr))}
+      .c8{grid-column:span 6} .c9{grid-column:span 6} .c6{grid-column:span 6}
+      .c4{grid-column:span 3} .c3{grid-column:span 3} .c2{grid-column:span 3}
+    }
+    @media (max-width: 620px){
+      .grid12{grid-template-columns:1fr}
+      .c1,.c2,.c3,.c4,.c5,.c6,.c7,.c8,.c9,.c10,.c11,.c12{grid-column:1/-1}
+      .titulo{font-size:2em} .subtitulo{font-size:1.1em}
+    }
+/* + espaço entre conteúdo e a barra de rolagem */
+.form-body{
+  /* top | right | bottom | left */
+  padding: 8px 16px 14px 8px;      /* aumenta a “folga” do lado da barra */
+  scrollbar-gutter: stable both-edges; /* reserva um “canal” p/ a barra (onde suportado) */
+}
+
+/* + espaço vertical entre os campos (linhas do grid) */
+.grid12{
+  row-gap: 22px;  /* antes era 18px; ajuste se quiser mais/menos */
+}
+
+/* rótulo um pouquinho mais afastado do input */
+label{
+  margin-bottom: 8px; /* antes 6px */
+}
+
+/* (opcional) mais respiro entre as seções/títulos */
+.section-title{
+  margin: 16px 0 10px; /* um pouco mais de espaço acima e abaixo */
+}
+
+  </style>
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <header>
+    <p class="titulo">ARBOVIROSES</p>
+    <p class="subtitulo">Unidade de Vigilância em Saúde — M’ Boi Mirim</p>
+  </header>
+
+  <!-- Navegação -->
+  <nav>
+    <button class="nav-button" onclick="loadPage('gestao')">Gestão</button>
+    <button class="nav-button" onclick="loadPage('fichaBL')">Ficha de campo</button>
+    <button class="nav-button" onclick="loadPage('login')">Login</button>
+  </nav>
+
+  <!-- Formulário -->
+  <main class="formulario">
+    <div class="form-title">Registro de Bloqueios</div>
+
+    <div class="form-body">
+      <form id="form-bl" onsubmit="event.preventDefault(); salvarBL();">
+        <!-- ===== REGISTRO ===== -->
+       
+        <section class="grid12">
+          <!-- 1) Nº Bloqueio, Nº SINAN, Doença (OK) -->
+          <div class="c4">
+            <label for="numeroBL">Nº do Bloqueio</label>
+            <input id="numeroBL" name="numeroBL" type="text" inputmode="numeric" placeholder="0001">
+          </div>
+          <div class="c4">
+            <label for="numeroSINAN">Nº SINAN</label>
+            <input id="numeroSINAN" name="numeroSINAN" type="text" placeholder="Ex.: 2025-000000">
+          </div>
+          <div class="c4">
+            <label for="doenca">Doença</label>
+            <select id="doenca" name="doenca">
+              <option value="" selected>Selecione</option>
+              <option>Dengue</option>
+              <option>Zika</option>
+              <option>Chikungunya</option>
+              <option>Febre Amarela</option>
+            </select>
+          </div>
+
+          <!-- 2) Datas (OK) -->
+          <div class="c4">
+            <label for="dataRecebUvis">Data de Recebimento UVIS</label>
+            <input id="dataRecebUvis" name="dataRecebUvis" type="date">
+          </div>
+          <div class="c4">
+            <label for="dataRecebAmbiental">Data de Recebimento Ambiental</label>
+            <input id="dataRecebAmbiental" name="dataRecebAmbiental" type="date">
+          </div>
+          <div class="c4">
+            <label for="dataNotificacao">Data da Notificação</label>
+            <input id="dataNotificacao" name="dataNotificacao" type="date">
+          </div>
+
+          <!-- 3) Unidades + DA (mesma linha) -->
+<div class="c4">
+  <label for="unidadeNotificante">Unidade Notificante (UBS)</label>
+  <select id="unidadeNotificante" name="unidadeNotificante">
+    <option value="">Selecione</option>
+    <!-- opções serão inseridas via JS -->
+  </select>
+</div>
+
+<div class="c4">
+  <label for="unidadeOrigem">Unidade de Origem (UBS)</label>
+  <select id="unidadeOrigem" name="unidadeOrigem">
+    <option value="">Selecione</option>
+    <!-- opções serão inseridas via JS -->
+  </select>
+</div>
+
+<div class="c4">
+  <label>DA</label>
+  <div class="radio-group">
+    <label class="muted"><input type="radio" name="da" value="42"> 42</label>
+    <label class="muted"><input type="radio" name="da" value="45"> 45</label>
+  </div>
+</div>
+
+
+          <!-- 4) Paciente, Idade, Nome da mãe (sempre visível) -->
+          <div class="c4">
+            <label for="paciente">Paciente</label>
+            <input id="paciente" name="paciente" type="text" placeholder="Nome completo">
+          </div>
+          <div class="c4">
+            <label for="idade">Idade</label>
+            <input id="idade" name="idade" type="number" min="0" step="1" placeholder="Anos">
+          </div>
+          <div class="c4">
+            <label for="nomeMae">Nome da mãe</label>
+            <input id="nomeMae" name="nomeMae" type="text" placeholder="Se aplicável">
+          </div>
+
+          <!-- 5) Telefones -->
+          <div class="c6">
+            <label for="tel1">Telefone 1</label>
+            <input id="tel1" name="tel1" type="tel" placeholder="(XX) XXXXX-XXXX" pattern="\\(\\d{2}\\) \\d{4,5}-\\d{4}">
+          </div>
+          <div class="c6">
+            <label for="tel2">Telefone 2</label>
+            <input id="tel2" name="tel2" type="tel" placeholder="(XX) XXXXX-XXXX" pattern="\\(\\d{2}\\) \\d{4,5}-\\d{4}">
+          </div>
+
+          <!-- 6) Endereço: Tipo (3) + Endereço (7) + Nº (2) | (Bairro removido) -->
+          <div class="c3">
+            <label for="tipoLogradouro">Tipo</label>
+            <select id="tipoLogradouro" name="tipoLogradouro">
+              <option value="" selected>Selecione</option>
+              <option>Rua</option><option>Avenida</option><option>Travessa</option>
+              <option>Praça</option><option>Estrada</option>
+            </select>
+          </div>
+          <div class="c7">
+            <label for="logradouro">Endereço</label>
+            <input id="logradouro" name="logradouro" type="text" placeholder="Ex.: Bento de Souza">
+          </div>
+          <div class="c2">
+            <label for="numero">Nº</label>
+            <input id="numero" name="numero" type="text" inputmode="numeric" placeholder="000">
+          </div>
+        </section>
+
+        <!-- ===== EXAMES (mantido) ===== -->
+        <h3 class="section-title">Exames</h3>
+        <section class="grid12">
+          <div class="c3">
+            <label for="data1Sintoma">Data 1º Sintoma</label>
+            <input id="data1Sintoma" name="data1Sintoma" type="date">
+          </div>
+
+          <div class="c3">
+            <label for="trIgm">TR IgM</label>
+            <select id="trIgm" name="trIgm">
+              <option value="" selected>Selecione</option>
+              <option>Reagente</option>
+              <option>Não reagente</option>
+              <option>Inconclusivo</option>
+              <option>Não realizado</option>
+            </select>
+          </div>
+          <div class="c3">
+            <label for="dataTR">Data TR</label>
+            <input id="dataTR" name="dataTR" type="date">
+          </div>
+
+          <div class="c3">
+            <label for="sorologiaIgm">Sorologia IgM</label>
+            <select id="sorologiaIgm" name="sorologiaIgm">
+              <option value="" selected>Selecione</option>
+              <option>Reagente</option>
+              <option>Não reagente</option>
+              <option>Inconclusivo</option>
+              <option>Não realizado</option>
+            </select>
+          </div>
+          <div class="c3">
+            <label for="dataSorologiaIgm">Data Sorologia IgM</label>
+            <input id="dataSorologiaIgm" name="dataSorologiaIgm" type="date">
+          </div>
+
+          <div class="c3">
+            <label for="sorologiaNs1">Sorologia NS1</label>
+            <select id="sorologiaNs1" name="sorologiaNs1">
+              <option value="" selected>Selecione</option>
+              <option>Reagente</option>
+              <option>Não reagente</option>
+              <option>Inconclusivo</option>
+              <option>Não realizado</option>
+            </select>
+          </div>
+          <div class="c3">
+            <label for="dataSorologiaNs1">Data Sorologia NS1</label>
+            <input id="dataSorologiaNs1" name="dataSorologiaNs1" type="date">
+          </div>
+
+          <div class="c3">
+            <label for="lpi">LPI</label>
+            <input id="lpi" name="lpi" type="text" placeholder="Local Provável de Infecção">
+          </div>
+        </section>
+
+        <!-- Botões -->
+        <div class="form-buttons">
+          <button type="submit" class="command-button">Salvar</button>
+          <button type="button" class="command-button" onclick="document.getElementById('form-bl').reset();">Limpar</button>
+        </div>
+      </form>
+    </div><!-- /.form-body -->
+  </main>
+
+  <script>
+    /* mede header e nav p/ o cálculo da altura do card */
+    (function(){
+      function setHeights(){
+        const h = document.querySelector('header');
+        const n = document.querySelector('nav');
+        const hH = h ? h.offsetHeight : 0;
+        const nH = n ? n.offsetHeight : 0;
+        document.documentElement.style.setProperty('--header-height', hH + 'px');
+        document.documentElement.style.setProperty('--nav-height', nH + 'px');
+      }
+      setHeights();
+      window.addEventListener('resize', setHeights);
+    })();
+
+    // Roteador simples para os botões da barra
+    function loadPage(key){
+      const routes = {
+        gestao:    'Gestao.html',
+        fichaBL:   'fichaBL.html',
+        login:     'index.html'
+      };
+      const url = routes[key] || (key + '.html');
+      window.location.href = url;
+    }
+
+    // Salvar (demo) — ajustado para os campos de Bloqueio
+    function salvarBL(){
+      const dados = {
+        numeroBL:            document.getElementById('numeroBL').value.trim(),
+        numeroSINAN:         document.getElementById('numeroSINAN').value.trim(),
+        doenca:              document.getElementById('doenca').value,
+        dataRecebUvis:       document.getElementById('dataRecebUvis').value,
+        dataRecebAmbiental:  document.getElementById('dataRecebAmbiental').value,
+        dataNotificacao:     document.getElementById('dataNotificacao').value,
+        unidadeNotificante:  document.getElementById('unidadeNotificante').value.trim(),
+        unidadeOrigem:       document.getElementById('unidadeOrigem').value.trim(),
+        da: (document.querySelector('input[name="da"]:checked')||{}).value || '',
+        paciente:            document.getElementById('paciente').value.trim(),
+        idade:               document.getElementById('idade').value,
+        nomeMae:             document.getElementById('nomeMae').value.trim(),
+        tel1:                document.getElementById('tel1').value.trim(),
+        tel2:                document.getElementById('tel2').value.trim(),
+        tipoLogradouro:      document.getElementById('tipoLogradouro').value,
+        logradouro:          document.getElementById('logradouro').value.trim(),
+        numero:              document.getElementById('numero').value.trim(),
+        exames:{
+          data1Sintoma:        document.getElementById('data1Sintoma').value,
+          trIgm:               document.getElementById('trIgm').value,
+          dataTR:              document.getElementById('dataTR').value,
+          sorologiaIgm:        document.getElementById('sorologiaIgm').value,
+          dataSorologiaIgm:    document.getElementById('dataSorologiaIgm').value,
+          sorologiaNs1:        document.getElementById('sorologiaNs1').value,
+          dataSorologiaNs1:    document.getElementById('dataSorologiaNs1').value,
+          lpi:                 document.getElementById('lpi').value.trim()
+        }
+      };
+      console.log('Payload Bloqueio:', dados);
+      alert('Bloqueio salvo (demo). Veja o console para o payload.');
+    }
+  </script>
+</body>
+</html>
+

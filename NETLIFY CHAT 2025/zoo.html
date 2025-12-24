@@ -1,0 +1,689 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ações de Vigilância e Controle Zoossanitária</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --azul-escuro:#003562;
+      --azul-claro:#b0cbe9;
+      --cinza-card:#e0e0e0;
+      --borda:#888;
+      --borda-input:#ccc;
+      --shadow:0 4px 10px rgba(0,0,0,.2);
+      --radius:12px;
+      --bg:#f0f4f8;
+      --header-h:0px; --nav-h:0px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Roboto, sans-serif; background:var(--bg);
+      display:grid; grid-template-rows:auto auto 1fr; min-height:100vh;
+    }
+    header{
+      background:var(--azul-escuro); color:#fff; text-align:center; padding:20px;
+      box-shadow:0 4px 8px rgba(0,0,0,.2); position:sticky; top:0; z-index:1000;
+    }
+    .titulo{font-size:2.2em; font-weight:700; margin:0}
+    .subtitulo{font-size:1.2em; font-weight:600; margin:0}
+
+    nav{
+      background:var(--azul-claro); padding:14px 10px; text-align:center; box-shadow:var(--shadow);
+      position:sticky; top:var(--header-h); z-index:950; margin-bottom:16px;
+    }
+    .nav-button{
+      display:inline-block; text-decoration:none; background:var(--azul-claro); color:#000; font-weight:700;
+      border:1px solid var(--borda); padding:10px 20px; border-radius:var(--radius);
+      box-shadow:2px 2px 5px rgba(0,0,0,.2); font-size:16px; margin:0 6px; cursor:pointer; transition:transform .2s;
+    }
+    .nav-button:hover{ transform:scale(1.05) }
+
+
+    .formulario{
+      background:var(--cinza-card); width:92%; max-width:1100px; margin:16px auto;
+      padding:24px; border-radius:10px; box-shadow:var(--shadow); overflow-y:auto;
+    }
+    .form-title{ color:var(--azul-escuro); font-weight:800; font-size:1.2rem; margin-bottom:14px; }
+    .section-title{ color:var(--azul-escuro); font-weight:800; font-size:1.05rem; margin:16px 0 8px }
+    label{display:block; font-weight:700; margin-bottom:6px}
+    input, select, textarea{
+      width:100%; background:#fff; padding:10px; border:1px solid var(--borda-input);
+      border-radius:6px; font-size:1rem; box-shadow:0 2px 5px rgba(0,0,0,.2);
+    }
+    textarea{min-height:50px; resize:vertical}
+    table{width:100%; border-collapse:collapse; margin-bottom:10px}
+    th, td{border:1px solid #ccc; padding:6px; text-align:left}
+    th{background:#d9d9d9; font-weight:800}
+
+    /* GRID */
+    .grid12{display:grid; grid-template-columns:repeat(12,1fr); gap:16px}
+    .c12{grid-column:span 12}
+    .c6{grid-column:span 6}
+    .c4{grid-column:span 4}
+    .c3{grid-column:span 3}   /* << corrigido: necessário para CPF/Telefone */
+
+    /* Registro */
+    .kv{
+      display:grid; grid-template-columns:max-content 1fr max-content 1fr;
+      gap:8px 18px; padding:12px; background:var(--cinza-card); border-radius:8px;
+    }
+    .kv dt{margin:0; font-weight:700; color:#000;}
+    .kv dd{margin:0; color:#111}
+    .kv .full{grid-column:1/-1}
+
+    .form-buttons{display:flex; gap:12px; flex-wrap:wrap; margin-top:18px}
+    .command-button{
+      background:#e0e0e0; border:1px solid var(--borda); border-radius:12px;
+      padding:12px 20px; font-weight:700; box-shadow:2px 2px 5px rgba(0,0,0,.2);
+      cursor:pointer; min-width:160px;
+    }
+
+    /* Checkboxes em grade (usado acima) */
+    .checks-grid{ display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:12px 16px; }
+    .checks-grid > label{ grid-column:span 3; display:flex; align-items:center; gap:8px; font-weight:700; white-space:nowrap; }
+    .checks-grid input[type="checkbox"]{ width:18px; height:18px; }
+
+    /* Responsivo */
+    @media (max-width: 980px){
+      .grid12{ grid-template-columns:repeat(6,1fr) }
+      .c6{grid-column:span 6}
+      .c4{grid-column:span 3}
+      .c3{grid-column:span 3}
+      .kv{ grid-template-columns:max-content 1fr; }
+      .checks-grid{ grid-template-columns:repeat(6,1fr) }
+      .checks-grid > label{ grid-column:span 3; }
+    }
+    @media (max-width: 620px){
+      .grid12{ grid-template-columns:1fr }
+      .c12,.c6,.c4,.c3{ grid-column:1/-1 }
+      .checks-grid{ grid-template-columns:1fr 1fr }
+      .checks-grid > label{ grid-column:span 1; }
+    }
+/* === Botões de comando: alinhar à direita e padronizar tipografia === */
+.form-buttons{
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;   /* → direita */
+  margin-top: 18px;
+}
+
+.command-button{
+  font-family: inherit;        /* Roboto */
+  font-weight: 700;            /* mesmo peso */
+  text-align: center;
+  min-width: 160px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--borda);
+  background: #e0e0e0;
+  box-shadow: 2px 2px 5px rgba(0,0,0,.2);
+  cursor: pointer;
+}
+
+/* Em telas muito estreitas, centraliza para não “estourar” a linha */
+@media (max-width: 520px){
+  .form-buttons{ justify-content: center; }
+}
+
+  </style>
+</head>
+
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Arboviroses — Registro de Bloqueios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --azul-escuro:#003562;
+      --azul-claro:#b0cbe9;
+      --cinza-card:#e0e0e0;
+      --borda:#888;
+      --borda-input:#ccc;
+      --shadow-strong:0 4px 10px rgba(0,0,0,0.2);
+      --shadow-soft:0 2px 5px rgba(0,0,0,0.2);
+      --radius:12px;
+      --bg:#f7f9fb;
+      --header-height: 0px; /* preenchidos via JS */
+      --nav-height: 0px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      font-family:'Roboto',sans-serif;
+      margin:0; background:var(--bg);
+      display:grid; grid-template-rows:auto auto 1fr; min-height:100vh;
+    }
+
+    /* Cabeçalho fixo */
+    header{
+      background:var(--azul-escuro); color:#fff; text-align:center; padding:20px;
+      box-shadow:0 4px 8px rgba(0,0,0,0.2); position:sticky; top:0; z-index:1000;
+    }
+    .titulo{font-size:2.2em;font-weight:800;margin:0}
+    .subtitulo{font-size:1.1em;font-weight:700;margin:0}
+
+    /* Navegação (fixa logo abaixo do header) */
+    nav{
+      background:var(--azul-claro); padding:15px 10px;
+      display:flex; justify-content:center; gap:15px; flex-wrap:wrap;
+      box-shadow:var(--shadow-strong);
+      position:sticky;
+      /* COSTURA header + nav, eliminando a “faixa” */
+      top: calc(var(--header-height) - 1px);
+      z-index:950;
+      margin-bottom:16px;
+    }
+    .nav-button{
+      background:var(--azul-claro); color:#000; font-weight:700;
+      border:1px solid var(--borda); padding:10px 20px; border-radius:var(--radius);
+      box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; transition:transform .2s
+    }
+    .nav-button:hover{transform:scale(1.05)}
+
+    /* Card do formulário (título fixo + corpo rolável) */
+    .formulario{
+      background:var(--cinza-card); width:92%; max-width:1100px;
+      margin:0 auto; padding:30px; border-radius:10px; box-shadow:var(--shadow-strong);
+      display:flex; flex-direction:column; min-height:0;
+      height: calc(100vh - var(--header-height) - var(--nav-height) - 32px);
+      overflow:hidden; /* scroll fica na .form-body */
+    }
+    .form-title{
+      color:var(--azul-escuro); font-weight:800; font-size:1.3rem;
+      margin:0 0 14px 0; flex:0 0 auto;
+      background:var(--cinza-card); padding:6px 8px; border-bottom:1px solid #d8d8d8;
+    }
+    
+    .form-body{flex:1 1 auto; min-height:0; overflow-y:auto; padding-top:4px;
+    padding-inline-end:14px;
+    scrollbar-gutter:stable;
+    
+    
+    }
+
+    /* Seções */
+    .section-title{
+      color:var(--azul-escuro); font-weight:800; font-size:1.05rem; margin:12px 0 8px;
+    }
+
+    /* Campos */
+    label{display:block; font-weight:700; color:#000; margin-bottom:6px}
+    input[type="text"], input[type="number"], input[type="date"], input[type="tel"],
+    input[type="email"], select, textarea{
+      width:100%; background:#fff; padding:10px; border:1px solid var(--borda-input);
+      border-radius:6px; font-size:1rem; box-shadow:var(--shadow-soft)
+    }
+    textarea{min-height:86px; resize:vertical}
+    .radio-group{display:flex; gap:24px; align-items:center; margin-top:6px}
+    .muted{color:#444; font-weight:500}
+
+    /* GRID 12 colunas */
+    .grid12{display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:18px}
+    .c1{grid-column:span 1}.c2{grid-column:span 2}.c3{grid-column:span 3}
+    .c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}
+    .c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}
+    .c10{grid-column:span 10}.c11{grid-column:span 11}.c12{grid-column:span 12}
+
+    /* Lista rótulo/valor (se um dia usar modo descritivo) */
+    .kv{
+      display:grid;
+      grid-template-columns:max-content 1fr max-content 1fr;
+      gap:8px 18px; padding:12px; background:var(--cinza-card); border-radius:8px;
+    }
+    
+    .kv dt{margin:0; font-weight:700; color:#000}
+    .kv dd{margin:0; color:#000}
+    .kv .full{grid-column:1/-1
+    
+    }
+
+  
+    /* Botões */
+    .form-buttons{display:flex; flex-wrap:wrap; gap:12px; justify-content:flex-end; margin-top:24px}
+    .command-button{
+      background:var(--cinza-card); color:#000; font-weight:700; border:1px solid var(--borda);
+      padding:12px 20px; border-radius:var(--radius); box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; min-width:160px; transition:transform .15s
+    }
+    .command-button:hover{transform:scale(1.03)}
+
+    /* Responsividade */
+    @media (max-width: 980px){
+      .grid12{grid-template-columns:repeat(6, minmax(0,1fr))}
+      .c8{grid-column:span 6} .c9{grid-column:span 6} .c6{grid-column:span 6}
+      .c4{grid-column:span 3} .c3{grid-column:span 3} .c2{grid-column:span 3}
+    }
+    @media (max-width: 620px){
+      .grid12{grid-template-columns:1fr}
+      .c1,.c2,.c3,.c4,.c5,.c6,.c7,.c8,.c9,.c10,.c11,.c12{grid-column:1/-1}
+      .titulo{font-size:2em} .subtitulo{font-size:1.1em}
+    }
+    /* + espaço entre conteúdo e a barra de rolagem */
+    .form-body{
+    /* top | right | bottom | left */
+    padding: 8px 16px 14px 8px;      /* aumenta a “folga” do lado da barra */
+    scrollbar-gutter: stable both-edges; /* reserva um “canal” p/ a barra (onde suportado) */
+    }
+
+    /* + espaço vertical entre os campos (linhas do grid) */
+    .grid12{
+    row-gap: 22px;  /* antes era 18px; ajuste se quiser mais/menos */
+    }
+
+    /* rótulo um pouquinho mais afastado do input */
+    label{
+    margin-bottom: 8px; /* antes 6px */
+    }
+
+    /* (opcional) mais respiro entre as seções/títulos */
+    .section-title{
+    margin: 16px 0 10px; /* um pouco mais de espaço acima e abaixo */
+    }
+
+    /* === SIDEBAR (DASHBOARD LATERAL) ================================== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  background: var(--azul-escuro);
+  color: #fff;
+  padding: 20px 0;
+  transform: translateX(-240px);
+  transition: 0.3s ease;
+  z-index: 9999;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.sidebar a {
+  display: block;
+  padding: 12px 22px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.sidebar a:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Botão que abre e fecha o menu */
+.menu-toggle {
+  position: fixed;
+  top: 18px;
+  left: 16px;
+  background: var(--azul-escuro);
+  color: #fff;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 10000;
+  font-size: 18px;
+  transition: background 0.2s;
+}
+
+.menu-toggle:hover {
+  background: #022d52;
+}
+
+/* Empurra o conteúdo quando o menu abre */
+.content.shift {
+  margin-left: 240px;
+  transition: margin-left 0.3s ease;
+}
+
+  </style>
+</head>
+
+<body> 
+
+   <!-- MENU SIDEBAR -->
+
+  <script>
+    document.querySelector('.menu-toggle').addEventListener('click', function () {
+        const sidebar = document.getElementById('sidebar');
+        const content = document.querySelector('main'); // ou .content se você usar
+
+        sidebar.classList.toggle('open');
+
+        // Empurra conteúdo se quiser
+        if (content) {
+            content.classList.toggle('shift');
+        }
+    });
+  </script>
+
+
+   
+<button class="menu-toggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <h2>      >-------          SIGVA - Acesso Rápido</h2>
+
+
+  <a href="welcome_sigva.html">Página Inicial</a>
+  <a href="pesquisa_os_v2.html">Pesquisar OS</a> >
+  <a href="Bloqueio_supabase.html">Bloqueios - Cadastro</a> 
+  <a href="Ficha_Bloqueio.html">Bloqueios - Consulta</a>  >    
+  <a href="Bloqueio_supabase.html">Arbovirores - Ficha Cadastral</a> 
+  <a href="Escorpiao.html">Escorpião</a>
+  <a href="himenoptero.html">Himenopteros - Abelhas</a>
+  <a href="identificacao_sorologia.html">Identificação e Sorologia</a>
+  <a href="materialapoio.html">Material de Apoio</a>
+  <a href="monitoramento.html">Monitoramento</a>
+  <a href="acessoOS.html">Ordem de Serviço</a>
+  <a href="zoosanitaria.html">Zoosanitária</a>
+</div>
+
+<script>
+// (Seu código supabase...)
+</script>
+
+<script>
+document.querySelector('.menu-toggle').addEventListener('click', function () {
+    const sidebar = document.getElementById('sidebar');
+    const content = document.querySelector('main');
+
+    sidebar.classList.toggle('open');
+    if (content) content.classList.toggle('shift');
+});
+</script>
+
+
+
+<body>
+  <header>
+    <p class="titulo">AÇÕES DE VIGILÂNCIA E CONTROLE ZOOSSANITÁRIA</p>
+    <p class="subtitulo">Unidade de Vigilância em Saúde - M’ Boi Mirim</p>
+  </header>
+
+  <nav>
+    <a class="nav-button" href="fichaOS.html">Ficha de Campo</a>
+    <a class="nav-button" href="login.html">Login</a>
+  </nav>
+
+  <main class="formulario">
+    <div class="form-title">Formulário de campo</div>
+
+    <!-- Registro -->
+    <h3 class="section-title">Registro</h3>
+    <section class="grid12">
+      <div class="c12">
+        <dl class="kv">
+          <dt>Nº OS:</dt><dd id="r-os">—</dd>
+          <dt>Origem da solicitação:</dt><dd id="r-origem">—</dd>
+          <dt>Protocolo:</dt><dd id="r-protocolo">—</dd>
+          <dt>Data da notificação:</dt><dd id="r-dn">—</dd>
+          <dt>Data do recebimento:</dt><dd id="r-dr">—</dd>
+          <dt>Ocorrência:</dt><dd id="r-ocorrencia">Zoossanitária</dd>
+          <dt class="full">Descrição da Solicitação:</dt><dd class="full" id="r-desc">—</dd>
+          <dt>Solicitante:</dt><dd id="r-sol">—</dd>
+          <dt>Paciente:</dt><dd id="r-paciente">—</dd>
+          <dt>Telefones:</dt><dd id="r-tels">—</dd>
+          <dt>Endereço:</dt><dd id="r-endereco">—</dd>
+          <dt>DA:</dt><dd id="r-da">—</dd>
+          <dt>UBS:</dt><dd id="r-ubs">—</dd>
+        </dl>
+      </div>
+    </section>
+
+    <!-- Visitas -->
+    <h3 class="section-title">Formulário de campo</h3>
+    <section class="grid12">
+      <div class="c4"><label>Data da 1ª visita</label><input type="date"></div>
+      <div class="c4"><label>Data da 2ª visita</label><input type="date"></div>
+      <div class="c4"><label>Data da 3ª visita</label><input type="date"></div>
+    </section>
+
+    <!-- Histórico -->
+    <h3 class="section-title">Histórico de Atendimento</h3>
+    <section class="grid12">
+      <div class="c6"><label for="tipo-imovel">Tipo de imóvel</label><select id="tipo-imovel"></select></div>
+      <div class="c6"><label for="situacao-imovel">Situação do imóvel</label><select id="situacao-imovel"></select></div>
+    </section>
+
+    <!-- Identificação do animal -->
+    <h3 class="section-title">Identificação do animal</h3>
+    <section class="grid12">
+      <div class="c12 checks-grid">
+        <label><input type="checkbox" id="ani-canino">Canino</label>
+        <label><input type="checkbox" id="ani-felino">Felino</label>
+        <label><input type="checkbox" id="ani-bovino">Bovino</label>
+        <label><input type="checkbox" id="ani-equino">Equino</label>
+        <label><input type="checkbox" id="ani-caprino">Caprino</label>
+        <label><input type="checkbox" id="ani-suino">Suíno</label>
+        <label><input type="checkbox" id="ani-aves">Aves</label>
+        <label><input type="checkbox" id="ani-outros">Outros</label>
+      </div>
+      <div class="c12" id="wrap-outros" style="display:none;">
+        <label for="ani-outros-desc">Especifique (Outros)</label>
+        <textarea id="ani-outros-desc" placeholder="Ex.: ovinos, coelhos, etc."></textarea>
+      </div>
+    </section>
+
+   <!-- ANIMAIS DOMICILIADOS (tabela única) -->
+<h3 class="section-title">Animais domiciliados</h3>
+<table id="tbl-animais-uni" class="tbl-animais">
+  <thead>
+    <tr>
+      <th style="width:160px">animais domiciliados</th>
+      <th>Nome</th>
+      <th>Raça</th>
+      <th style="width:120px">Sexo</th>
+      <th style="width:110px">Idade</th>
+      <th style="width:140px">Vacinação</th>
+      <th style="width:140px">Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- linha inicial -->
+    <tr>
+      <td>
+        <select class="inp-especie">
+          <option value="">Selecione</option>
+          <option value="cão">cão</option>
+          <option value="gato">gato</option>
+        </select>
+      </td>
+      <td><input type="text" class="inp-nome" placeholder=""></td>
+      <td><input type="text" class="inp-raca" placeholder=""></td>
+      <td>
+        <select class="inp-sexo">
+          <option value="">Selecione</option>
+          <option value="macho">macho</option>
+          <option value="fêmea">fêmea</option>
+        </select>
+      </td>
+      <td><input type="text" class="inp-idade" placeholder="Ex.: 12"></td>
+      <td>
+        <select class="inp-vac">
+          <option value="">Selecione</option>
+          <option value="sim">sim</option>
+          <option value="não">não</option>
+        </select>
+      </td>
+      <td>
+        <button type="button" class="command-button btn-add-linha">Adicionar linha</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+    <!-- Condições do abrigo -->
+    <h3 class="section-title">Condições do abrigo do animal</h3>
+    <table>
+      <tr><th>Item</th><th>Situação</th></tr>
+      <tr><td>Espaço físico</td><td><select><option>Adequado</option><option>Inadequado</option></select></td></tr>
+      <tr><td>Odor</td><td><select><option>Normal</option><option>Desagradável</option></select></td></tr>
+      <tr><td>Higiene</td><td><select><option>Adequado</option><option>Inadequado</option></select></td></tr>
+      <tr><td>Alimento</td><td><select><option>Adequado</option><option>Inadequado</option></select></td></tr>
+      <tr><td>Água</td><td><select><option>Adequado</option><option>Inadequado</option></select></td></tr>
+    </table>
+
+    <!-- Condições inadequadas persistem? -->
+    <h3 class="section-title">Condições inadequadas persistem?</h3>
+    <section class="grid12">
+      <div class="c12 checks-grid">
+        <label><input type="checkbox" id="cond2">2ª visita</label>
+        <label><input type="checkbox" id="cond3">3ª visita</label>
+      </div>
+    </section>
+
+    <!-- Relatório da equipe -->
+    <h3 class="section-title">Relatório da equipe</h3>
+    <section class="grid12">
+      <div class="c12">
+        <textarea id="relatorio-equipe" placeholder="Descreva o que foi feito, orientações, pendências..."></textarea>
+      </div>
+    </section>
+
+    <!-- Identificação do Munícipe -->
+    <h3 class="section-title">Identificação do Munícipe</h3>
+    <section class="grid12">
+      <div class="c6"><label for="nome-municipe">Nome do Munícipe</label><input id="nome-municipe" type="text"></div>
+      <div class="c3"><label for="cpf">CPF</label><input id="cpf" type="text" placeholder="XXX.XXX.XXX-XX"></div>
+      <div class="c3"><label for="telefone-municipe">Telefone</label><input id="telefone-municipe" type="tel" placeholder="(XX) XXXXX-XXXX"></div>
+      <div class="c12"><label for="equipe">Equipe</label><input id="equipe" type="text" placeholder="Nomes da equipe"></div>
+    </section>
+
+    <div class="form-buttons">
+      <button class="command-button" type="button">Salvar</button>
+      <button class="command-button" type="button">Ver mapa</button>
+      <button class="command-button" type="button" onclick="limparCampos()">Limpar Campos</button>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const chkOutros  = document.getElementById('ani-outros');
+      const wrapOutros = document.getElementById('wrap-outros');
+      if (chkOutros && wrapOutros) {
+        const toggle = () => wrapOutros.style.display = chkOutros.checked ? 'block' : 'none';
+        chkOutros.addEventListener('change', toggle);
+        toggle();
+      }
+    });
+
+    function limparCampos(){
+      document.querySelectorAll('input, textarea, select').forEach(el=>{
+        if (el.closest('.kv')) return;
+        if (el.type==='checkbox') el.checked = false;
+        else if (el.tagName==='SELECT') el.selectedIndex = 0;
+        else if (el.type!=='button') el.value = '';
+      });
+      const wrapOutros = document.getElementById('wrap-outros');
+      if (wrapOutros) wrapOutros.style.display = 'none';
+    }
+
+  // cria uma nova linha vazia
+  function criarLinhaUni(){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <select class="inp-especie">
+          <option value="">Selecione</option>
+          <option value="cão">cão</option>
+          <option value="gato">gato</option>
+        </select>
+      </td>
+      <td><input type="text" class="inp-nome"></td>
+      <td><input type="text" class="inp-raca"></td>
+      <td>
+        <select class="inp-sexo">
+          <option value="">Selecione</option>
+          <option value="macho">macho</option>
+          <option value="fêmea">fêmea</option>
+        </select>
+      </td>
+      <td><input type="text" class="inp-idade" placeholder="Ex.: 12"></td>
+      <td>
+        <select class="inp-vac">
+          <option value="">Selecione</option>
+          <option value="sim">sim</option>
+          <option value="não">não</option>
+        </select>
+      </td>
+      <td>
+        <button type="button" class="command-button btn-remover-linha">Remover</button>
+      </td>
+    `;
+    return tr;
+  }
+
+  // delegação de eventos: adicionar / remover
+  document.addEventListener('click', (ev)=>{
+    const add = ev.target.closest('.btn-add-linha');
+    if(add){
+      const tbody = document.querySelector('#tbl-animais-uni tbody');
+      tbody.appendChild(criarLinhaUni());
+      return;
+    }
+    const rem = ev.target.closest('.btn-remover-linha');
+    if(rem){
+      const tr = rem.closest('tr');
+      const tbody = tr.parentElement;
+      if(tbody.rows.length === 1){
+        // se só existe a primeira linha, apenas limpa
+        tr.querySelectorAll('input').forEach(i=>i.value='');
+        tr.querySelectorAll('select').forEach(s=>s.selectedIndex=0);
+      }else{
+        tr.remove();
+      }
+    }
+  });
+
+  // coleta os dados no formato da sua planilha
+  function getAnimaisDomiciliadosUni(){
+    const out = [];
+    document.querySelectorAll('#tbl-animais-uni tbody tr').forEach(tr=>{
+      out.push({
+        especie:   tr.querySelector('.inp-especie')?.value || '',
+        nome:      tr.querySelector('.inp-nome')?.value?.trim() || '',
+        raca:      tr.querySelector('.inp-raca')?.value?.trim() || '',
+        sexo:      tr.querySelector('.inp-sexo')?.value || '',
+        idade:     tr.querySelector('.inp-idade')?.value?.trim() || '',
+        vacinacao: tr.querySelector('.inp-vac')?.value || ''
+      });
+    });
+    return out;
+  }
+
+  // EXEMPLO: usar no botão Salvar existente
+  // document.getElementById('btn-salvar').addEventListener('click', async ()=>{
+  //   const animais = getAnimaisDomiciliadosUni();
+  //   // junte com o resto do formulário e envie:
+  //   await fetch('SEU_ENDPOINT_APPS_SCRIPT', {
+  //     method:'POST',
+  //     headers:{'Content-Type':'application/json'},
+  //     body: JSON.stringify({ animais })
+  //   });
+  // });
+
+  </script>
+</body>
+</html>

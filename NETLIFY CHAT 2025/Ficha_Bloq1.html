@@ -1,0 +1,863 @@
+
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Arboviroses — Registro de Bloqueios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --azul-escuro:#003562;
+      --azul-claro:#b0cbe9;
+      --cinza-card:#e0e0e0;
+      --borda:#888;
+      --borda-input:#ccc;
+      --shadow-strong:0 4px 10px rgba(0,0,0,0.2);
+      --shadow-soft:0 2px 5px rgba(0,0,0,0.2);
+      --radius:12px;
+      --bg:#f7f9fb;
+      --header-height: 0px; /* preenchidos via JS */
+      --nav-height: 0px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      font-family:'Roboto',sans-serif;
+      margin:0; background:var(--bg);
+      display:grid; grid-template-rows:auto auto 1fr; min-height:100vh;
+    }
+
+    /* Cabeçalho fixo */
+    header{
+      background:var(--azul-escuro); color:#fff; text-align:center; padding:20px;
+      box-shadow:0 4px 8px rgba(0,0,0,0.2); position:sticky; top:0; z-index:1000;
+    }
+    .titulo{font-size:2.2em;font-weight:800;margin:0}
+    .subtitulo{font-size:1.1em;font-weight:700;margin:0}
+
+    /* Navegação (fixa logo abaixo do header) */
+    nav{
+      background:var(--azul-claro); padding:15px 10px;
+      display:flex; justify-content:center; gap:15px; flex-wrap:wrap;
+      box-shadow:var(--shadow-strong);
+      position:sticky;
+      /* COSTURA header + nav, eliminando a “faixa” */
+      top: calc(var(--header-height) - 1px);
+      z-index:950;
+      margin-bottom:16px;
+    }
+    .nav-button{
+      background:var(--azul-claro); color:#000; font-weight:700;
+      border:1px solid var(--borda); padding:10px 20px; border-radius:var(--radius);
+      box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; transition:transform .2s
+    }
+    .nav-button:hover{transform:scale(1.05)}
+
+    /* Card do formulário (título fixo + corpo rolável) */
+    .formulario{
+      background:var(--cinza-card); width:92%; max-width:1100px;
+      margin:0 auto; padding:30px; border-radius:10px; box-shadow:var(--shadow-strong);
+      display:flex; flex-direction:column; min-height:0;
+      height: calc(100vh - var(--header-height) - var(--nav-height) - 32px);
+      overflow:hidden; /* scroll fica na .form-body */
+    }
+    .form-title{
+      color:var(--azul-escuro); font-weight:800; font-size:1.3rem;
+      margin:0 0 14px 0; flex:0 0 auto;
+      background:var(--cinza-card); padding:6px 8px; border-bottom:1px solid #d8d8d8;
+    }
+    
+    .form-body{flex:1 1 auto; min-height:0; overflow-y:auto; padding-top:4px;
+    padding-inline-end:14px;
+    scrollbar-gutter:stable;
+    
+    
+    }
+
+    /* Seções */
+    .section-title{
+      color:var(--azul-escuro); font-weight:800; font-size:1.05rem; margin:12px 0 8px;
+    }
+
+    /* Campos */
+    label{display:block; font-weight:700; color:#000; margin-bottom:6px}
+    input[type="text"], input[type="number"], input[type="date"], input[type="tel"],
+    input[type="email"], select, textarea{
+      width:100%; background:#fff; padding:10px; border:1px solid var(--borda-input);
+      border-radius:6px; font-size:1rem; box-shadow:var(--shadow-soft)
+    }
+    textarea{min-height:86px; resize:vertical}
+    .radio-group{display:flex; gap:24px; align-items:center; margin-top:6px}
+    .muted{color:#444; font-weight:500}
+
+    /* GRID 12 colunas */
+    .grid12{display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:18px}
+    .c1{grid-column:span 1}.c2{grid-column:span 2}.c3{grid-column:span 3}
+    .c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}
+    .c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}
+    .c10{grid-column:span 10}.c11{grid-column:span 11}.c12{grid-column:span 12}
+
+    /* Lista rótulo/valor (se um dia usar modo descritivo) */
+    .kv{
+      display:grid;
+      grid-template-columns:max-content 1fr max-content 1fr;
+      gap:8px 18px; padding:12px; background:var(--cinza-card); border-radius:8px;
+    }
+    
+    .kv dt{margin:0; font-weight:700; color:#000}
+    .kv dd{margin:0; color:#000}
+    .kv .full{grid-column:1/-1
+    
+    }
+
+  
+    /* Botões */
+    .form-buttons{display:flex; flex-wrap:wrap; gap:12px; justify-content:flex-end; margin-top:24px}
+    .command-button{
+      background:var(--cinza-card); color:#000; font-weight:700; border:1px solid var(--borda);
+      padding:12px 20px; border-radius:var(--radius); box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; min-width:160px; transition:transform .15s
+    }
+    .command-button:hover{transform:scale(1.03)}
+
+    /* Responsividade */
+    @media (max-width: 980px){
+      .grid12{grid-template-columns:repeat(6, minmax(0,1fr))}
+      .c8{grid-column:span 6} .c9{grid-column:span 6} .c6{grid-column:span 6}
+      .c4{grid-column:span 3} .c3{grid-column:span 3} .c2{grid-column:span 3}
+    }
+    @media (max-width: 620px){
+      .grid12{grid-template-columns:1fr}
+      .c1,.c2,.c3,.c4,.c5,.c6,.c7,.c8,.c9,.c10,.c11,.c12{grid-column:1/-1}
+      .titulo{font-size:2em} .subtitulo{font-size:1.1em}
+    }
+    /* + espaço entre conteúdo e a barra de rolagem */
+    .form-body{
+    /* top | right | bottom | left */
+    padding: 8px 16px 14px 8px;      /* aumenta a “folga” do lado da barra */
+    scrollbar-gutter: stable both-edges; /* reserva um “canal” p/ a barra (onde suportado) */
+    }
+
+    /* + espaço vertical entre os campos (linhas do grid) */
+    .grid12{
+    row-gap: 22px;  /* antes era 18px; ajuste se quiser mais/menos */
+    }
+
+    /* rótulo um pouquinho mais afastado do input */
+    label{
+    margin-bottom: 8px; /* antes 6px */
+    }
+
+    /* (opcional) mais respiro entre as seções/títulos */
+    .section-title{
+    margin: 16px 0 10px; /* um pouco mais de espaço acima e abaixo */
+    }
+
+    /* === SIDEBAR (DASHBOARD LATERAL) ================================== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  background: var(--azul-escuro);
+  color: #fff;
+  padding: 20px 0;
+  transform: translateX(-240px);
+  transition: 0.3s ease;
+  z-index: 9999;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.sidebar a {
+  display: block;
+  padding: 12px 22px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.sidebar a:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Botão que abre e fecha o menu */
+.menu-toggle {
+  position: fixed;
+  top: 18px;
+  left: 16px;
+  background: var(--azul-escuro);
+  color: #fff;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 10000;
+  font-size: 18px;
+  transition: background 0.2s;
+}
+
+.menu-toggle:hover {
+  background: #022d52;
+}
+
+/* Empurra o conteúdo quando o menu abre */
+.content.shift {
+  margin-left: 240px;
+  transition: margin-left 0.3s ease;
+}
+
+  </style>
+</head>
+
+<body> 
+
+   <!-- MENU SIDEBAR -->
+
+  <script>
+    document.querySelector('.menu-toggle').addEventListener('click', function () {
+        const sidebar = document.getElementById('sidebar');
+        const content = document.querySelector('main'); // ou .content se você usar
+
+        sidebar.classList.toggle('open');
+
+        // Empurra conteúdo se quiser
+        if (content) {
+            content.classList.toggle('shift');
+        }
+    });
+  </script>
+
+
+   
+<button class="menu-toggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <h2>      >-------          SIGVA - Acesso Rápido</h2>
+
+
+  <a href="welcome_sigva.html">Página Inicial</a>
+  <a href="pesquisa_os_v2.html">Pesquisar OS</a> >
+  <a href="Bloqueio_supabase.html">Bloqueios - Cadastro</a> 
+  <a href="Ficha_Bloqueio.html">Bloqueios - Consulta</a>  >    
+  <a href="Bloqueio_supabase.html">Arbovirores - Ficha Cadastral</a> 
+  <a href="Escorpiao.html">Escorpião</a>
+  <a href="himenoptero.html">Himenopteros - Abelhas</a>
+  <a href="identificacao_sorologia.html">Identificação e Sorologia</a>
+  <a href="materialapoio.html">Material de Apoio</a>
+  <a href="monitoramento.html">Monitoramento</a>
+  <a href="acessoOS.html">Ordem de Serviço</a>
+  <a href="zoosanitaria.html">Zoosanitária</a>
+</div>
+
+<script>
+// (Seu código supabase...)
+</script>
+
+<script>
+document.querySelector('.menu-toggle').addEventListener('click', function () {
+    const sidebar = document.getElementById('sidebar');
+    const content = document.querySelector('main');
+
+    sidebar.classList.toggle('open');
+    if (content) content.classList.toggle('shift');
+});
+</script>
+
+
+ 
+    </div>
+    
+    <div id="content"></div>
+
+  <!-- Cabeçalho -->
+  <header>
+    <p class="titulo">ARBOVIROSES</p>
+    <p class="subtitulo">Unidade de Vigilância em Saúde — M’ Boi Mirim</p>
+  </header>
+
+  <!-- Navegação -->
+  <nav>
+    
+    <button class="nav-button" onclick="window.location.href=('welcome_sigva.html')">Home</button>
+    <button class="nav-button" onclick="window.location.href=('gestao')">Gestão</button>
+    <button class="nav-button" onclick="window.location.href=('fichaBL')">Ficha de campo</button>
+    <button class="nav-button" onclick="window.location.href=('fichaBL')">Pesquisar o Registro</button>
+    <button class="nav-button" onclick="window.location.href=('login')">Logout</button>
+  </nav>
+
+
+
+<!-- Formulário -->
+ <main class="formulario">
+
+
+<!-- ⬇️ CABEÇALHO INSERIDO AQUI -->
+    <div class="form-title">Ficha de Bloqueio </div>
+
+    <div class="form-body">
+     
+      <section class="grid12">
+        <div class="c12">
+         
+          <dl class="kv">
+
+            <dt>DA:</dt>                    <dd id="r-da"></dd>
+           
+            <dt>Nº do Bloqueio:</dt>                 <dd id="r-numero_bl"></dd>
+           
+            <dt>SINAN:</dt>                 <dd id="r-numero_sinan"></dd>
+           
+            <dt>UBS:</dt>                   <dd id="r-ubs"></dd>
+            
+            
+            <dt>Endereço:</dt>              <dd id="r-endereco"></dd>
+           
+            <dt>Telefones:</dt>             <dd id="r-tels"></dd>
+            
+            <dt>Paciente:</dt>              <dd id="r-paciente">—</dd>
+           
+            <dt>Doença:</dt>             <dd id="r-doenca"></dd>
+           
+            <dt>Data do Primeiro Sintoma:</dt>   <dd id="r-data_1_sintoma"></dd>
+            
+            <dt></dt>           <dd id="r-obs"></dd>
+            
+            
+                       
+            
+            <dt>Observação:</dt> <dd id="r-observ"></dd>
+          </dl>
+        </div>
+      </section>
+    </div>
+
+
+
+  <div class="form-title"> </div> 
+  <div class="form-title">Controle de Produção por Quarteirão</div> 
+
+  
+
+  <section class="grid12">
+
+    <!-- Quarteirão -->
+    <div class="c4">
+      <label for="quarteirao">Quarteirão</label>
+      <select id="quarteirao">
+        <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+        <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+        <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+        <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+        <option value="13">13</option><option value="14">14</option><option value="15">15</option>
+        <option value="16">16</option><option value="17">17</option><option value="18">18</option>
+        <option value="19">19</option><option value="20">20</option>
+      </select>
+    </div>
+
+    <!-- Fechados -- Valores por padrao = 0 -->
+    <div class="c4">
+      <label>Fechados</label>
+      <input type="number" id="fechados" min="0" value="0" />
+    </div> 
+
+    <!-- Script para garantir que o campo não fique vazio -->
+<script>
+  document.querySelector('form').addEventListener('submit', function(event) {
+    const fechados = document.getElementById('fechados');
+    if (fechados.value === "") {
+      fechados.value = 0; // Se estiver vazio, define como 0
+    }
+  });
+</script>
+
+    <!-- Recusados -->
+    <div class="c4">
+      <label>Recusados</label>
+      <input type="number" id="recusados" min="0" value="0" />
+    </div>
+
+    <!-- Desocupados -->
+    <div class="c4">
+      <label>Desocupados</label>
+      <input type="number" id="desocupados" min="0" value="0" />
+    </div>
+
+    <!-- Trabalhados -->
+    <div class="c4">
+      <label>Trabalhados</label>
+      <input type="number" id="trabalhados" min="0"  value="0" />
+    </div>
+
+    <!-- Total -->
+    <div class="c4">
+      <label>Total Geral</label>
+      <input type="number" id="total" readonly />
+    </div>
+
+    <!-- Equipes -->
+    <div class="c4">
+      <label>Número das Equipes</label>
+      <input type="number" id="equipes" min="1" value="0" />
+    </div>
+
+    <!-- Data Início -->
+    <div class="c4">
+      <label>Data de Início</label>
+      <input id="data_inicio" name="data_inicio" type="date">
+    </div>
+
+    <!-- Data Término -->
+    <div class="c4">
+      <label>Data do Término</label>
+      <input id="data_termino" name="data_termino" type="date">
+    </div>
+
+    <!-- Observações (coluna inteira) -->
+    <div class="c12">
+      <label>Observações</label>
+      <input id="obs" name="obs" type="text">
+    </div>
+
+  </section>
+
+  <div class="form-buttons">
+    <!-- Botão de Salvar Quarteirão -->
+<button type="button" class="command-button" id="salvarQuarteiraoBtn"> Salvar Quarteirão
+</button>
+
+     
+    </button>
+  </div>
+
+ 
+
+
+</main> 
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+
+const SUPABASE_URL = 'https://vepnalrpyaxhpklicqrb.supabase.co'; 
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlcG5hbHJweWF4aHBrbGljcXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5MDgxNzIsImV4cCI6MjA3NzQ4NDE3Mn0.-9_J-RE4IWdaGISGZgAXe6S2MLStG9lVm50suQKr7jY';
+const { createClient } = window.supabase;
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// =====================================================
+//   VARIÁVEIS GLOBAIS — PRECISAM EXISTIR ANTES DE TUDO
+// =====================================================
+let registroID = null;     // ID do Bloqueio vindo da URL
+let currentOSId = null;    // ID usado para relacionar registros na ficha
+
+document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+
+  // captura o ID vindo da tela anterior
+  registroID = params.get("id");
+
+  // sincroniza o relacionamento
+  currentOSId = registroID;
+
+  console.log("ID recebido:", registroID);
+  //console.log("currentOSId definido como:", currentOSId);
+
+  if (!registroID) {
+    alert("Nenhum ID recebido na URL!");
+    return;
+  }
+
+  // Agora sim você pode chamar a função que carrega o Supabase
+  carregarCabecalho();
+ 
+  carregarInformacoesDoBloqueio();
+
+
+ });
+
+
+
+
+// ID recebido pela URL
+//const urlParams = new URLSearchParams(window.location.search);
+//const registroID = params.get("id"); 
+
+//let currentOSId = urlParams.get('os_id'); 
+
+//const TABELA_BLOQUEIO = "Detalhes_Bloqueio";
+const TABELA_BLOQUEIO = 'Detalhes_Bloqueio';
+
+
+
+const PRINCIPAL_FIELD_MAP = {
+  "r-numero_bl": "numero_bl",
+  "r-numero_sinan": "numero_sinan",
+  "r-paciente": "paciente",
+  "r-data_1_sintoma" : "data_1_sintoma",
+  "r-idade": "idade",
+  "r-mae": "nome_mae",
+  "r-da": "da",
+  "r-unidade": "unidade_notificante",
+  "r-ubs": "unidade_origem",
+  "r-logradouro": "logradouro",
+  "r-num": "numero",
+  "r-tipo": "tipo_logradouro",
+  "r-telefone": "telefone",
+  "r-telefone2": "telefone2",
+  "r-doenca": "doenca",
+  "r-data-notificacao": "data_notificacao",
+  "r-data-receb-ambiental": "data_receb_ambiental",
+  "r-data-receb-uvis": "data_receb_uvis"
+};
+
+
+
+
+// PREENCHENDO OS CAMPOS 
+function preencherCabecalho(data) {
+  for (const destino in PRINCIPAL_FIELD_MAP) {
+    const origem = PRINCIPAL_FIELD_MAP[destino];
+    const campo = document.getElementById(destino);
+    if (campo) campo.innerText = data[origem] || "";
+  }
+
+
+
+  // juntar endereço completo (opcional)
+  if (document.getElementById("r-endereco")) {
+    document.getElementById("r-endereco").innerText =
+      `${data.tipo_logradouro || ""} ${data.logradouro || ""}, Nº ${data.numero || ""}`;
+  }
+
+  // Formatar a data do primeiro sintoma para o formato brasileiro (DD/MM/YYYY)
+  if (data.data_1_sintoma) {
+    const data1Sintoma = new Date(data.data_1_sintoma); // Converte a string de data para um objeto Date
+    const data1SintomaFormatada = data1Sintoma.toLocaleDateString('pt-BR'); // Formato brasileiro: DD/MM/YYYY
+    if (document.getElementById("r-data_1_sintoma")) {
+      document.getElementById("r-data_1_sintoma").innerText = data1SintomaFormatada;
+    }
+  }
+  
+
+
+
+}
+
+//Ativar tudo ao abrir a página
+document.addEventListener("DOMContentLoaded", carregarCabecalho);
+
+
+
+// CARREGANDO CABEÇALHO 
+async function carregarCabecalho() {
+  if (!registroID) {
+    alert("Nenhum ID recebido para carregar a ficha.");
+    return;
+  }
+
+  const { data, error } = await supabase
+    
+  //.from("Detalhes_Bloqueio")
+    .from(TABELA_BLOQUEIO)
+    .select("*")
+    .eq("id", registroID)
+    .single();
+
+  if (error || !data) {
+    alert("Erro ao carregar dados: " + error.message);
+    return;
+  }
+
+  preencherCabecalho(data);
+}
+
+
+
+// CARREGAR DADOS DO BLOQUEIO (campos de formulário)
+async function carregarInformacoesDoBloqueio() {
+  if (!currentOSId) return;
+  const { data, error } = await supabase.from(TABELA_BLOQUEIO)
+    .select('*')
+    .eq('id', currentOSId)
+    .single();
+  if (!error && data) {
+    ['quarteirao','fechados','recusados','desocupados','trabalhados','total','equipes','data_inicio','data_termino','obs']
+      .forEach(field => {
+        const el = document.getElementById(field);
+        if(el) el.value = data[field] || (field==='total'?0:'');
+      });
+  }
+}
+
+// ATUALIZA TOTAL AUTOMATICAMENTE
+['fechados','recusados','desocupados','trabalhados'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    const f = Number(document.getElementById('fechados').value) || 0;
+    const r = Number(document.getElementById('recusados').value) || 0;
+    const d = Number(document.getElementById('desocupados').value) || 0;
+    const t = Number(document.getElementById('trabalhados').value) || 0;
+    document.getElementById('total').value = f + r + d + t;
+  });
+});
+
+// COLETA DADOS BLOQUEIO
+function coletarDadosBloqueio() {
+  return {
+    os_id: currentOSId || null,
+    da: document.getElementById('r-da').innerText || '',
+    numero_bl: document.getElementById('r-numero_bl').innerText || '',
+    numero_sinan: document.getElementById('r-numero_sinan').innerText || '',
+    paciente: document.getElementById('r-paciente').innerText || '',
+    data_1_sintoma: document.getElementById('r-data_1_sintoma').innerText || '',
+    ubs: document.getElementById('r-ubs').innerText || '',
+    endereco: document.getElementById('r-endereco').innerText || '',
+    obs: document.getElementById('r-obs').innerText || '',
+    atualizado_em: new Date().toISOString()
+  };
+}
+
+// SALVAR BLOQUEIO
+async function salvarBloqueio() {
+  const dados = coletarDadosBloqueio();
+
+  const { data, error } = await supabase
+    .from(TABELA_BLOQUEIO)
+    .upsert([dados], { onConflict: ['os_id'] });
+
+  if (error) return alert("Erro ao salvar bloqueio: " + error.message);
+
+  registroID = data[0].id;
+  alert("Bloqueio salvo com sucesso!");
+}
+
+// COLETA DADOS QUARTEIRÃO
+
+const TABELA_QUARTEIRAO = 'Quarteiroes_Bloqueio';
+
+// COLETA DADOS QUARTEIRÃO
+// COLETA DADOS QUARTEIRÃO
+function coletarDadosQuarteirao() {
+  // Garantir que todos os valores inteiros tenham um valor válido (não vazio)
+  const quarteirao = Number(document.getElementById('quarteirao').value) ?? 0; // Garantir número válido
+  const fechados = Number(document.getElementById('fechados').value) ?? 0; // Garantir número válido
+  const recusados = Number(document.getElementById('recusados').value) ?? 0; // Garantir número válido
+  const desocupados = Number(document.getElementById('desocupados').value) ?? 0; // Garantir número válido
+  const trabalhados = Number(document.getElementById('trabalhados').value) ?? 0; // Garantir número válido
+  const equipes = Number(document.getElementById('equipes').value) ?? 0; // Garantir número válido
+  
+  // Garantir que as datas ou observações sejam válidas
+  const data_inicio = document.getElementById('data_inicio').value ?? null;
+  const data_termino = document.getElementById('data_termino').value ?? null;
+  
+  const obs = document.getElementById('obs').value ?? '';
+
+  // Calculando o total com base nos outros campos
+  const total = fechados + recusados + desocupados + trabalhados;
+
+
+
+
+
+  return {
+    bl_id: registroID,  // A referência ao bloqueio que está sendo processado
+    quarteirao: quarteirao,  // Garantir que tenha um número válido
+    fechados: fechados,
+    recusados: recusados,
+    desocupados: desocupados,
+    trabalhados: trabalhados,
+    total: total,  // Agora, o total é calculado corretamente
+    equipes: equipes,
+    data_inicio: data_inicio,
+    data_termino: data_termino,
+    obs: obs,
+    data_registro: new Date().toISOString()  // Data atual no formato ISO
+  };
+}
+
+// Função para salvar os dados do quarteirão
+async function salvarQuarteirao() {
+
+  const quarteirao = document.getElementById('quarteirao').value; // Número do quarteirão selecionado
+
+  // Coletando os valores dos campos
+  let fechados = document.getElementById('fechados').value;
+  let recusados = document.getElementById('recusados').value;
+  let desocupados = document.getElementById('desocupados').value;
+  let trabalhados = document.getElementById('trabalhados').value;
+  let equipes = document.getElementById('equipes').value; 
+
+  // Converte os valores para números (se estiverem vazios, substitui por 0)
+  fechados = fechados === "" ? 0 : parseInt(fechados, 10);
+  recusados = recusados === "" ? 0 : parseInt(recusados, 10);
+  desocupados = desocupados === "" ? 0 : parseInt(desocupados, 10);
+  trabalhados = trabalhados === "" ? 0 : parseInt(trabalhados, 10);
+  equipes = equipes === "" ? 0 : parseInt(equipes, 10);
+
+  // As datas podem ser nulas, por isso, já são atribuídas como null se não forem fornecidas
+  const data_inicio = document.getElementById('data_inicio').value || null;
+  const data_termino = document.getElementById('data_termino').value || null;
+  
+  const obs = document.getElementById('obs').value;
+
+  // Verificar se o número do quarteirão é válido
+  if (isNaN(quarteirao) || quarteirao <= 0) {
+    alert("Número do quarteirão inválido. Por favor, insira um número válido.");
+    return;
+  }
+
+  // Dados para salvar no banco
+  const dadosQuarteirao = {
+    bl_id: registroID,  // ID do bloqueio
+    quarteirao: quarteirao,  // Número do quarteirão
+    fechados: fechados,
+    recusados: recusados,
+    desocupados: desocupados,
+    trabalhados: trabalhados,
+    equipes: equipes,
+    data_inicio: data_inicio,
+    data_termino: data_termino,
+    obs: obs,
+    data_registro: new Date().toISOString()  // Data de registro no formato ISO
+  };
+
+  // Salvar ou atualizar o quarteirão
+  const { data, error } = await supabase
+    .from("Quarteiroes_Bloqueio")
+    .upsert([dadosQuarteirao], { onConflict: ['os_id', 'quarteirao'] }); // Usa 'os_id' e 'quarteirao' como chave de conflito
+
+  if (error) {
+    alert("Erro ao salvar os dados do quarteirão: " + error.message);
+    return;
+  }
+
+  alert("Dados do quarteirão salvos com sucesso!");
+}
+
+// Função para consultar os dados do quarteirão
+async function consultarQuarteirao(numeroQuarteirao) {
+  if (!numeroQuarteirao || !currentOSId) {
+    alert("Por favor, selecione um número de quarteirão e verifique o ID do bloqueio.");
+    return;
+  }
+
+  // Consulta no banco de dados com os parâmetros quarteirão e os_id
+  const { data, error } = await supabase
+    .from("Quarteiroes_Bloqueio")
+    .select("*")
+
+    //AQUI ESTÁ O SEGREDO DA BUSCA : SE ENCONTRAR O bl_id ele acha tudo
+    .eq("bl_id", currentOSId) // Usando o bl_id correto vindo da URL
+     
+    .eq("quarteirao", numeroQuarteirao)
+    .single(); // Pega um único registro, pois cada quarteirão é único por os_id
+
+  if (error || !data) {
+    alert(`Nenhum dado foi preenchido para o quarteirão ${numeroQuarteirao}.`);
+    // Limpa os campos se não encontrar dados
+    document.getElementById('fechados').value = '';
+    document.getElementById('recusados').value = '';
+    document.getElementById('desocupados').value = '';
+    document.getElementById('trabalhados').value = '';
+    document.getElementById('total').value = '';
+    document.getElementById('equipes').value = '';
+    document.getElementById('data_inicio').value = '';
+    document.getElementById('data_termino').value = '';
+    document.getElementById('obs').value = '';
+    return;
+  }
+
+  // Se encontrou dados, preenche os campos
+  console.log(data); // Verifique a estrutura dos dados recebidos
+
+  document.getElementById('fechados').value = data.fechados || 0;
+  document.getElementById('recusados').value = data.recusados || 0;
+  document.getElementById('desocupados').value = data.desocupados || 0;
+  document.getElementById('trabalhados').value = data.trabalhados || 0;
+  document.getElementById('equipes').value = data.equipes || '';
+  document.getElementById('data_inicio').value = data.data_inicio || '';
+  document.getElementById('data_termino').value = data.data_termino || '';
+  document.getElementById('obs').value = data.obs || '';
+
+  // Atualiza o total (caso o total não tenha sido preenchido)
+  const total = (data.fechados || 0) + (data.recusados || 0) + (data.desocupados || 0) + (data.trabalhados || 0);
+  document.getElementById('total').value = total;
+
+  alert("Dados carregados com sucesso!");
+}
+
+// Adicionar evento para o select do quarteirão
+document.getElementById("quarteirao").addEventListener("change", async function() {
+  const numeroQuarteirao = this.value; // Pega o número do quarteirão selecionado
+
+  if (!numeroQuarteirao) {
+    alert("Por favor, selecione um número de quarteirão.");
+    return;
+  }
+
+  // Chama a função para consultar o quarteirão
+  await consultarQuarteirao(numeroQuarteirao);
+});
+
+// Função para atualizar dados do quarteirão
+async function atualizarQuarteirao() {
+  const numeroQuarteirao = document.getElementById('quarteirao').value;
+
+  if (!numeroQuarteirao) {
+    alert("Por favor, selecione um número de quarteirão.");
+    return;
+  }
+
+  const dadosQuarteirao = {
+    fechados: document.getElementById('fechados').value,
+    recusados: document.getElementById('recusados').value,
+    desocupados: document.getElementById('desocupados').value,
+    trabalhados: document.getElementById('trabalhados').value,
+    equipes: document.getElementById('equipes').value,
+    data_inicio: document.getElementById('data_inicio').value,
+    data_termino: document.getElementById('data_termino').value,
+    obs: document.getElementById('obs').value,
+    
+    
+    data_registro: new Date().toISOString()
+  };
+
+  const { error } = await supabase
+    .from("Quarteiroes_Bloqueio")
+    .update(dadosQuarteirao)
+    .eq('os_id', currentOSId)
+    .eq('quarteirao', numeroQuarteirao);
+
+  if (error) {
+    alert("Erro ao atualizar os dados do quarteirão: " + error.message);
+    return;
+  }
+
+  alert("Dados do quarteirão atualizados com sucesso!");
+}
+
+// Ações no botão de salvar
+document.getElementById("salvarQuarteiraoBtn").addEventListener("click", async () => {
+  await salvarQuarteirao();
+});
+
+
+</script>
+</body>
+</html>

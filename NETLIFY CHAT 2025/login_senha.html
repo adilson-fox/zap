@@ -1,0 +1,347 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Ordens de Serviços</title>
+    
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #003562;
+            color: white;
+            width: 100%;
+            padding: 1.5em 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            font-size: 2.4em;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        header h2 {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin: 0.5em 0 0;
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 2em;
+            margin-top: 4em;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5em;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.8em;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1em;
+            box-sizing: border-box;
+            padding-right: 3em;
+        }
+
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.2em;
+            color: #777;
+        }
+        
+        /* Estilos para o alerta personalizado */
+        .custom-alert {
+            display: none; /* Começa escondido */
+            background-color: #ffcccc; /* Fundo vermelho claro para erro */
+            color: #cc0000; /* Texto vermelho escuro */
+            border: 1px solid #cc0000;
+            border-radius: 8px;
+            padding: 1em;
+            margin-bottom: 1em;
+            text-align: center;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .custom-alert.show {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Estilos dos botões */
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5em;
+        }
+
+        .button {
+            padding: 0.8em 1.5em;
+            border-radius: 8px;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            text-align: center;
+            flex-grow: 1;
+            margin: 0 5px;
+        }
+        
+        .button-entrar {
+            background-color: #003562;
+            color: white;
+            border: 2px solid #002a4d;
+        }
+        
+        .button-entrar:hover {
+            background-color: #00284b;
+        }
+        
+        .button-cancelar {
+            background-color: #ff4d4d;
+            color: white;
+            border: 2px solid #e60000;
+        }
+
+        .button-cancelar:hover {
+            background-color: #e60000;
+        }
+
+        .button-voltar {
+            background-color: #f0f4f8;
+            color: #333;
+            border: 2px solid #ccc;
+        }
+        
+        .button-voltar:hover {
+            background-color: #ddd;
+        }
+
+        .login-status {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            color: white;
+            font-weight: bold;
+            z-index: 9999;
+        }
+
+        .login-success {
+            background-color: #4CAF50;
+        }
+
+        .login-error {
+            background-color: #D9534F;
+        }
+
+        .login-warning {
+            background-color: #F0AD4E;
+        }
+
+    </style>
+
+</head>
+<body>
+    
+<header>
+        <h1>Sistema de Gestão de Ordens de Serviços</h1>
+        <h2>Unidade de Vigilância em Saúde - M’ Boi Mirim</h2>
+    </header>
+
+    <div id="loginStatus" class="login-status"></div>
+
+    <div class="login-container">
+        <form id="loginForm">
+            <label for="rf">RF:</label>
+            <div class="input-group">
+                <input type="text" id="rf" required placeholder="Digite seu RF">
+            </div>
+
+            <label for="senha">Senha:</label>
+            <div class="input-group">
+                <input type="password" id="senha" required placeholder="Digite sua senha">
+                <span class="toggle-password" onclick="togglePassword()">👁️</span>
+            </div>
+
+            <div class="button-group">
+                <!-- Botão agora tipo button para não submeter o form -->
+                <button id="loginButton" type="button" class="button button-entrar">Entrar</button>
+                <button type="button" class="button button-cancelar" onclick="handleCancel()">Cancelar</button>
+               
+            </div>
+        </form>
+    </div>
+
+    <!-- bcrypt -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        const SUPABASE_URL = "https://vepnalrpyaxhpklicqrb.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlcG5hbHJweWF4aHBrbGljcXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5MDgxNzIsImV4cCI6MjA3NzQ4NDE3Mn0.-9_J-RE4IWdaGISGZgAXe6S2MLStG9lVm50suQKr7jY";
+
+        // Inicializa Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+
+        // *****************************************************************************
+        
+        function mostrarLoginStatus(msg, tipo = "success") {
+            const box = document.getElementById("loginStatus");
+
+            box.textContent = msg;
+            box.className = "login-status"; // reseta classes
+            box.classList.add("login-" + tipo);
+
+            box.style.display = "block";
+
+            // esconde depois de 2s
+            setTimeout(() => {
+                box.style.display = "none";
+            }, 2000);
+}
+
+        
+        //********************************************************************************
+
+        
+
+        // Alternar visibilidade da senha
+        function togglePassword() {
+            const senhaInput = document.getElementById("senha");
+            senhaInput.type = senhaInput.type === "password" ? "text" : "password";
+        }
+
+        // Função de cancelar (limpa campos)
+        function handleCancel() {
+            document.getElementById("rf").value = "";
+            document.getElementById("senha").value = "";
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            const loginBtn = document.getElementById("loginButton");
+
+            loginBtn.addEventListener("click", async function handleLogin() {
+                const rf = document.getElementById("rf").value.trim();
+                const senha = document.getElementById("senha").value;
+
+                if (!rf || !senha) {
+                    alert("Preencha todos os campos!");
+                    return;
+                }
+
+                try {
+                    const { data, error } = await supabase
+                        .from("usuarios_logon")
+                        .select("*")
+                        .eq("rf", rf)
+                        .single();
+
+                    if (error || !data) {
+                        alert("RF não encontrado!");
+                        return;
+                    }
+
+                    const senhaOk = await dcodeIO.bcrypt.compare(senha, data.senha_hash);
+
+
+                    if (!senhaOk) {
+                       
+                       mostrarLoginStatus("❌ Senha incorreta!", "error");
+                        // alert("Senha incorreta!");
+                        return;
+                    }
+
+                    //alert("Login realizado com sucesso!");
+                     
+                     mostrarLoginStatus("✅ Login realizado com sucesso!", "success");
+                    
+                     localStorage.setItem("usuarioNome", data.nome);
+                     localStorage.setItem("usuarioLogado", "true");
+                    //window.location.href = "SIGVA.html";
+                  // window.location.href = "welcome_sigva.html" 
+
+                  // Depois de 5 segundos, redireciona para a página espelho
+                    setTimeout(() => {
+                    window.location.href = "welcome_sigva.html";
+                    }, 4000); // 5000 ms = 5 segundos
+
+
+
+                } catch (err) {
+                    console.error(err);
+                    alert("Erro ao tentar logar!");
+                }
+            });
+        });
+    </script>
+
+<script>
+async function gerarHash() {
+    const senha = "123456"; // sua nova senha
+    const salt = await dcodeIO.bcrypt.genSalt(10);
+    const hash = await dcodeIO.bcrypt.hash(senha, salt);
+    console.log("Senha:", senha);
+    console.log("Hash:", hash);
+    return hash;
+}
+gerarHash("123456");
+</script> 
+
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    // Mostra a mensagem personalizada
+    const nome = localStorage.getItem("usuarioNome");
+    if (nome) {
+      document.getElementById("welcomeMsg").textContent = "Bem-vindo, " + nome + "!";
+    }
+
+    // Depois de 5 segundos, redireciona para a página espelho
+    setTimeout(() => {
+      window.location.href = "welcome_sigva.html";
+    }, 3000); // 5000 ms = 5 segundos
+  });
+</script>
+
+</body>
+</html>    

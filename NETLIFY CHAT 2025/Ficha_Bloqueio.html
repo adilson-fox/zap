@@ -1,0 +1,716 @@
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Arboviroses — Registro de Bloqueios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --azul-escuro:#003562;
+      --azul-claro:#b0cbe9;
+      --cinza-card:#e0e0e0;
+      --borda:#888;
+      --borda-input:#ccc;
+      --shadow-strong:0 4px 10px rgba(0,0,0,0.2);
+      --shadow-soft:0 2px 5px rgba(0,0,0,0.2);
+      --radius:12px;
+      --bg:#f7f9fb;
+      --header-height: 0px; /* preenchidos via JS */
+      --nav-height: 0px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      font-family:'Roboto',sans-serif;
+      margin:0; background:var(--bg);
+      display:grid; grid-template-rows:auto auto 1fr; min-height:100vh;
+    }
+
+    /* Cabeçalho fixo */
+    header{
+      background:var(--azul-escuro); color:#fff; text-align:center; padding:20px;
+      box-shadow:0 4px 8px rgba(0,0,0,0.2); position:sticky; top:0; z-index:1000;
+    }
+    .titulo{font-size:2.2em;font-weight:800;margin:0}
+    .subtitulo{font-size:1.1em;font-weight:700;margin:0}
+
+    /* Navegação (fixa logo abaixo do header) */
+    nav{
+      background:var(--azul-claro); padding:15px 10px;
+      display:flex; justify-content:center; gap:15px; flex-wrap:wrap;
+      box-shadow:var(--shadow-strong);
+      position:sticky;
+      /* COSTURA header + nav, eliminando a “faixa” */
+      top: calc(var(--header-height) - 1px);
+      z-index:950;
+      margin-bottom:16px;
+    }
+    .nav-button{
+      background:var(--azul-claro); color:#000; font-weight:700;
+      border:1px solid var(--borda); padding:10px 20px; border-radius:var(--radius);
+      box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; transition:transform .2s
+    }
+    .nav-button:hover{transform:scale(1.05)}
+
+    /* Card do formulário (título fixo + corpo rolável) */
+    .formulario{
+      background:var(--cinza-card); width:92%; max-width:1100px;
+      margin:0 auto; padding:30px; border-radius:10px; box-shadow:var(--shadow-strong);
+      display:flex; flex-direction:column; min-height:0;
+      height: calc(100vh - var(--header-height) - var(--nav-height) - 32px);
+      overflow:hidden; /* scroll fica na .form-body */
+    }
+    .form-title{
+      color:var(--azul-escuro); font-weight:800; font-size:1.3rem;
+      margin:0 0 14px 0; flex:0 0 auto;
+      background:var(--cinza-card); padding:6px 8px; border-bottom:1px solid #d8d8d8;
+    }
+    
+    .form-body{flex:1 1 auto; min-height:0; overflow-y:auto; padding-top:4px;
+    padding-inline-end:14px;
+    scrollbar-gutter:stable;
+    
+    
+    }
+
+    /* Seções */
+    .section-title{
+      color:var(--azul-escuro); font-weight:800; font-size:1.05rem; margin:12px 0 8px;
+    }
+
+    /* Campos */
+    label{display:block; font-weight:700; color:#000; margin-bottom:6px}
+    input[type="text"], input[type="number"], input[type="date"], input[type="tel"],
+    input[type="email"], select, textarea{
+      width:100%; background:#fff; padding:10px; border:1px solid var(--borda-input);
+      border-radius:6px; font-size:1rem; box-shadow:var(--shadow-soft)
+    }
+    textarea{min-height:86px; resize:vertical}
+    .radio-group{display:flex; gap:24px; align-items:center; margin-top:6px}
+    .muted{color:#444; font-weight:500}
+
+    /* GRID 12 colunas */
+    .grid12{display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:18px}
+    .c1{grid-column:span 1}.c2{grid-column:span 2}.c3{grid-column:span 3}
+    .c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}
+    .c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}
+    .c10{grid-column:span 10}.c11{grid-column:span 11}.c12{grid-column:span 12}
+
+    /* Lista rótulo/valor (se um dia usar modo descritivo) */
+    .kv{
+      display:grid;
+      grid-template-columns:max-content 1fr max-content 1fr;
+      gap:8px 18px; padding:12px; background:var(--cinza-card); border-radius:8px;
+    }
+    
+    .kv dt{margin:0; font-weight:700; color:#000}
+    .kv dd{margin:0; color:#000}
+    .kv .full{grid-column:1/-1
+    
+    }
+
+  
+    /* Botões */
+    .form-buttons{display:flex; flex-wrap:wrap; gap:12px; justify-content:flex-end; margin-top:24px}
+    .command-button{
+      background:var(--cinza-card); color:#000; font-weight:700; border:1px solid var(--borda);
+      padding:12px 20px; border-radius:var(--radius); box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; min-width:160px; transition:transform .15s
+    }
+    .command-button:hover{transform:scale(1.03)}
+
+    /* Responsividade */
+    @media (max-width: 980px){
+      .grid12{grid-template-columns:repeat(6, minmax(0,1fr))}
+      .c8{grid-column:span 6} .c9{grid-column:span 6} .c6{grid-column:span 6}
+      .c4{grid-column:span 3} .c3{grid-column:span 3} .c2{grid-column:span 3}
+    }
+    @media (max-width: 620px){
+      .grid12{grid-template-columns:1fr}
+      .c1,.c2,.c3,.c4,.c5,.c6,.c7,.c8,.c9,.c10,.c11,.c12{grid-column:1/-1}
+      .titulo{font-size:2em} .subtitulo{font-size:1.1em}
+    }
+    /* + espaço entre conteúdo e a barra de rolagem */
+    .form-body{
+    /* top | right | bottom | left */
+    padding: 8px 16px 14px 8px;      /* aumenta a “folga” do lado da barra */
+    scrollbar-gutter: stable both-edges; /* reserva um “canal” p/ a barra (onde suportado) */
+    }
+
+    /* + espaço vertical entre os campos (linhas do grid) */
+    .grid12{
+    row-gap: 22px;  /* antes era 18px; ajuste se quiser mais/menos */
+    }
+
+    /* rótulo um pouquinho mais afastado do input */
+    label{
+    margin-bottom: 8px; /* antes 6px */
+    }
+
+    /* (opcional) mais respiro entre as seções/títulos */
+    .section-title{
+    margin: 16px 0 10px; /* um pouco mais de espaço acima e abaixo */
+    }
+
+    /* === SIDEBAR (DASHBOARD LATERAL) ================================== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  background: var(--azul-escuro);
+  color: #fff;
+  padding: 20px 0;
+  transform: translateX(-240px);
+  transition: 0.3s ease;
+  z-index: 9999;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.sidebar a {
+  display: block;
+  padding: 12px 22px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.sidebar a:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Botão que abre e fecha o menu */
+.menu-toggle {
+  position: fixed;
+  top: 18px;
+  left: 16px;
+  background: var(--azul-escuro);
+  color: #fff;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 10000;
+  font-size: 18px;
+  transition: background 0.2s;
+}
+
+.menu-toggle:hover {
+  background: #022d52;
+}
+
+/* Empurra o conteúdo quando o menu abre */
+.content.shift {
+  margin-left: 240px;
+  transition: margin-left 0.3s ease;
+}
+
+  </style>
+</head>
+
+
+<script>
+  // const para abrir e fechar o menu 
+  document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.querySelector(".menu-toggle");
+  const sidebar   = document.getElementById("sidebar");
+  const content   = document.getElementById("content");
+
+  toggleBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("open");
+    content.classList.toggle("shift");
+  });
+});
+
+</script>
+
+<body>
+    <button class="menu-toggle">☰</button>
+
+    <div class="sidebar" id="sidebar">
+    <h2>MENU</h2>
+    <a href="welcome_sigva.html">Home</a>
+    <a href="gestao">Gestão</a>
+    <a href="fichaBL">Ficha de campo</a>
+    <a href="fichaBL">Pesquisar</a>
+    <a href="login">Logout</a>
+    </div>
+
+<div id="content">
+
+  <!-- Cabeçalho -->
+  <header>
+    <p class="titulo">ARBOVIROSES</p>
+    <p class="subtitulo">Unidade de Vigilância em Saúde — M’ Boi Mirim</p>
+  </header>
+
+  <!-- Navegação -->
+  <nav>
+    
+    <button class="nav-button" onclick="window.location.href=('welcome_sigva.html')">Home</button>
+    <button class="nav-button" onclick="window.location.href=('gestao')">Gestão</button>
+    <button class="nav-button" onclick="window.location.href=('fichaBL')">Ficha de campo</button>
+    <button class="nav-button" onclick="window.location.href=('fichaBL')">Pesquisar o Registro</button>
+    <button class="nav-button" onclick="window.location.href=('login')">Logout</button>
+  </nav>
+
+  <!-- Formulário -->
+  <main class="formulario">
+
+
+          <div class="c4">
+
+
+             <div class="form-title">Registro de Bloqueios - Pesquisa </div>
+
+            <label for="numeroBL">Nº do Bloqueio <span class="muted">( digite aqui p/ pesquisar)</span></label>
+
+                <input type="text" id="numeroBLBusca" placeholder="Digite o nº do Bloqueio para realizar a Pesquisar">
+
+                <button type="button" class="command-button" id="btnBuscar">🔍 Pesquisar</button>
+
+           
+          </div>
+
+    <div class="form-body">
+      <!-- Mensagens de status -->
+      <div id="statusMessage" class="status-message"></div>
+     <div id="loadingSpinner" class="spinner"></div>
+    
+    
+    <div class="form-body">
+      <form id="form-bl" onsubmit="event.preventDefault(); salvarBL();">
+        <!-- ===== REGISTRO ===== -->
+       
+        <section class="grid12">
+          <!-- 1) Nº Bloqueio, Nº SINAN, Doença (OK) -->
+          <div class="c4">
+            <label for="numeroBL">Nº do Bloqueio</label>
+            <input id="numeroBL" name="numeroBL" type="text" inputmode="numeric" readonly>
+           
+            <input type="hidden" id="registroID">
+  
+        </div>
+          <div class="c4">
+            <label for="numeroSINAN">Nº SINAN</label>
+            <input id="numeroSINAN" name="numeroSINAN" type="text" placeholder="Ex.: 2025-000000">
+          </div>
+          <div class="c4">
+            <label for="doenca">Doença</label>
+            <select id="doenca" name="doenca">
+              <option value="" selected>Selecione</option>
+              <option>Dengue</option>
+              <option>Zika</option>
+              <option>Chikungunya</option>
+              <option>Febre Amarela</option>
+            </select>
+          </div>
+
+          <!-- 2) Datas (OK) -->
+          <div class="c4">
+            <label for="dataRecebUvis">Data de Recebimento UVIS</label>
+            <input id="dataRecebUvis" name="dataRecebUvis" type="date">
+          </div>
+          <div class="c4">
+            <label for="dataRecebAmbiental">Data de Recebimento Ambiental</label>
+            <input id="dataRecebAmbiental" name="dataRecebAmbiental" type="date">
+          </div>
+          <div class="c4">
+            <label for="dataNotificacao">Data da Notificação</label>
+            <input id="dataNotificacao" name="dataNotificacao" type="date">
+          </div>
+
+          <!-- 3) Unidades + DA (mesma linha) -->
+
+       <div class="c4">
+          <label for="unidadeNotificante">Unidade Notificante (UBS)</label>
+          <input 
+            id="unidadeNotificante" 
+            name="unidadeNotificante" 
+            type="text" 
+            placeholder="Digite o nome da Unidade Notificante"
+          >
+        </div>
+
+        <div class="c4">
+        <label>DA</label>
+        <div class="radio-group">
+          <label class="muted"><input type="radio" name="da" value="42"> 42</label>
+          <label class="muted"><input type="radio" name="da" value="45"> 45</label>
+        </div>
+      </div>
+
+
+<div class="c4">
+  <label for="ubs">Unidade de Origem (UBS)</label>
+  <select id="ubs" name="ubs">
+     <option value="">Selecione</option>
+
+
+
+    <!-- opções serão inseridas via JS -->
+  </select>
+
+
+</div> 
+
+          <!-- 4) Paciente, Idade, Nome da mãe (sempre visível) -->
+          <div class="c4">
+            <label for="paciente">Paciente</label>
+            <input id="paciente" name="paciente" type="text" placeholder="Nome completo">
+          </div>
+          <div class="c4">
+            <label for="idade">Idade</label>
+            <input id="idade" name="idade" type="number" min="0" step="1" placeholder="Anos">
+          </div>
+          <div class="c4">
+            <label for="nomeMae">Nome da mãe</label>
+            <input id="nomeMae" name="nomeMae" type="text" placeholder="Se aplicável">
+          </div>
+
+          <!-- 5) Telefones -->
+         <div class="c6">
+            <label for="tel1">Telefone 1</label>
+            <input id="tel1" name="tel1" type="tel" placeholder="(XX) XXXXX-XXXX">
+          </div>
+          <div class="c6">
+            <label for="tel2">Telefone 2</label>
+            <input id="tel2" name="tel2" type="tel" placeholder="(XX) XXXXX-XXXX">
+          </div>
+
+          <!-- 6) Endereço: Tipo (3) + Endereço (7) + Nº (2) | (Bairro removido) -->
+          <div class="c3">
+            <label for="tipoLogradouro">Tipo</label>
+            <select id="tipoLogradouro" name="tipoLogradouro">
+              <option value="" selected>Selecione</option>
+              <option>Rua</option><option>Avenida</option><option>Travessa</option>
+              <option>Praça</option><option>Estrada</option>
+            </select>
+          </div>
+          <div class="c7">
+            <label for="logradouro">Endereço</label>
+            <input id="logradouro" name="logradouro" type="text" placeholder="Ex.: Bento de Souza">
+          </div>
+          <div class="c2">
+            <label for="numero">Nº</label>
+            <input id="numero" name="numero" type="text" inputmode="numeric" placeholder="000">
+          </div>
+        </section>
+
+        <!-- ===== EXAMES (mantido) ===== -->
+        <h3 class="section-title">Exames</h3>
+        <section class="grid12">
+          <div class="c3">
+            <label for="data_prim_sintoma">Data 1º Sintoma</label>
+            <input id="data_prim_sintoma" name="data_prim_sintoma" type="date">
+          </div>
+
+          <div class="c3">
+            <label for="trIgm">TR IgM</label>
+            <select id="trIgm" name="trIgm">
+              <option value="" selected>Selecione</option>
+              <option>Reagente</option>
+              <option>Não reagente</option>
+              <option>Inconclusivo</option>
+              <option>Não realizado</option>
+            </select>
+          </div>
+          <div class="c3">
+            <label for="dataTR">Data TR</label>
+            <input id="dataTR" name="dataTR" type="date">
+          </div>
+
+          <div class="c3">
+            <label for="sorologiaIgm">Sorologia IgM</label>
+            <select id="sorologiaIgm" name="sorologiaIgm">
+              <option value="" selected>Selecione</option>
+              <option>Reagente</option>
+              <option>Não reagente</option>
+              <option>Inconclusivo</option>
+              <option>Não realizado</option>
+            </select>
+          </div>
+          <div class="c3">
+            <label for="dataSorologiaIgm">Data Sorologia IgM</label>
+            <input id="dataSorologiaIgm" name="dataSorologiaIgm" type="date">
+          </div>
+
+          <div class="c3">
+            <label for="sorologiaNs1">Sorologia NS1</label>
+            <select id="sorologiaNs1" name="sorologiaNs1">
+              <option value="" selected>Selecione</option>
+              <option>Reagente</option>
+              <option>Não reagente</option>
+              <option>Inconclusivo</option>
+              <option>Não realizado</option>
+            </select>
+          </div>
+          <div class="c3">
+            <label for="dataSorologiaNs1">Data Sorologia NS1</label>
+            <input id="dataSorologiaNs1" name="dataSorologiaNs1" type="date">
+          </div>
+
+          <div class="c3">
+            <label for="lpi">LPI</label>
+            <input id="lpi" name="lpi" type="text" placeholder="Local Provável de Infecção">
+          </div>
+        </section>
+
+        <!-- Botões -->
+        <div class="form-buttons">
+          
+          <button type="button" class="command-button" onclick="tracarRota();">Ver End. no Mapa</button>
+
+          
+         
+           <button type="button" class="command-button" onclick="abrirFicha();">Gerar Ficha</button>
+
+           <button type="submit" class="command-button">Imprimir Ficha</button>
+          
+          
+          <button type="button" class="command-button" onclick="atualizarRegistroPesquisado();">Salvar</button>
+
+        
+
+          
+
+          <button type="button" class="command-button" onclick="limparFormulario();">Limpar</button>
+
+       
+        </div>
+      </form>
+    </div><!-- /.form-body -->
+
+      
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+    const SUPABASE_URL = 'https://vepnalrpyaxhpklicqrb.supabase.co'; 
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlcG5hbHJweWF4aHBrbGljcXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5MDgxNzIsImV4cCI6MjA3NzQ4NDE3Mn0.-9_J-RE4IWdaGISGZgAXe6S2MLStG9lVm50suQKr7jY';
+    const { createClient } = window.supabase;
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+
+    /* ============================================
+       PREENCHER FORMULÁRIO
+    ============================================= */
+    // FUNCTIONS 
+    function limparFormulario() {
+    document.getElementById("form-bl").reset();
+
+    const campoBL = document.getElementById("numeroBLBusca");
+
+    // ✅ DESTRAVA O CAMPO
+    campoBL.disabled = false;
+    campoBL.style.backgroundColor = "#fff";
+
+    // ✅ LIMPA O MODO EDIÇÃO
+    if (document.getElementById("registroID")) {
+        document.getElementById("registroID").value = "";
+    }
+    }
+
+
+
+    function preencherFormulario(d) {
+      registroID.value = d.id;
+
+      numeroBL.value = d.numero_bl || "";
+      numeroSINAN.value = d.numero_sinan || "";
+      doenca.value = d.doenca || "";
+      dataRecebUvis.value = d.data_receb_uvis || "";
+      dataRecebAmbiental.value = d.data_receb_ambiental || "";
+      dataNotificacao.value = d.data_notificacao || "";
+      unidadeNotificante.value = d.unidade_notificante || "";
+
+      if (d.da) {
+        document.querySelector(`input[name='da'][value='${d.da}']`).checked = true;
+      }
+
+      ubs.value = d.unidade_origem || "";
+      paciente.value = d.paciente || "";
+      idade.value = d.idade || "";
+      nomeMae.value = d.nome_mae || "";
+      tel1.value = d.telefone || "";
+      tel2.value = d.telefone2 || "";
+      tipoLogradouro.value = d.tipo_logradouro || "";
+      logradouro.value = d.logradouro || "";
+      numero.value = d.numero || "";
+      data_prim_sintoma.value = d.data_1_sintoma || ""; 
+      
+      trIgm.value = d.tr_igm || ""; 
+      dataTR.value = d.data_tr || "";
+      dataSorologiaNs1.value = d.data_sorolog_igm || "";
+      sorologiaIgm.value = d.sorologia_igm || ""; 
+      dataSorologiaIgm.value = d.data_sorolog_igm || "",
+      sorologiaNs1.value = d.sorologia_ns1 || "";
+      dataSorologiaNs1.value = d.data_sorolog_igm || "";
+      lpi.value = d.lpi || "";
+     
+    }
+
+    
+    function coletarDados() {
+      return {
+        numero_bl: numeroBL.value.trim(),
+        numero_sinan: numeroSINAN.value.trim(),
+        doenca: doenca.value,
+        data_receb_uvis: dataRecebUvis.value || null,
+        data_receb_ambiental: dataRecebAmbiental.value || null,
+        data_notificacao: dataNotificacao.value || null,
+        unidade_notificante: unidadeNotificante.value,
+        da: (document.querySelector("input[name='da']:checked") || {}).value || null,
+        unidade_origem: ubs.value,
+        paciente: paciente.value,
+        idade: idade.value,
+        nome_mae: nomeMae.value,
+        telefone: tel1.value,
+        telefone2: tel2.value,
+        tipo_logradouro: tipoLogradouro.value,
+        logradouro: logradouro.value,
+        numero: numero.value,
+
+        data_1_sintoma: data_1_sintoma.value || null,
+        
+        trIgm: tr_igm.value,   
+        
+        dataTR: data_tr.value || null, 
+        
+        sorologiaIgm: sorologiaIgm.value,
+        
+        dataSorologiaIgm: data_sorolog_igm.value || null,
+
+        sorologiaNs1: sorologiaNs1.value, 
+        
+        dataSorologiaNs1: dataSorologiaNs1.value || null, 
+        
+        
+        LPI: LPI.value 
+
+      };
+    }
+
+    // ==========================================================================
+
+ // FUNCOES ASYNCRONAS 
+
+async function abrirFicha() {
+  
+  window.location.href=('Ficha_Bloq1.html')
+ 
+  
+}
+
+
+ async function atualizarRegistroPesquisado() {
+  const id = document.getElementById("registroID").value;
+
+  if (!id) {
+    alert("Nenhum registro carregado para atualização.");
+    return;
+  }
+
+  const dados = coletarDados();
+
+  const { error } = await supabase
+    .from("Detalhes_Bloqueio")
+    .update(dados)
+    .eq("id", id);
+
+  if (error) {
+    alert("Erro ao atualizar: " + error.message);
+    return;
+  }
+
+  alert("Registro atualizado com sucesso!");
+}
+
+
+
+  async function salvarBL() {
+      const dados = coletarDados();
+
+      const { error } = await supabase
+        .from("Detalhes_Bloqueio")
+        .insert(dados);
+
+      if (error) {
+        alert("Erro ao salvar: " + error.message);
+        return;
+      }
+
+      alert("Salvo com sucesso!");
+    }
+
+    async function atualizarBL(id) {
+      const dados = coletarDados();
+
+      const { error } = await supabase
+        .from("Detalhes_Bloqueio")
+        .update(dados)
+        .eq("id", id);
+
+      if (error) {
+        alert("Erro ao atualizar: " + error.message);
+        return;
+      }
+
+      alert("Atualizado com sucesso!");
+    } 
+
+   // METODO DE BUSCA 
+
+   document.getElementById("btnBuscar").addEventListener("click", async () => {
+  const numeroBL = document.getElementById("numeroBLBusca").value.trim();
+
+  if (!numeroBL) {
+    alert("Digite o Nº do Bloqueio!");
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("Detalhes_Bloqueio")
+    .select("*")
+    .eq("numero_bl", numeroBL)
+    .single();
+
+  if (error || !data) {
+    alert("Nenhum registro encontrado.");
+    return;
+  }
+
+  preencherFormulario(data);
+  alert("Registro carregado com sucesso!"); 
+
+  // ✅ TRAVA O CAMPO APÓS A BUSCA
+  campoBL.disabled = true;
+  campoBL.style.backgroundColor = "#e0e0e0";
+
+  alert("Registro carregado com sucesso!");
+
+
+
+});
+ </script>
+
+  </div> <!-- fecha #content -->
+
+</body>
+</html>

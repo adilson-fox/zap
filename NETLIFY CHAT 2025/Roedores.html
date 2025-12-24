@@ -1,0 +1,1102 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Arboviroses — Registro de Bloqueios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --azul-escuro:#003562;
+      --azul-claro:#b0cbe9;
+      --cinza-card:#e0e0e0;
+      --borda:#888;
+      --borda-input:#ccc;
+      --shadow-strong:0 4px 10px rgba(0,0,0,0.2);
+      --shadow-soft:0 2px 5px rgba(0,0,0,0.2);
+      --radius:12px;
+      --bg:#f7f9fb;
+      --header-height: 0px; /* preenchidos via JS */
+      --nav-height: 0px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      font-family:'Roboto',sans-serif;
+      margin:0; background:var(--bg);
+      display:grid; grid-template-rows:auto auto 1fr; min-height:100vh;
+    }
+
+    /* Cabeçalho fixo */
+    header{
+      background:var(--azul-escuro); color:#fff; text-align:center; padding:20px;
+      box-shadow:0 4px 8px rgba(0,0,0,0.2); position:sticky; top:0; z-index:1000;
+    }
+    .titulo{font-size:2.2em;font-weight:800;margin:0}
+    .subtitulo{font-size:1.1em;font-weight:700;margin:0}
+
+    /* Navegação (fixa logo abaixo do header) */
+    nav{
+      background:var(--azul-claro); padding:15px 10px;
+      display:flex; justify-content:center; gap:15px; flex-wrap:wrap;
+      box-shadow:var(--shadow-strong);
+      position:sticky;
+      /* COSTURA header + nav, eliminando a “faixa” */
+      top: calc(var(--header-height) - 1px);
+      z-index:950;
+      margin-bottom:16px;
+    }
+    .nav-button{
+      background:var(--azul-claro); color:#000; font-weight:700;
+      border:1px solid var(--borda); padding:10px 20px; border-radius:var(--radius);
+      box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; transition:transform .2s
+    }
+    .nav-button:hover{transform:scale(1.05)}
+
+    /* Card do formulário (título fixo + corpo rolável) */
+    .formulario{
+      background:var(--cinza-card); width:92%; max-width:1100px;
+     
+      margin:0 auto; padding:30px; border-radius:10px; box-shadow:var(--shadow-strong);
+     
+      display:flex; flex-direction:column; min-height:0;
+      height: calc(100vh - var(--header-height) - var(--nav-height) - 32px);
+      overflow:hidden; /* scroll fica na .form-body */
+    }
+    .form-title{
+      color:var(--azul-escuro); font-weight:800; font-size:1.3rem;
+      margin:0 0 14px 0; flex:0 0 auto;
+      background:var(--cinza-card); padding:6px 8px; border-bottom:1px solid #d8d8d8;
+    }
+    
+    .form-body{flex:1 1 auto; min-height:0; overflow-y:auto; padding-top:4px;
+    padding-inline-end:14px;
+    scrollbar-gutter:stable;
+    
+    
+    }
+
+    /* Seções */
+    .section-title{
+      color:var(--azul-escuro); font-weight:800; font-size:1.05rem; margin:12px 0 8px;
+    }
+
+    /* Campos */
+    label{display:block; font-weight:700; color:#000; margin-bottom:6px}
+    input[type="text"], input[type="number"], input[type="date"], input[type="tel"],
+    input[type="email"], select, textarea{
+      width:100%; background:#fff; padding:10px; border:1px solid var(--borda-input);
+      border-radius:6px; font-size:1rem; box-shadow:var(--shadow-soft)
+    }
+    textarea{min-height:86px; resize:vertical}
+    .radio-group{display:flex; gap:24px; align-items:center; margin-top:6px}
+    .muted{color:#444; font-weight:500}
+
+    /* GRID 12 colunas */
+    .grid12{display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:18px}
+    .c1{grid-column:span 1}.c2{grid-column:span 2}.c3{grid-column:span 3}
+    .c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}
+    .c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}
+    .c10{grid-column:span 10}.c11{grid-column:span 11}.c12{grid-column:span 12}
+
+    /* Lista rótulo/valor (se um dia usar modo descritivo) */
+    .kv{
+      display:grid;
+      grid-template-columns:max-content 1fr max-content 1fr;
+      gap:8px 18px; padding:12px; background:var(--cinza-card); border-radius:8px;
+    }
+    
+    .kv dt{margin:0; font-weight:700; color:#000}
+    .kv dd{margin:0; color:#000}
+    .kv .full{grid-column:1/-1
+    
+    }
+
+  
+    /* Botões */
+    .form-buttons{display:flex; flex-wrap:wrap; gap:12px; justify-content:flex-end; margin-top:24px}
+    .command-button{
+      background:var(--cinza-card); color:#000; font-weight:700; border:1px solid var(--borda);
+      padding:12px 20px; border-radius:var(--radius); box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; min-width:160px; transition:transform .15s
+    }
+    .command-button:hover{transform:scale(1.03)}
+
+    /* Responsividade */
+    @media (max-width: 980px){
+      .grid12{grid-template-columns:repeat(6, minmax(0,1fr))}
+      .c8{grid-column:span 6} .c9{grid-column:span 6} .c6{grid-column:span 6}
+      .c4{grid-column:span 3} .c3{grid-column:span 3} .c2{grid-column:span 3}
+    }
+    @media (max-width: 620px){
+      .grid12{grid-template-columns:1fr}
+      .c1,.c2,.c3,.c4,.c5,.c6,.c7,.c8,.c9,.c10,.c11,.c12{grid-column:1/-1}
+      .titulo{font-size:2em} .subtitulo{font-size:1.1em}
+    }
+    /* + espaço entre conteúdo e a barra de rolagem */
+    .form-body{
+    /* top | right | bottom | left */
+    padding: 8px 16px 14px 8px;      /* aumenta a “folga” do lado da barra */
+    scrollbar-gutter: stable both-edges; /* reserva um “canal” p/ a barra (onde suportado) */
+    }
+
+    /* + espaço vertical entre os campos (linhas do grid) */
+    .grid12{
+    row-gap: 22px;  /* antes era 18px; ajuste se quiser mais/menos */
+    }
+
+    /* rótulo um pouquinho mais afastado do input */
+    label{
+    margin-bottom: 8px; /* antes 6px */
+    }
+
+    /* (opcional) mais respiro entre as seções/títulos */
+    .section-title{
+    margin: 16px 0 10px; /* um pouco mais de espaço acima e abaixo */
+    }
+
+    /* === SIDEBAR (DASHBOARD LATERAL) ================================== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  background: var(--azul-escuro);
+  color: #fff;
+  padding: 20px 0;
+  transform: translateX(-240px);
+  transition: 0.3s ease;
+  z-index: 9999;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.sidebar a {
+  display: block;
+  padding: 12px 22px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.sidebar a:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Botão que abre e fecha o menu */
+.menu-toggle {
+  position: fixed;
+  top: 18px;
+  left: 16px;
+  background: var(--azul-escuro);
+  color: #fff;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 10000;
+  font-size: 18px;
+  transition: background 0.2s;
+}
+
+.menu-toggle:hover {
+  background: #022d52;
+}
+
+/* Empurra o conteúdo quando o menu abre */
+.content.shift {
+  margin-left: 240px;
+  transition: margin-left 0.3s ease;
+}
+
+  </style>
+</head>
+
+<body> 
+
+   <!-- MENU SIDEBAR -->
+
+  <script>
+    document.querySelector('.menu-toggle').addEventListener('click', function () {
+        const sidebar = document.getElementById('sidebar');
+        const content = document.querySelector('main'); // ou .content se você usar
+
+        sidebar.classList.toggle('open');
+
+        // Empurra conteúdo se quiser
+        if (content) {
+            content.classList.toggle('shift');
+        }
+    });
+  </script>
+
+
+   
+<button class="menu-toggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <h2>      >-------          SIGVA - Acesso Rápido</h2>
+
+
+  <a href="welcome_sigva.html">Página Inicial</a>
+  <a href="pesquisa_os_v2.html">Pesquisar OS</a> >
+  <a href="Bloqueio_supabase.html">Bloqueios - Cadastro</a> 
+  <a href="Ficha_Bloqueio.html">Bloqueios - Consulta</a>  >    
+  <a href="Bloqueio_supabase.html">Arbovirores - Ficha Cadastral</a> 
+  <a href="Escorpiao.html">Escorpião</a>
+  <a href="himenoptero.html">Himenopteros - Abelhas</a>
+  <a href="identificacao_sorologia.html">Identificação e Sorologia</a>
+  <a href="materialapoio.html">Material de Apoio</a>
+  <a href="monitoramento.html">Monitoramento</a>
+  <a href="acessoOS.html">Ordem de Serviço</a>
+  <a href="zoosanitaria.html">Zoosanitária</a>
+</div>
+
+<script>
+// (Seu código supabase...)
+</script>
+
+<script>
+document.querySelector('.menu-toggle').addEventListener('click', function () {
+    const sidebar = document.getElementById('sidebar');
+    const content = document.querySelector('main');
+
+    sidebar.classList.toggle('open');
+    if (content) content.classList.toggle('shift');
+});
+</script>
+
+
+</head>
+
+</head>
+
+<body>
+    <header>
+        <h1>Ações de Vigilância e Controle de Roedores</h1>
+        <h2>Unidade de Vigilância em Saúde – M’ Boi Mirim</h2>
+    </header> 
+
+    <!-- Navegação -->
+      <nav>
+
+    <a class="nav-button" href="welcome_sigva.html">Home</a> 
+    <a class="nav-button" href="login.html">Login</a>
+    <a class="nav-button" href="ficha_OS.html">Ficha OS</a>
+    <a class="nav-button" href="Cadastramento_OrdemServico.html">Registro de OS</a>
+
+
+  </nav>
+
+     <!-- Novos Campos -->
+   
+     <main class="formulario">
+    <div class="form-title">Formulário de campo</div>
+
+    <div class="form-body">
+      <!-- Registro -->
+      <h3 class="form-title">Registro</h3>
+      
+      <section class="grid12">
+      
+        <div class="c12">
+          <dl class="kv">
+            <dt>Nº OS:</dt>                 <dd id="r-os"></dd>
+            <dt>Origem da solicitação:</dt> <dd id="r-origem"></dd>
+            <dt>Protocolo:</dt>             <dd id="r-protocolo"></dd>
+            <dt>Data da notificação:</dt>   <dd id="r-dn"></dd>
+            <dt>Data do recebimento:</dt>   <dd id="r-dr"></dd>
+            <dt>Ocorrência:</dt>            <dd id="r-ocorrencia"></dd>
+            <dt>Solicitante:</dt>           <dd id="r-sol"></dd>
+            <dt>Paciente:</dt>              <dd id="r-paciente">—</dd>
+            <dt>Telefones:</dt>             <dd id="r-tels"></dd>
+            <dt>Endereço:</dt>              <dd id="r-endereco"></dd>
+            <dt>DA:</dt>                    <dd id="r-da"></dd>
+            <dt>UBS:</dt>                   <dd id="r-ubs"></dd>
+            <dt>Descrição da Solicitação:</dt> <dd id="r-desc"></dd>
+          </dl>
+        </div>
+
+        <div class="c12">
+          <label for="obs_registro">Observações do registro</label>
+          <textarea id="obs_registro" name="obs_registro" placeholder="Ex.: Nome correto do paciente é ... / Endereço com complemento ..."></textarea>
+        </div>
+     
+    </section>
+
+  <!-- Formulário -->
+  <main class="formulario"> 
+
+  <div class="form-title">Ações de Vigilância e Controle de Leptospirose e Roedores</div>  
+  
+    <main class="form-body">
+        <div id="statusMessage" class="status-message"></div>
+        <div id="loadingSpinner" class="spinner"></div>
+        
+        
+       <form id="form-os">
+
+    <div class="campos-roedores" style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;"> 
+     
+        <div>
+            <h4>Espécie Infestante</h4>
+            <div class="visita-box">
+                <label><input type="checkbox" name="especie_ratazana"> Ratazana</label> 
+                <label><input type="checkbox" name="especie_rato_telhado"> Rato-de-telhado</label>
+                <label><input type="checkbox" name="especie_camundongo"> Camundongo</label>
+                <label><input type="checkbox" name="especie_indeterminada"> Indeterminado</label>
+                <label><input type="checkbox" name="especie_infestado"> Infestado</label>
+            </div>
+        </div>
+
+        <div>
+            <h4>Visíveis</h4>
+            <div class="visita-box">
+                <label><input type="checkbox" name="sinal_trilhas_tocas"> Trilhas/Tocas</label>
+                <label><input type="checkbox" name="sinal_fezes"> Fezes </label>
+                <label><input type="checkbox" name="sinal_manchas_gordura"> Manchas de gordura</label>
+                <label><input type="checkbox" name="sinal_roeduras"> Roeduras</label>
+                <label><input type="checkbox" name="sinal_vivos_mortos"> Ratos vivos ou mortos</label>
+            </div>
+        </div>
+    </div>
+    <h4>Condições Ambientais</h4> 
+    <div class="visita-container"> 	
+        <div class="visita-box" style="flex: 1 1 300px; min-width: auto;">
+            <label><input type="checkbox" name="cond_lixo_acessivel"> Lixo acessível</label>
+            <label><input type="checkbox" name="cond_alimento_disponivel"> Alimento disponível</label>
+            <label><input type="checkbox" name="cond_entulho"> Entulho</label>
+            <label><input type="checkbox" name="cond_mato_alto"> Mato alto</label>
+        </div>
+    </div>
+
+    <h3>Controle Químico em Logradouros (Boca-de-lobo)</h3>
+
+    <div class="visita-container" style="display: flex; gap: 20px;">
+    <div class="visita-box">
+        <h4>Primeira Visita:</h4>
+        <label>Nº de bocas tratadas:</label>
+        <input type="number" id="lograd_visita1_bocas_tratadas" name="lograd_visita1_bocas_tratadas">
+
+        <label>Nº de blocos parafinados aplicados:</label>
+        <input type="number" id="lograd_visita1_blocos_aplicados" name="lograd_visita1_blocos_aplicados">
+
+        
+        <label>Nº de bocas obstruídas:</label>
+        <input type="number" id="lograd_visita1_bocas_obstruidas" name="lograd_visita1_bocas_obstruidas">
+
+    </div> 
+     
+    
+    <div class="visita-box">
+        <h4>Segunda Visita:</h4>
+        <label>Quantidade consumida:</label>
+        <input type="number" id="lograd_visita2_consumida" name="lograd_visita2_consumida">
+
+        <label>Quantidade extraviada:</label>
+        <input type="number" id="lograd_visita2_extraviada" name="lograd_visita2_extraviada">
+
+        <label>Quantidade reaplicada:</label>
+        <input type="number" id="lograd_visita2_reaplicada" name="lograd_visita2_reaplicada">
+
+        <label>Nº de bocas obstruídas:</label>
+        <input type="number" id="lograd_visita2_bocas_obstruidas" name="lograd_visita2_bocas_obstruidas">
+    </div>
+
+    <div class="visita-box">
+        <h4>Terceira Visita:</h4>
+        <label>Quantidade consumida:</label>
+        <input type="number" id="lograd_visita3_consumida" name="lograd_visita3_consumida">
+
+        <label>Quantidade extraviada:</label>
+        <input type="number" id="lograd_visita3_extraviada" name="lograd_visita3_extraviada">
+
+        <label>Quantidade reaplicada:</label>
+        <input type="number" id="lograd_visita3_reaplicada" name="lograd_visita3_reaplicada">
+
+        <label>Nº de bocas obstruídas:</label>
+        <input type="number" id="lograd_visita3_bocas_obstruidas" name="lograd_visita3_bocas_obstruidas">
+    </div>
+</div>
+
+<div class="visita-container" style="display: flex; gap: 20px;">
+
+    <div class="visita-box">
+        <h4>Central – Pó de Contato</h4>
+        <label>Nº de tocas tratadas:</label>
+        <input type="number" id="central_pocontato_tocas_tratadas" name="central_pocontato_tocas_tratadas">
+
+        <label>Quantidade aplicada (kg):</label>
+        <input type="number" id="central_pocontato_qtd_aplicada" name="central_pocontato_qtd_aplicada">
+    </div>
+
+    <div class="visita-box">
+        <h4>Controle Químico em Imóveis</h4>
+
+        <label>Granulado – Nº de caixas ou pontos de isca:</label>
+        <input type="number" id="imovel_granulado_num_caixas" name="imovel_granulado_num_caixas">
+
+        <label>Granulado – Quantidade aplicada:</label>
+        <input type="number" id="imovel_granulado_qtd_aplicada" name="imovel_granulado_qtd_aplicada">
+
+        <label>Pó de Contato – Nº de tocas tratadas:</label>
+        <input type="number" id="imovel_pocontato_tocas_tratadas" name="imovel_pocontato_tocas_tratadas">
+
+        <label>Pó de Contato – Quantidade aplicada (kg):</label>
+        <input type="number" id="imovel_pocontato_qtd_aplicada" name="imovel_pocontato_qtd_aplicada">
+
+        <label>Parafinado – Nº de caixas ou pontos de isca:</label>
+        <input type="number" id="imovel_parafinado_num_caixas" name="imovel_parafinado_num_caixas">
+
+        <label>Parafinado – Quantidade aplicada:</label>
+        <input type="number" id="imovel_parafinado_qtd_aplicada" name="imovel_parafinado_qtd_aplicada">
+    </div>
+</div>
+
+
+            <div class="section-title">Datas das Visitas</div>
+            <label for="data_visita1">Data da Primeira Visita</label><input id="data_visita1" type="date">
+            <label for="data_visita2">Data da Segunda Visita</label><input id="data_visita2" type="date">
+            <label for="data_visita3">Data da Terceira Visita</label><input id="data_visita3" type="date">
+       
+        </div>
+    </div>
+    
+    <div class="form-buttons">
+        <button type="submit" class="command-button" id="btnSalvar">Salvar Ficha</button>
+
+        <button type="button" class="command-button" onclick="limparFormulario()">Limpar campos</button>
+
+        <button type="button" class="command-button" id="btnEnviar"> Enviar para Andamento</button>
+    </div>
+</form> 
+    </div>
+    </main>
+
+
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://vepnalrpyaxhpklicqrb.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlcG5hbHJweWF4aHBrbGljcXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5MDgxNzIsImV4cCI6MjA3NzQ4NDE3Mn0.-9_J-RE4IWdaGISGZgAXe6S2MLStG9lVm50suQKr7jY";
+  const { createClient } = window.supabase;
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); 
+
+  let currentOSId = null; 
+
+  // NOME DA TABELA DE DETALHES ESPECÍFICA
+   const TABELA_DETALHES = 'ficha_roedores'; 
+
+   // Mapeamento de IDs HTML para colunas da TABELA: Principal
+         // Esses dados serão salvos lá
+        const PRINCIPAL_FIELD_MAP = {
+            'especie_ratazana': 'especie_ratazana',
+            'especie_rato_telhado': 'especie_rato_telhado',
+            'especie_camundongo': 'especie_camundongo',
+            'especie_inderteminada': 'especie_inderteminada',
+            'especie_infestado': 'especie_infestado', 
+            'sinal_trilhas_tocas': 'sinal_trilhas_tocas',
+            'sinal_fezes': 'sinal_fezes',
+            'sinal_manchas_gorduras': 'sinal_manchas_gorduras',
+            'sinal_roeduras': 'sinal_roeduras',
+            'sinal_vivos_mortos': 'sinal_vivos_mortos',
+
+            'cond_lixo_acessivel': 'cond_lixo_acessivel',
+            'cond_alimento_disponivel': 'cond_alimento_disponivel',
+            'cond_entulho': 'cond_entulho',
+            'cond_mato_alto' : 'cond_mato_alto', 
+            'lograd_visita1_bocas_tratadas' : 'lograd_visita1_bocas_tratadas',
+            'lograd_visita1_blocos_aplicados' : 'lograd_visita1_blocos_aplicados',
+            'lograd_visita1_bocas_obstruidas' : 'lograd_visita1_bocas_obstruidas',
+            'lograd_visita2_consumida' : 'lograd_visita2_consumida',
+            'lograd_visita2_extraviada' : 'lograd_visita2_extraviada',
+            'lograd_visita2_reaplicada' : 'lograd_visita2_reaplicada',
+            'lograd_visita2_extraviada' : 'lograd_visita2_extraviada', 
+            'lograd_visita2_bocas_obstruidas' : 'lograd_visita2_bocas_obstruidas',
+
+            'lograd_visita3_consumida' : 'lograd_visita3_consumida',
+            'lograd_visita3_extraviada' : 'lograd_visita3_extraviada',
+            'lograd_visita3_replicada' : 'lograd_visita3_replicada',
+            
+             'central_pocontato_tocas_tratadas' : 'central_pocontato_tocas_tratadas',
+            'central_pocontato_qtd_aplicada' : 'central_pocontato_qtd_aplicada',
+            'imovel_granulado_num_caixas' : 'imovel_granulado_num_caixas',
+            'imovel_granulado_qtd_aplicada' : 'imovel_granulado_qtd_aplicada',
+            'imovel_pocontato_tocas_tratadas' : 'imovel_pocontato_tocas_tratadas',
+            'imovel_pocontato_qtd_aplicada' : 'imovel_pocontato_qtd_aplicada',
+            'imovel_parafinado_num_caixas' : 'imovel_parafinado_num_caixas',
+            'imovel_parafinado_qtd_aplicada' : 'imovel_parafinado_qtd_aplicada',
+            'data_visita1' : 'data_visita1', 
+            'data_visita2' : 'data_visita2',
+            'data_visita3' : 'data_visita3'
+                        
+          };  
+
+            // RESPONSAVEL POR DECLARAR OS CAMPOS NA TABELA DO SUPABASE - ficha_roedores
+            const DETALHES_FIELD_MAP = {
+            'especie_ratazana': 'especie_ratazana',
+            'especie_rato_telhado': 'especie_rato_telhado',
+            'especie_camundongo': 'especie_camundongo',
+            'especie_inderteminada': 'especie_inderteminada',
+            'especie_infestado': 'especie_infestado', 
+            'sinal_trilhas_tocas': 'sinal_trilhas_tocas',
+            'sinal_fezes': 'sinal_fezes',
+            'sinal_manchas_gorduras': 'sinal_manchas_gorduras',
+            'sinal_roeduras': 'sinal_roeduras',
+            'sinal_vivos_mortos': 'sinal_vivos_mortos',
+
+            'cond_lixo_acessivel': 'cond_lixo_acessivel',
+            'cond_alimento_disponivel': 'cond_alimento_disponivel',
+            'cond_entulho': 'cond_entulho',
+            'connd_mato_alto' : 'cond_mato_alto', 
+           
+            'lograd_visita1_bocas_tratadas' : 'lograd_visita1_bocas_tratadas',
+            'lograd_visita1_blocos_aplicados' : 'lograd_visita1_blocos_aplicados',
+            'lograd_visita1_bocas_obstruidas' : 'lograd_visita1_bocas_obstruidas',
+            'lograd_visita2_consumida' : 'lograd_visita2_consumida',
+            'lograd_visita2_extraviada' : 'lograd_visita2_extraviada',
+            'lograd_visita2_replicada' : 'lograd_visita2_replicada',
+            'lograd_visita2_extraviada' : 'lograd_visita2_extraviada', 
+            'lograd_visita2_bocas_obstruidas' : 'lograd_visita2_bocas_obstruidas',
+            'lograd_visita3_consumida' : 'lograd_visita3_consumida',
+            'lograd_visita3_replicada' : 'lograd_visita3_replicada',
+         
+            'central_pocontato_tocas_tratadas' : 'central_pocontato_tocas_tratadas',
+            'central_pocontato_qtd_aplicada' : 'central_pocontato_qtd_aplicada',
+            'imovel_granulado_num_caixas' : 'imovel_granulado_num_caixas',
+            'imovel_granulado_qtd_aplicada' : 'imovel_granulado_qtd_aplicada',
+            'movel_pocontato_tocas_tratadas' : 'movel_pocontato_tocas_tratadas',
+            'imovel_pocontato_qtd_aplicada' : 'imovel_pocontato_qtd_aplicada',
+            'imovel_parafinado_num_caixas' : 'imovel_parafinado_num_caixas',
+            'imovel_parafinado_qtd_aplicada' : 'imovel_parafinado_qtd_aplicada',
+         
+            'data_visita1' : 'data_visita1', 
+            'data_visita2' : 'data_visita2',
+            'data_visita3' : 'data_visita3'
+        };
+
+
+
+          
+           // ================== FUNÇÕES DE UTILIDADE ==================
+
+          function formatarDataBR(dataISO) {
+              if (!dataISO) return '—'; 
+              const dataString = dataISO.substring(0, 10); 
+              if (!/^\d{4}-\d{2}-\d{2}$/.test(dataString)) return 'Data Inválida';
+              const [ano, mes, dia] = dataString.split('-');
+              return `${dia}/${mes}/${ano}`; 
+          }
+
+
+
+           function LerIDdaURL() {
+            const params = new URLSearchParams(window.location.search);
+            const osId = params.get('osid');
+            if (!osId) {
+                document.getElementById('r-os').textContent = 'ERRO';
+                alert('Erro: ID da Ordem de Serviço não encontrado na URL.');
+                return null;
+            }
+            return parseInt(osId);
+        }
+
+          // ================== CARREGAMENTO ==================
+
+        window.onload = function() {
+            // Ajusta alturas do header/nav para cálculo da área de scroll
+            (function(){
+                function setHeights(){
+                    const h = document.querySelector('header');
+                    const n = document.querySelector('nav');
+                    document.documentElement.style.setProperty('--header-h', (h?.offsetHeight||0)+'px');
+                    document.documentElement.style.setProperty('--nav-h',    (n?.offsetHeight||0)+'px');
+                }
+                setHeights(); window.addEventListener('resize', setHeights);
+            })();
+            
+            currentOSId = LerIDdaURL();
+            if (currentOSId) {
+                CarregarFichaRoedores(currentOSId);
+            }
+            
+            // Liga o botão Salvar à função correta
+            document.querySelector('.form-buttons .command-button:first-child').onclick = SalvarFichaRoedores;
+        };
+        
+
+        // CARREGAMENTO DA FICHA ROEDORES 
+        async function CarregarFichaRoedores(osId) {
+            try {
+        // Consulta Principal + ficha_roedores (JOIN implícito)
+        const { data, error } = await supabase
+            .from('Principal')
+            .select(` *, ${TABELA_DETALHES} (*)`)
+            .eq('id', osId)
+            .single();
+            //.maybeSingle();
+
+        if (error) throw error;
+        if (!data) throw new Error("OS não encontrada.");
+
+        const os = data;
+
+        // Carrega   separadamente
+        const { data: detalhes, error: err2 } = await supabase
+            .from('ficha_roedores')
+            .select('*')
+            .eq('os_id', osId)
+            .maybeSingle();
+
+        if (err2) throw err2;
+
+        console.log("📋 Principal:", os);
+        console.log("🦂 ficha_roedores:", detalhes);
+
+        // PREENCHIMENTO DO BLOCO DE REGISTRO
+        document.getElementById('r-os').textContent = os.nextosnumber || '—';
+        document.getElementById('r-origem').textContent = os.origem || '—';
+        document.getElementById('r-protocolo').textContent = os.protocolo || '—';
+        document.getElementById('r-dn').textContent = formatarDataBR(os.datanotificacao);
+        document.getElementById('r-dr').textContent = formatarDataBR(os.datarecebimento);
+        document.getElementById('r-ocorrencia').textContent = os.tipoocorrencia || '—';
+        document.getElementById('r-desc').textContent = os.descricao || '—';
+        document.getElementById('r-sol').textContent = os.paciente || '—';
+        document.getElementById('r-paciente').textContent = os.paciente || '—';
+        document.getElementById('r-tels').textContent = `${os.tel1 || ''}, ${os.tel2 || ''}`;
+        document.getElementById('r-da').textContent = os.da || '—';
+        document.getElementById('r-ubs').textContent = os.ubs || '—';
+        document.getElementById('r-endereco').textContent = `${os.logradouro || ''}, ${os.numero || 'S/N'} — ${os.bairro || '—'}`;
+
+       
+       //  Preenchimento de checkboxes (grupos_roedores)
+        //  Preenchimento de checkboxes (grupos_roedores)
+            
+            let grupos = detalhes?.grupo_especie_infestante ?? {};
+
+            document.querySelector('[name="especie_ratazana"]').checked = !!grupos.especie_ratazana;
+            document.querySelector('[name="especie_rato_telhado"]').checked = !!grupos.especie_rato_telhado;
+            document.querySelector('[name="especie_camundongo"]').checked = !!grupos.especie_camundongo;
+            document.querySelector('[name="especie_indeterminada"]').checked = !!grupos.especie_indeterminada;
+            document.querySelector('[name="especie_infestado"]').checked = !!grupos.especie_infestado;
+
+
+
+        // Grupo sinais visiveis 
+        let grupo_cond = detalhes?.grupo_condicoes_ambientais ?? {};
+
+            document.querySelector('[name="cond_lixo_acessivel"]').checked = !!grupo_cond.cond_lixo_acessivel;
+            document.querySelector('[name="cond_alimento_disponivel"]').checked = !!grupo_cond.cond_alimento_disponivel;
+            document.querySelector('[name="cond_entulho"]').checked = !!grupo_cond.cond_entulho;
+            document.querySelector('[name="cond_mato_alto"]').checked = !!grupo_cond.cond_mato_alto;
+
+              
+        // Grupo de condições ambientais 
+        let grupo_sinais = detalhes?.grupo_sinais_visiveis ?? {};
+
+                document.querySelector('[name="sinal_trilhas_tocas"]').checked = !!grupo_sinais.sinal_trilhas_tocas;
+                document.querySelector('[name="sinal_fezes"]').checked = !!grupo_sinais.sinal_fezes;
+                document.querySelector('[name="sinal_manchas_gordura"]').checked = !!grupo_sinais.sinal_manchas_gordura;
+                document.querySelector('[name="sinal_roeduras"]').checked = !!grupo_sinais.sinal_roeduras;
+                document.querySelector('[name="sinal_vivos_mortos"]').checked = !!grupo_sinais.sinal_vivos_mortos;
+
+
+        //Carregamento de campos numericos para exibição 
+
+                // ===================== CAMPOS NUMÉRICOS =======================
+
+            // VISITA 1
+            document.getElementById("lograd_visita1_bocas_tratadas").value =
+                detalhes?.lograd_visita1_bocas_tratadas ?? "";
+
+            document.getElementById("lograd_visita1_blocos_aplicados").value =
+                detalhes?.lograd_visita1_blocos_aplicados ?? "";
+
+            document.getElementById("lograd_visita1_bocas_obstruidas").value =
+                detalhes?.lograd_visita1_bocas_obstruidas ?? "";
+
+            // VISITA 2
+            document.getElementById("lograd_visita2_consumida").value =
+                detalhes?.lograd_visita2_consumida ?? "";
+
+            document.getElementById("lograd_visita2_extraviada").value =
+                detalhes?.lograd_visita2_extraviada ?? "";
+
+            document.getElementById("lograd_visita2_reaplicada").value =
+                detalhes?.lograd_visita2_reaplicada ?? "";
+
+            document.getElementById("lograd_visita2_bocas_obstruidas").value =
+                detalhes?.lograd_visita2_bocas_obstruidas ?? "";
+
+            // VISITA 3
+            document.getElementById("lograd_visita3_consumida").value =
+                detalhes?.lograd_visita3_consumida ?? "";
+
+            document.getElementById("lograd_visita3_extraviada").value =
+                detalhes?.lograd_visita3_extraviada ?? "";
+
+            document.getElementById("lograd_visita3_reaplicada").value =
+                detalhes?.lograd_visita3_reaplicada ?? "";
+
+            document.getElementById("lograd_visita3_bocas_obstruidas").value =
+                detalhes?.lograd_visita3_bocas_obstruidas ?? "";
+
+            // CENTRAL
+            document.getElementById("central_pocontato_tocas_tratadas").value =
+                detalhes?.central_pocontato_tocas_tratadas ?? "";
+
+            document.getElementById("central_pocontato_qtd_aplicada").value =
+                detalhes?.central_pocontato_qtd_aplicada ?? "";
+
+            // IMÓVEL
+            document.getElementById("imovel_granulado_num_caixas").value =
+                detalhes?.imovel_granulado_num_caixas ?? "";
+
+            document.getElementById("imovel_granulado_qtd_aplicada").value =
+                detalhes?.imovel_granulado_qtd_aplicada ?? "";
+
+            document.getElementById("imovel_pocontato_tocas_tratadas").value =
+                detalhes?.imovel_pocontato_tocas_tratadas ?? "";
+
+            document.getElementById("imovel_pocontato_qtd_aplicada").value =
+                detalhes?.imovel_pocontato_qtd_aplicada ?? "";
+
+            document.getElementById("imovel_parafinado_num_caixas").value =
+                detalhes?.imovel_parafinado_num_caixas ?? "";
+
+            document.getElementById("imovel_parafinado_qtd_aplicada").value =
+                detalhes?.imovel_parafinado_qtd_aplicada ?? "";
+
+
+
+        // Carregamento das datas das visitas
+        document.getElementById('data_visita1').value = detalhes?.data_visita1 ? detalhes.data_visita1.substring(0, 10) : '';
+        document.getElementById('data_visita2').value = detalhes?.data_visita2 ? detalhes.data_visita2.substring(0, 10) : '';
+        document.getElementById('data_visita3').value = detalhes?.data_visita3 ? detalhes.data_visita3.substring(0, 10) : '';
+        
+              
+        //  Preenchimento automático dos inputs
+        const ALL_FIELDS = { ...PRINCIPAL_FIELD_MAP, ...DETALHES_FIELD_MAP };
+        
+        // se consta o id em todos os campos emtao ele pega os elementos  
+        for (const id in ALL_FIELDS) {
+            const element = document.getElementById(id);
+            if (!element) continue;
+
+            const campoBD = ALL_FIELDS[id];
+            let valor;
+           
+            if (id in PRINCIPAL_FIELD_MAP) {
+                if (os[campoBD] !== null && os[campoBD] !== undefined) {
+                    
+                    element.value = (element.type === "date")
+                        ? os[campoBD].substring(0, 10)
+                        : os[campoBD];
+                }
+
+            } else if (id in DETALHES_FIELD_MAP) {
+                let valor = detalhes ? detalhes[campoBD] : null;
+
+                if (valor !== null && valor !== undefined) {
+                    element.value = (element.type === "date")
+                        ? valor.substring(0, 10)
+                        : valor;
+                }
+            }
+        }
+
+        // CHECKBOXES - ESPECIE INFESTANTE
+        if (detalhes && detalhes.especie_ratazana) {
+            let especie = detalhes.especie_ratazana;
+
+            if (typeof especie === 'string') {
+                try {
+                     especie = JSON.parse(especie);
+                } catch (e) {
+                    especie = [];
+                }
+            }
+
+            document.querySelectorAll('.grid12 label input[type="checkbox"]').forEach(checkbox => {
+                const labelText = checkbox.parentNode.textContent.trim();
+                checkbox.checked = especie.includes(labelText);
+            });
+        }
+
+        console.log("✨ Carregamento concluído");
+
+    } catch (err) {
+        console.error('Erro ao carregar ficha:', err);
+        document.getElementById('r-os').textContent = 'ERRO DE CARREGAMENTO';
+        alert(`Não foi possível carregar a ficha (ID: ${osId}). Erro: ${err.message}`);
+    }
+}
+
+</script>
+
+<script>
+
+// FUNCAO PARA ACEITAR DADOS APENAS NUMERICOS AO SALVAR
+function toNumberOrNull(value) {
+  return value === "" ? null : Number(value);
+}
+
+// FUNCAO PARA ACEITAR DADOS APENAS PARA AO SALVAR
+   //function toNumberOrNull(value) {
+    function toDateOrNull(value) {
+  return value === "" ? null : value; // Envia a string da data ou null
+}
+
+
+// ========== FUNCAO PARA MOSTRAR STATUS NA TELA =================//
+// Exibir status na tela
+       function mostrarStatusRegistro(msg, tipo = "success") {
+    const box = document.getElementById("statusMessage");
+
+    // Adiciona a mensagem ao elemento
+    box.textContent = msg;
+    box.className = "status"; // Reseta classes
+    box.classList.add("status-" + tipo); // Adiciona a classe conforme o tipo (sucesso, erro, etc.)
+
+    // Exibe a mensagem com animação
+    box.style.display = "block";
+    box.style.opacity = 1;
+
+    // Esconde após 3 segundos
+    setTimeout(() => {
+        box.style.opacity = 0;
+        setTimeout(() => {
+            box.style.display = "none";
+        }, 500); // Delay para ocultar
+    }, 3000); // Mostra por 3 segundos
+}
+
+// ================== FUNÇÃO PARA TRAÇAR ROTA (CORRIGIDA) ==================
+
+function tracarRota() {
+    // Busca o texto do endereço completo da seção de registro (somente leitura)
+    const enderecoCompletoElement = document.getElementById('r-endereco');
+    
+    // Verifica se o elemento existe (medida de segurança)
+    if (!enderecoCompletoElement) {
+        alert('Erro: Elemento do endereço de registro (id="r-endereco") não encontrado.');
+        return;
+    }
+    
+    // Pega o endereço de registro, que já está formatado como: Rua Exemplo, 123 – Vila Prel
+    const destinoCompleto = enderecoCompletoElement.textContent.trim();
+    
+    // Verifica se o endereço está vazio
+    if (destinoCompleto === '—' || destinoCompleto === '') {
+        alert('O endereço da OS não foi carregado. Impossível traçar a rota.');
+        return;
+    }
+
+    // Adiciona a cidade/estado para geolocalização mais precisa
+    const destinoAjustado = destinoCompleto + ", São Paulo, SP";
+    
+    // Codificar o endereço é crucial para URLs
+    const destinoCodificado = encodeURIComponent(destinoAjustado);
+
+    // Cria a URL de Rotas no Google Maps
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destinoCodificado}`;
+    
+    // Abre em uma nova aba
+    window.open(mapsUrl, '_blank');
+    
+    console.log("Abrindo Google Maps para traçar rota até:", destinoAjustado);
+}
+
+        // ================== SALVAMENTO ==================
+
+   async function SalvarFichaRoedores(event) {
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentOSId = urlParams.get('osid');
+
+    if (!currentOSId) {
+        alert('Impossível salvar: ID da OS não está definido.');
+        return;
+    }
+
+    const button = event.currentTarget;
+    button.disabled = true;
+    button.textContent = 'Salvando...';
+
+    const detalhesData = {
+        os_id: currentOSId,
+        obs_registro: document.getElementById('obs_registro').value,
+
+        grupo_especie_infestante: {
+            especie_ratazana: document.querySelector('[name="especie_ratazana"]').checked,
+            especie_rato_telhado: document.querySelector('[name="especie_rato_telhado"]').checked,
+            especie_camundongo: document.querySelector('[name="especie_camundongo"]').checked,
+            especie_indeterminada: document.querySelector('[name="especie_indeterminada"]').checked,
+            especie_infestado: document.querySelector('[name="especie_infestado"]').checked
+        },
+
+        grupo_sinais_visiveis: {
+            sinal_trilhas_tocas: document.querySelector('[name="sinal_trilhas_tocas"]').checked,
+            sinal_fezes: document.querySelector('[name="sinal_fezes"]').checked,
+            sinal_manchas_gordura: document.querySelector('[name="sinal_manchas_gordura"]').checked,
+            sinal_roeduras: document.querySelector('[name="sinal_roeduras"]').checked,
+            sinal_vivos_mortos: document.querySelector('[name="sinal_vivos_mortos"]').checked
+        },
+
+        grupo_condicoes_ambientais: {
+            cond_lixo_acessivel: document.querySelector('[name="cond_lixo_acessivel"]').checked,
+            cond_alimento_disponivel: document.querySelector('[name="cond_alimento_disponivel"]').checked,
+            cond_entulho: document.querySelector('[name="cond_entulho"]').checked,
+            cond_mato_alto: document.querySelector('[name="cond_mato_alto"]').checked
+        },
+
+        // Exemplo campos
+        //lograd_visita1_bocas_tratadas: toNumberOrNull(document.querySelector('[name="lograd_visita1_bocas_tratadas"]').value),
+
+        lograd_visita1_bocas_tratadas: toNumberOrNull(document.querySelector('[name="lograd_visita1_bocas_tratadas"]').value),
+        lograd_visita1_blocos_aplicados: toNumberOrNull(document.querySelector('[name="lograd_visita1_blocos_aplicados"]').value),
+        lograd_visita1_bocas_obstruidas: toNumberOrNull(document.querySelector('[name="lograd_visita1_bocas_obstruidas"]').value),
+
+        lograd_visita2_consumida: toNumberOrNull(document.querySelector('[name="lograd_visita2_consumida"]').value),
+        lograd_visita2_extraviada: toNumberOrNull(document.querySelector('[name="lograd_visita2_extraviada"]').value),
+        lograd_visita2_reaplicada: toNumberOrNull(document.querySelector('[name="lograd_visita2_reaplicada"]').value),
+        lograd_visita2_bocas_obstruidas: toNumberOrNull(document.querySelector('[name="lograd_visita2_bocas_obstruidas"]').value),
+
+        lograd_visita3_consumida: toNumberOrNull(document.querySelector('[name="lograd_visita3_consumida"]').value),
+        lograd_visita3_extraviada: toNumberOrNull(document.querySelector('[name="lograd_visita3_extraviada"]').value),
+        lograd_visita3_reaplicada: toNumberOrNull(document.querySelector('[name="lograd_visita3_reaplicada"]').value),
+        lograd_visita3_bocas_obstruidas: toNumberOrNull(document.querySelector('[name="lograd_visita3_bocas_obstruidas"]').value),
+
+        central_pocontato_tocas_tratadas: toNumberOrNull(document.querySelector('[name="central_pocontato_tocas_tratadas"]').value),
+        central_pocontato_qtd_aplicada: toNumberOrNull(document.querySelector('[name="central_pocontato_qtd_aplicada"]').value),
+
+        imovel_granulado_num_caixas: toNumberOrNull(document.querySelector('[name="imovel_granulado_num_caixas"]').value),
+        imovel_granulado_qtd_aplicada: toNumberOrNull(document.querySelector('[name="imovel_granulado_qtd_aplicada"]').value),
+
+        imovel_pocontato_tocas_tratadas: toNumberOrNull(document.querySelector('[name="imovel_pocontato_tocas_tratadas"]').value),
+        imovel_pocontato_qtd_aplicada: toNumberOrNull(document.querySelector('[name="imovel_pocontato_qtd_aplicada"]').value),
+
+        imovel_parafinado_num_caixas: toNumberOrNull(document.querySelector('[name="imovel_parafinado_num_caixas"]').value),
+        imovel_parafinado_qtd_aplicada: toNumberOrNull(document.querySelector('[name="imovel_parafinado_qtd_aplicada"]').value),
+
+
+        data_visita1: toDateOrNull(document.getElementById("data_visita1")?.value || ""),
+        data_visita2: toDateOrNull(document.getElementById("data_visita2")?.value || ""),
+        data_visita3: toDateOrNull(document.getElementById("data_visita3")?.value || ""),
+
+  
+    };
+
+    // ===== SALVAR NO SUPABASE =====
+    const { data: saveData, error: saveError } = await supabase
+        .from("ficha_roedores")
+        .upsert(detalhesData, { onConflict: "os_id" });
+
+
+    const principalUpdate = {
+    data_visita_1: detalhesData.data_visita1, // apos detalhesData.data_visita1(coluna do supabase)
+    data_visita_2: detalhesData.data_visita2,
+    data_visita_3: detalhesData.data_visita3
+
+    
+};
+
+
+    if (saveError) {
+        mostrarStatusRegistro("Erro ao salvar: " + saveError.message, "error");
+        //alert("Erro ao salvar: " + saveError.message);
+        console.error(saveError);
+        button.disabled = false;
+        button.textContent = 'Salvar';
+        return;
+    }
+
+    // ATUALIZADA PARA VERSAO 
+    //alert("Ficha salva com sucesso!");
+   
+   mostrarStatusRegistro("✅ Ficha salva com sucesso!!", "success");
+   
+    button.textContent = 'Salvo ✔️';
+    console.log(saveData);
+   
+   
+}
+
+        
+        // ================== FUNÇÃO LIMPAR CAMPOS ==================
+
+        function limparCampos(){
+            document.querySelectorAll('input, textarea, select').forEach(el=>{
+                // Não limpa o bloco de Registro (kv)
+                if (el.closest('.kv')) return;    
+                
+                if (el.type === 'checkbox') el.checked = false; 
+                else if (el.tagName==='SELECT') el.selectedIndex = 0;
+                else if (el.type!=='button') el.value = '';
+              
+                // button.textContent = 'Salvar Ficha';
+           
+            });
+            //  alert("Campos limpos. O bloco de Registro (topo) não foi alterado.");
+           
+        }
+
+     </script>
+
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+  //  }
+</script>
+
+  </body> 
+
+</html>
+    
+

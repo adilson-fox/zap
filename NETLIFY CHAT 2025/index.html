@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gestão - UVIS M'BOI MIM</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .card {
+      background: #fff;
+      padding: 40px 60px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      text-align: center;
+      animation: fadeIn 1.5s ease;
+    }
+
+    .card h1 {
+      font-size: 1.8rem;
+      color: #2a5298;
+      margin: 0;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>SISTEMA DE GESTÃO<br>UVIS M'BOI MIM</h1>
+  </div>
+
+  <script>
+    // Temporizador de 3 segundos antes de redirecionar
+    setTimeout(() => {
+      window.location.href = "welcome_sigva.html"; // substitua pelo nome da sua página principal
+    }, 5000);
+  </script>
+</body>
+</html>

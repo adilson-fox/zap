@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head> 
+
+
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+
+    <title>Sistema de Gestão de Ordens de Serviços</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: #003562;
+            color: white;
+            width: 100%;
+            padding: 1.5em 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            font-size: 2.4em;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        header h2 {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin: 0.5em 0 0;
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 2em;
+            margin-top: 4em;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5em;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.8em;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1em;
+            box-sizing: border-box;
+            padding-right: 3em;
+        }
+
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.2em;
+            color: #777;
+        }
+        
+        /* Estilos para o alerta personalizado */
+        .custom-alert {
+            display: none; /* Começa escondido */
+            background-color: #ffcccc; /* Fundo vermelho claro para erro */
+            color: #cc0000; /* Texto vermelho escuro */
+            border: 1px solid #cc0000;
+            border-radius: 8px;
+            padding: 1em;
+            margin-bottom: 1em;
+            text-align: center;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .custom-alert.show {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Estilos dos botões */
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5em;
+        }
+
+        .button {
+            padding: 0.8em 1.5em;
+            border-radius: 8px;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            text-align: center;
+            flex-grow: 1;
+            margin: 0 5px;
+        }
+        
+        .button-entrar {
+            background-color: #003562;
+            color: white;
+            border: 2px solid #002a4d;
+        }
+        
+        .button-entrar:hover {
+            background-color: #00284b;
+        }
+        
+        .button-cancelar {
+            background-color: #ff4d4d;
+            color: white;
+            border: 2px solid #e60000;
+        }
+
+        .button-cancelar:hover {
+            background-color: #e60000;
+        }
+
+        .button-voltar {
+            background-color: #f0f4f8;
+            color: #333;
+            border: 2px solid #ccc;
+        }
+        
+        .button-voltar:hover {
+            background-color: #ddd;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Sistema de Gestão de Ordens de Serviços</h1>
+        <h2>Unidade de Vigilância em Saúde - M’ Boi Mirim</h2>
+
+        <h2>[ Sessão Encerrada ...]  </h2>
+       
+
+
+    </header>
+    <script>
+
+        // Verificação de sessão
+window.addEventListener("DOMContentLoaded", () => {
+  const logado = localStorage.getItem("usuarioLogado");
+  if (logado !== "true") {
+    window.location.replace("login_senha.html"); // replace evita voltar com seta
+  } else {
+    const nome = localStorage.getItem("usuarioNome");
+    if (nome) {
+      document.getElementById("welcomeMsg").textContent = "Bem-vindo, " + nome + "!";
+    }
+  }
+});
+
+// Função de logout
+function logout() {
+  localStorage.removeItem("usuarioLogado");
+  localStorage.removeItem("usuarioNome");
+  window.location.replace("login_senha.html"); // apenas replace
+}
+        
+
+    </script>

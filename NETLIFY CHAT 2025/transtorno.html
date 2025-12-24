@@ -1,0 +1,777 @@
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Arboviroses — Registro de Bloqueios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --azul-escuro:#003562;
+      --azul-claro:#b0cbe9;
+      --cinza-card:#e0e0e0;
+      --borda:#888;
+      --borda-input:#ccc;
+      --shadow-strong:0 4px 10px rgba(0,0,0,0.2);
+      --shadow-soft:0 2px 5px rgba(0,0,0,0.2);
+      --radius:12px;
+      --bg:#f7f9fb;
+      --header-height: 0px; /* preenchidos via JS */
+      --nav-height: 0px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      font-family:'Roboto',sans-serif;
+      margin:0; background:var(--bg);
+      display:grid; grid-template-rows:auto auto 1fr; min-height:100vh;
+    }
+
+    /* Cabeçalho fixo */
+    header{
+      background:var(--azul-escuro); color:#fff; text-align:center; padding:20px;
+      box-shadow:0 4px 8px rgba(0,0,0,0.2); position:sticky; top:0; z-index:1000;
+    }
+    .titulo{font-size:2.2em;font-weight:800;margin:0}
+    .subtitulo{font-size:1.1em;font-weight:700;margin:0}
+
+    /* Navegação (fixa logo abaixo do header) */
+    nav{
+      background:var(--azul-claro); padding:15px 10px;
+      display:flex; justify-content:center; gap:15px; flex-wrap:wrap;
+      box-shadow:var(--shadow-strong);
+      position:sticky;
+      /* COSTURA header + nav, eliminando a “faixa” */
+      top: calc(var(--header-height) - 1px);
+      z-index:950;
+      margin-bottom:16px;
+    }
+    .nav-button{
+      background:var(--azul-claro); color:#000; font-weight:700;
+      border:1px solid var(--borda); padding:10px 20px; border-radius:var(--radius);
+      box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; transition:transform .2s
+    }
+    .nav-button:hover{transform:scale(1.05)}
+
+    /* Card do formulário (título fixo + corpo rolável) */
+    .formulario{
+      background:var(--cinza-card); width:92%; max-width:1100px;
+      margin:0 auto; padding:30px; border-radius:10px; box-shadow:var(--shadow-strong);
+      display:flex; flex-direction:column; min-height:0;
+      height: calc(100vh - var(--header-height) - var(--nav-height) - 32px);
+      overflow:hidden; /* scroll fica na .form-body */
+    }
+    .form-title{
+      color:var(--azul-escuro); font-weight:800; font-size:1.3rem;
+      margin:0 0 14px 0; flex:0 0 auto;
+      background:var(--cinza-card); padding:6px 8px; border-bottom:1px solid #d8d8d8;
+    }
+    
+    .form-body{flex:1 1 auto; min-height:0; overflow-y:auto; padding-top:4px;
+    padding-inline-end:14px;
+    scrollbar-gutter:stable;
+    
+    
+    }
+
+    /* Seções */
+    .section-title{
+      color:var(--azul-escuro); font-weight:800; font-size:1.05rem; margin:12px 0 8px;
+    }
+
+    /* Campos */
+    label{display:block; font-weight:700; color:#000; margin-bottom:6px}
+    input[type="text"], input[type="number"], input[type="date"], input[type="tel"],
+    input[type="email"], select, textarea{
+      width:100%; background:#fff; padding:10px; border:1px solid var(--borda-input);
+      border-radius:6px; font-size:1rem; box-shadow:var(--shadow-soft)
+    }
+    textarea{min-height:86px; resize:vertical}
+    .radio-group{display:flex; gap:24px; align-items:center; margin-top:6px}
+    .muted{color:#444; font-weight:500}
+
+    /* GRID 12 colunas */
+    .grid12{display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:18px}
+    .c1{grid-column:span 1}.c2{grid-column:span 2}.c3{grid-column:span 3}
+    .c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}
+    .c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}
+    .c10{grid-column:span 10}.c11{grid-column:span 11}.c12{grid-column:span 12}
+
+    /* Lista rótulo/valor (se um dia usar modo descritivo) */
+    .kv{
+      display:grid;
+      grid-template-columns:max-content 1fr max-content 1fr;
+      gap:8px 18px; padding:12px; background:var(--cinza-card); border-radius:8px;
+    }
+    
+    .kv dt{margin:0; font-weight:700; color:#000}
+    .kv dd{margin:0; color:#000}
+    .kv .full{grid-column:1/-1
+    
+    }
+
+  
+    /* Botões */
+    .form-buttons{display:flex; flex-wrap:wrap; gap:12px; justify-content:flex-end; margin-top:24px}
+    .command-button{
+      background:var(--cinza-card); color:#000; font-weight:700; border:1px solid var(--borda);
+      padding:12px 20px; border-radius:var(--radius); box-shadow:2px 2px 5px rgba(0,0,0,0.2);
+      cursor:pointer; font-size:16px; min-width:160px; transition:transform .15s
+    }
+    .command-button:hover{transform:scale(1.03)}
+
+    /* Responsividade */
+    @media (max-width: 980px){
+      .grid12{grid-template-columns:repeat(6, minmax(0,1fr))}
+      .c8{grid-column:span 6} .c9{grid-column:span 6} .c6{grid-column:span 6}
+      .c4{grid-column:span 3} .c3{grid-column:span 3} .c2{grid-column:span 3}
+    }
+    @media (max-width: 620px){
+      .grid12{grid-template-columns:1fr}
+      .c1,.c2,.c3,.c4,.c5,.c6,.c7,.c8,.c9,.c10,.c11,.c12{grid-column:1/-1}
+      .titulo{font-size:2em} .subtitulo{font-size:1.1em}
+    }
+    /* + espaço entre conteúdo e a barra de rolagem */
+    .form-body{
+    /* top | right | bottom | left */
+    padding: 8px 16px 14px 8px;      /* aumenta a “folga” do lado da barra */
+    scrollbar-gutter: stable both-edges; /* reserva um “canal” p/ a barra (onde suportado) */
+    }
+
+    /* + espaço vertical entre os campos (linhas do grid) */
+    .grid12{
+    row-gap: 22px;  /* antes era 18px; ajuste se quiser mais/menos */
+    }
+
+    /* rótulo um pouquinho mais afastado do input */
+    label{
+    margin-bottom: 8px; /* antes 6px */
+    }
+
+    /* (opcional) mais respiro entre as seções/títulos */
+    .section-title{
+    margin: 16px 0 10px; /* um pouco mais de espaço acima e abaixo */
+    }
+
+    /* === SIDEBAR (DASHBOARD LATERAL) ================================== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  background: var(--azul-escuro);
+  color: #fff;
+  padding: 20px 0;
+  transform: translateX(-240px);
+  transition: 0.3s ease;
+  z-index: 9999;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.sidebar a {
+  display: block;
+  padding: 12px 22px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.sidebar a:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Botão que abre e fecha o menu */
+.menu-toggle {
+  position: fixed;
+  top: 18px;
+  left: 16px;
+  background: var(--azul-escuro);
+  color: #fff;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 10000;
+  font-size: 18px;
+  transition: background 0.2s;
+}
+
+.menu-toggle:hover {
+  background: #022d52;
+}
+
+/* Empurra o conteúdo quando o menu abre */
+.content.shift {
+  margin-left: 240px;
+  transition: margin-left 0.3s ease;
+}
+
+  </style>
+</head>
+
+<body> 
+
+   <!-- MENU SIDEBAR -->
+
+  <script>
+    document.querySelector('.menu-toggle').addEventListener('click', function () {
+        const sidebar = document.getElementById('sidebar');
+        const content = document.querySelector('main'); // ou .content se você usar
+
+        sidebar.classList.toggle('open');
+
+        // Empurra conteúdo se quiser
+        if (content) {
+            content.classList.toggle('shift');
+        }
+    });
+  </script>
+
+
+   
+<button class="menu-toggle">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <h2>      >-------          SIGVA - Acesso Rápido</h2>
+
+
+  <a href="welcome_sigva.html">Página Inicial</a>
+  <a href="pesquisa_os_v2.html">Pesquisar OS</a> >
+  <a href="Bloqueio_supabase.html">Bloqueios - Cadastro</a> 
+  <a href="Ficha_Bloqueio.html">Bloqueios - Consulta</a>  >    
+  <a href="Bloqueio_supabase.html">Arbovirores - Ficha Cadastral</a> 
+  <a href="Escorpiao.html">Escorpião</a>
+  <a href="himenoptero.html">Himenopteros - Abelhas</a>
+  <a href="identificacao_sorologia.html">Identificação e Sorologia</a>
+  <a href="materialapoio.html">Material de Apoio</a>
+  <a href="monitoramento.html">Monitoramento</a>
+  <a href="acessoOS.html">Ordem de Serviço</a>
+  <a href="zoosanitaria.html">Zoosanitária</a>
+</div>
+
+<script>
+// (Seu código supabase...)
+</script>
+
+<script>
+document.querySelector('.menu-toggle').addEventListener('click', function () {
+    const sidebar = document.getElementById('sidebar');
+    const content = document.querySelector('main');
+
+    sidebar.classList.toggle('open');
+    if (content) content.classList.toggle('shift');
+});
+</script>
+
+</head>
+<body>
+  <header>
+    <p class="titulo">AÇÕES DE VIGILÂNCIA E CONTROLE DE TRANSTORNO DE ACUMULAÇÃO</p>
+    <p class="subtitulo">Unidade de Vigilância em Saúde - M’ Boi Mirim</p>
+  </header>
+  <nav>
+    <a class="nav-button" href="Ficha_OS.html">Ficha de Campo</a>
+    <a class="nav-button" href="login_senha.html">Login</a>
+  </nav>
+
+  <main class="formulario">
+    <div class="form-title">Formulário de campo</div>
+    <div class="form-body">
+
+       <!-- Registro -->
+      <h3 class="section-title">Registro</h3>
+      <section class="grid12">
+        <div class="c12">
+          <dl class="kv">
+            <dt>Nº OS:</dt>                 <dd id="r-os">001</dd>
+            <dt>Origem da solicitação:</dt> <dd id="r-origem">Telefone</dd>
+            <dt>Protocolo:</dt>             <dd id="r-protocolo">SP-2025-0001</dd>
+            <dt>Data da notificação:</dt>   <dd id="r-dn">21/07/2025</dd>
+            <dt>Data do recebimento:</dt>   <dd id="r-dr">21/07/2025</dd>
+            <dt>Ocorrência:</dt>            <dd id="r-ocorrencia">Transtorno de acumulação</dd>
+
+            <dt class="full">Descrição da Solicitação:</dt>
+            <dd class="full" id="r-desc">Relato de escorpião no quintal.</dd>
+
+            <dt>Solicitante:</dt>           <dd id="r-sol">Maria dos Santos</dd>
+            <dt>Paciente:</dt>              <dd id="r-paciente">—</dd>
+
+            <dt>Telefones:</dt>             <dd id="r-tels">11 99999-0000 / 11 98888-0000</dd>
+            <dt>Endereço:</dt>              <dd id="r-endereco">Rua Exemplo, 123 – Vila Prel</dd>
+            <dt>DA:</dt>                    <dd id="r-da">45</dd>
+            <dt>UBS:</dt>                   <dd id="r-ubs">Alfredo</dd>
+          </dl>
+        </div>
+
+        <div class="c12">
+          <label for="obs-registro">Observações do registro</label>
+          <textarea id="obs-registro" placeholder="Ex.: Nome correto do paciente é ... / Endereço com complemento ..."></textarea>
+        </div>
+      </section>
+
+
+
+      <!-- FORMULÁRIO DE CAMPO -->
+      <h3 class="section-title">Formulário de campo</h3>
+      <section class="grid12">
+        <div class="c4"><label for="dt_v1">Data da 1ª visita</label><input id="dt_v1" type="date"></div>
+        <div class="c4"><label for="dt_v2">Data da 2ª visita</label><input id="dt_v2" type="date"></div>
+        <div class="c4"><label for="dt_v3">Data da 3ª visita</label><input id="dt_v3" type="date"></div>
+      </section>
+
+      <section class="grid12">
+        <div class="c6"><label for="tipo-imovel">Tipo de imóvel</label><select id="tipo-imovel"></select></div>
+        <div class="c6"><label for="situacao-imovel">Situação do imóvel</label><select id="situacao-imovel"></select></div>
+      </section>
+
+      <!-- IDENTIFICAÇÃO DA PESSOA INVESTIGADA -->
+      <h3 class="section-title">Identificação da Pessoa Investigada</h3>
+      <section class="grid12">
+        <div class="c12"><label for="nome">Nome completo</label><textarea id="nome"></textarea></div>
+        <div class="c4"><label for="nasc">Data de nascimento</label><input type="date" id="nasc"></div>
+        <div class="c4"><label for="idade">Idade</label><input id="idade" type="number"></div>
+        <div class="c4"><label for="doc">Documento</label><textarea id="doc"></textarea></div>
+        <div class="c6"><label for="tel1">Telefone 1</label><input id="tel1" type="tel" placeholder="(00) 00000-0000"></div>
+        <div class="c6"><label for="tel2">Telefone 2</label><input id="tel2" type="tel" placeholder="(00) 00000-0000"></div>
+        <div class="c6"><label for="vive">Vive sozinho(a)?</label>
+          <select id="vive"><option>selecione</option><option>sim</option><option>não</option></select>
+        </div>
+        <div class="c6"><label for="comquem">Com quem?</label><textarea id="comquem"></textarea></div>
+      </section>
+
+      <!-- CONDIÇÕES DO IMÓVEL -->
+      <h3 class="section-title">Condições do Imóvel</h3>
+      <table>
+        <tr><th>Item Avaliado</th><th>Situação</th><th>Observações</th></tr>
+        <tr><td>Acesso à residência</td><td><select><option>Livre</option><option>Obstruído</option></select></td><td><textarea></textarea></td></tr>
+        <tr><td>Condições de higiene</td><td><select><option>Adequadas</option><option>Inadequadas</option></select></td><td><textarea></textarea></td></tr>
+        <tr><td>Risco sanitário aparente</td><td><select><option>Sim</option><option>Não</option></select></td><td><textarea></textarea></td></tr>
+        <tr><td>Presença de odores fortes</td><td><select><option>Sim</option><option>Não</option></select></td><td><textarea></textarea></td></tr>
+        <tr><td>Acúmulo de objetos</td><td><select><option>Sim</option><option>Não</option></select></td><td><textarea></textarea></td></tr>
+        <tr><td>Acúmulo de lixo orgânico</td><td><select><option>Sim</option><option>Não</option></select></td><td><textarea></textarea></td></tr>
+        <tr><td>Risco estrutural</td><td><select><option>Sim</option><option>Não</option></select></td><td><textarea></textarea></td></tr>
+        <tr><td>Vetores/infestação</td><td><select><option>Sim</option><option>Não</option></select></td><td><textarea></textarea></td></tr>
+      </table>
+
+      <!-- INFESTAÇÃO E ANIMAIS -->
+      <h3 class="section-title">Infestação e Animais</h3>
+      <section class="grid12">
+        <div class="c6"><label for="infest">Infestação?</label><select id="infest"><option>selecione</option><option>sim</option><option>não</option></select></div>
+        <div class="c6"><label for="ctrl">Controle químico/biológico</label><select id="ctrl"><option>Raticida</option><option>Drone</option><option>Larvicida</option></select></div>
+        <div class="c6"><label for="animais">Animais de criação?</label><select id="animais"><option>selecione</option><option>sim</option><option>não</option></select></div>
+        <div class="c6"><label for="quais">Quais?</label><textarea id="quais"></textarea></div>
+        <div class="c6"><label for="quant">Quantidade</label><input id="quant" type="number"></div>
+        <div class="c6"><label for="animais-doentes">Animais com sinais de doença?</label><select id="animais-doentes"><option>selecione</option><option>sim</option><option>não</option></select></div>
+        <div class="c12"><label for="cuidados">Cuidados prestados</label><textarea id="cuidados"></textarea></div>
+        <div class="c12"><label for="denuncias">Denúncias anteriores?</label><textarea id="denuncias"></textarea></div>
+      </section>
+
+      <!-- CONDIÇÕES DE SAÚDE -->
+      <h3 class="section-title">Condições de Saúde</h3>
+      <section class="grid12">
+        <div class="c6"><label for="fisicas">Condições físicas</label><select id="fisicas"><option>Boa</option><option>Regular</option><option>Ruim</option></select></div>
+        <div class="c6"><label for="medicacao">Uso de medicação contínua</label><select id="medicacao"><option>selecione</option><option>sim</option><option>não</option></select></div>
+        <div class="c6"><label for="saudemental">Acomp. saúde mental</label><select id="saudemental"><option>selecione</option><option>sim</option><option>não</option></select></div>
+        <div class="c6"><label for="onde">Onde?</label><textarea id="onde"></textarea></div>
+        <div class="c6"><label for="historico">Histórico de transtorno?</label><select id="historico"><option>selecione</option><option>sim</option><option>não</option></select></div>
+        <div class="c6"><label for="reconhece">Reconhece a situação?</label><select id="reconhece"><option>Sim</option><option>Não</option></select></div>
+        <div class="c6"><label for="resistencia">Resistência às intervenções</label><select id="resistencia"><option>Alta</option><option>Moderada</option><option>Baixa</option></select></div>
+      </section>
+
+      <!-- REDE DE APOIO -->
+      <h3 class="section-title">Rede de Apoio / Vínculos Sociais</h3>
+      <section class="grid12">
+        <div class="c6"><label for="rede">Rede de apoio?</label><select id="rede"><option>selecione</option><option>sim</option><option>não</option></select></div>
+        <div class="c6"><label for="familia">Contato com familiares/vizinhos?</label><select id="familia"><option>selecione</option><option>sim</option><option>não</option></select></div>
+        <div class="c6"><label for="cuidador">Existe cuidador?</label><select id="cuidador"><option>selecione</option><option>sim</option><option>não</option></select></div>
+        <div class="c6"><label for="visitas">Recebe visitas?</label><select id="visitas"><option>selecione</option><option>sim</option><option>não</option></select></div>
+        <div class="c12"><label for="servico">Vinculada a algum serviço?</label><textarea id="servico"></textarea></div>
+      </section>
+
+      <!-- RELATÓRIO -->
+      <h3 class="section-title">Relatório de campo</h3>
+      <section class="grid12">
+        <div class="c12"><textarea id="relatorio"></textarea></div>
+      </section>
+
+      <!-- IDENTIFICAÇÃO -->
+      <h3 class="section-title">Identificação</h3>
+      <section class="grid12">
+        <div class="c6"><label for="municipe">Nome do Munícipe</label><textarea id="municipe"></textarea></div>
+        <div class="c3"><label for="cpf">CPF</label><input id="cpf" type="text" placeholder="000.000.000-00"></div>
+        <div class="c3"><label for="tel">Telefone</label><input id="tel" type="tel" placeholder="(00) 00000-0000"></div>
+        <div class="c12"><label for="equipe">Equipe</label><textarea id="equipe"></textarea></div>
+      </section>
+
+      <!-- BOTÕES -->
+      <div class="form-buttons">
+        <button class="command-button">Salvar OS</button>
+        <button class="command-button" id="btnLimpar">Limpar Campos</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // === CONFIGURAÇÃO DO SUPABASE ===
+        // SISTEMA DE GESTAO: DESENVOLVIDO POR: ADILSON CEARÁ - ADS -14 Nov. 2025(backend) - Todos os direitos Reservados
+        const SUPABASE_URL = 'https://vepnalrpyaxhpklicqrb.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlcG5hbHJweWF4aHBrbGljcXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5MDgxNzIsImV4cCI6MjA3NzQ4NDE3Mn0.-9_J-RE4IWdaGISGZgAXe6S2MLStG9lVm50suQKr7jY';
+        const { createClient } = window.supabase;
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let currentOSId = null; 
+        
+        // NOME DA TABELA DE DETALHES ESPECÍFICA
+        const TABELA_DETALHES = 'Detalhes_Escorpiao'; 
+
+        // Mapeamento de IDs HTML para colunas da TABELA: Principal
+         // Esses dados serão salvos lá
+        const PRINCIPAL_FIELD_MAP = {
+            'obs-registro': 'obs_registro',
+            'dt_v1': 'data_visita_1',
+            'dt_v2': 'data_visita_2',
+            'dt_v3': 'data_visita_3',
+             'area_monitorada': 'area_monitorada',
+                        
+          };
+
+        // Mapeamento de IDs HTML para colunas da TABELA: DETALHES_ESCORPIAO
+        // Esses dados serão salvos lá
+        const DETALHES_FIELD_MAP = {
+            //'area-monitorada': 'area_monitorada',
+            'tipo_imovel': 'tipo_imovel',
+            'situacao-imovel': 'situacao_imovel',
+            'qtd-vistoriados': 'imovels_vistoriados',
+            'condicoes-ambientais': 'condicoes_ambientais',
+            'relatorio-equipe': 'relatorio_equipe',
+            'nome-municipe': 'nome_municipe',
+            'cpf': 'cpf', 
+            'telefone-municipe': 'telefone', 
+            'equipe': 'equipe'
+        };
+        
+        // ================== FUNÇÕES DE UTILIDADE ==================
+
+        function formatarDataBR(dataISO) {
+            if (!dataISO) return '—'; 
+            const dataString = dataISO.substring(0, 10); 
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(dataString)) return 'Data Inválida';
+            const [ano, mes, dia] = dataString.split('-');
+            return `${dia}/${mes}/${ano}`; 
+        }
+
+        function LerIDdaURL() {
+            const params = new URLSearchParams(window.location.search);
+            const osId = params.get('osid');
+            if (!osId) {
+                document.getElementById('r-os').textContent = 'ERRO';
+                alert('Erro: ID da Ordem de Serviço não encontrado na URL.');
+                return null;
+            }
+            return parseInt(osId);
+        }
+
+        // ================== CARREGAMENTO ==================
+
+        window.onload = function() {
+            // Ajusta alturas do header/nav para cálculo da área de scroll
+            (function(){
+                function setHeights(){
+                    const h = document.querySelector('header');
+                    const n = document.querySelector('nav');
+                    document.documentElement.style.setProperty('--header-h', (h?.offsetHeight||0)+'px');
+                    document.documentElement.style.setProperty('--nav-h',    (n?.offsetHeight||0)+'px');
+                }
+                setHeights(); window.addEventListener('resize', setHeights);
+            })();
+            
+            currentOSId = LerIDdaURL();
+            if (currentOSId) {
+                CarregarFichaEscorpiao(currentOSId);
+            }
+            
+            // Liga o botão Salvar à função correta
+            document.querySelector('.form-buttons .command-button:first-child').onclick = SalvarFichaEscorpiao;
+        };
+        
+        async function CarregarFichaEscorpiao(osId) {
+            try {
+        // Consulta Principal + Detalhes_Escorpiao (JOIN implícito)
+        const { data, error } = await supabase
+            .from('Principal')
+            .select(`
+                *,
+                ${TABELA_DETALHES} (*)
+            `)
+            .eq('id', osId)
+            .single();
+
+        if (error) throw error;
+        if (!data) throw new Error("OS não encontrada.");
+
+        const os = data;
+
+        // Carrega Detalhes_Escorpiao separadamente
+        const { data: detalhes, error: err2 } = await supabase
+            .from('Detalhes_Escorpiao')
+            .select('*')
+            .eq('os_id', osId)
+            .maybeSingle();
+
+        if (err2) throw err2;
+
+        console.log("📋 Principal:", os);
+        console.log("🦂 Detalhes_Escorpiao:", detalhes);
+
+        // PREENCHIMENTO DO BLOCO DE REGISTRO
+        document.getElementById('r-os').textContent = os.nextosnumber || '—';
+        document.getElementById('r-origem').textContent = os.origem || '—';
+        document.getElementById('r-protocolo').textContent = os.protocolo || '—';
+        document.getElementById('r-dn').textContent = formatarDataBR(os.datanotificacao);
+        document.getElementById('r-dr').textContent = formatarDataBR(os.datarecebimento);
+        document.getElementById('r-ocorrencia').textContent = os.tipoocorrencia || '—';
+        document.getElementById('r-desc').textContent = os.descricao || '—';
+        document.getElementById('r-sol').textContent = os.paciente || '—';
+        document.getElementById('r-paciente').textContent = os.paciente || '—';
+        document.getElementById('r-tels').textContent = `${os.tel1 || ''}, ${os.tel2 || ''}`;
+        document.getElementById('r-da').textContent = os.da || '—';
+        document.getElementById('r-ubs').textContent = os.ubs || '—';
+        document.getElementById('r-endereco').textContent = `${os.logradouro || ''}, ${os.numero || 'S/N'} — ${os.bairro || '—'}`;
+
+        // PREENCHIMENTO AUTOMÁTICO DOS INPUTS
+        const ALL_FIELDS = { ...PRINCIPAL_FIELD_MAP, ...DETALHES_FIELD_MAP };
+
+        for (const id in ALL_FIELDS) {
+            const element = document.getElementById(id);
+            const campoBD = ALL_FIELDS[id];
+
+            if (!element) continue;
+
+            if (id in PRINCIPAL_FIELD_MAP) {
+                if (os[campoBD] !== null && os[campoBD] !== undefined) {
+                    element.value = (element.type === "date")
+                        ? os[campoBD].substring(0, 10)
+                        : os[campoBD];
+                }
+
+            } else if (id in DETALHES_FIELD_MAP) {
+                let valor = detalhes ? detalhes[campoBD] : null;
+
+                if (valor !== null && valor !== undefined) {
+                    element.value = (element.type === "date")
+                        ? valor.substring(0, 10)
+                        : valor;
+                }
+            }
+        }
+
+        // CHECKBOXES - Logradouros monitorados
+        if (detalhes && detalhes.logradouros_monit) {
+            let logradouros = detalhes.logradouros_monit;
+
+            if (typeof logradouros === 'string') {
+                try {
+                    logradouros = JSON.parse(logradouros);
+                } catch (e) {
+                    logradouros = [];
+                }
+            }
+
+            document.querySelectorAll('.grid12 label input[type="checkbox"]').forEach(checkbox => {
+                const labelText = checkbox.parentNode.textContent.trim();
+                checkbox.checked = logradouros.includes(labelText);
+            });
+        }
+
+        console.log("✨ Carregamento concluído");
+
+    } catch (err) {
+        console.error('Erro ao carregar ficha:', err);
+        document.getElementById('r-os').textContent = 'ERRO DE CARREGAMENTO';
+        alert(`Não foi possível carregar a ficha (ID: ${osId}). Erro: ${err.message}`);
+    }
+}
+
+
+// ================== FUNÇÃO PARA TRAÇAR ROTA (CORRIGIDA) ==================
+
+function tracarRota() {
+    // Busca o texto do endereço completo da seção de registro (somente leitura)
+    const enderecoCompletoElement = document.getElementById('r-endereco');
+    
+    // Verifica se o elemento existe (medida de segurança)
+    if (!enderecoCompletoElement) {
+        alert('Erro: Elemento do endereço de registro (id="r-endereco") não encontrado.');
+        return;
+    }
+    
+    // Pega o endereço de registro, que já está formatado como: Rua Exemplo, 123 – Vila Prel
+    const destinoCompleto = enderecoCompletoElement.textContent.trim();
+    
+    // Verifica se o endereço está vazio
+    if (destinoCompleto === '—' || destinoCompleto === '') {
+        alert('O endereço da OS não foi carregado. Impossível traçar a rota.');
+        return;
+    }
+
+    // Adiciona a cidade/estado para geolocalização mais precisa
+    const destinoAjustado = destinoCompleto + ", São Paulo, SP";
+    
+    // Codificar o endereço é crucial para URLs
+    const destinoCodificado = encodeURIComponent(destinoAjustado);
+
+    // Cria a URL de Rotas no Google Maps
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destinoCodificado}`;
+    
+    // Abre em uma nova aba
+    window.open(mapsUrl, '_blank');
+    
+    console.log("Abrindo Google Maps para traçar rota até:", destinoAjustado);
+}
+
+        // ================== SALVAMENTO ==================
+
+        async function SalvarFichaEscorpiao() {
+            if (!currentOSId) {
+                alert('Impossível salvar: ID da OS não está definido.');
+                return;
+            }
+            
+            const button = event.currentTarget;
+            button.disabled = true;
+            button.textContent = 'Salvando...';
+
+            const dataPrincipal = {};
+            const dataDetalhes = { os_id: currentOSId }; 
+            
+            // Coleta e separa os dados
+            const ALL_FIELDS = { ...PRINCIPAL_FIELD_MAP, ...DETALHES_FIELD_MAP };
+
+            for (const id in ALL_FIELDS) {
+                const element = document.getElementById(id);
+                if (element) {
+                    const fieldName = ALL_FIELDS[id];
+                    let valor = element.value.trim();
+
+                    // Define como NULL se estiver vazio ou com valor padrão de seleção
+                    if (valor === "" || valor === "Selecione" || valor === "—") {
+                        valor = null;
+                    }
+                    
+                    if (id in PRINCIPAL_FIELD_MAP) {
+                        dataPrincipal[fieldName] = valor;
+                    } else if (id in DETALHES_FIELD_MAP) {
+                        dataDetalhes[fieldName] = valor;
+                    }
+                }
+            }
+            
+            // Coleta dados dos CHECKBOXES
+            const logradourosSelecionados = [];
+            document.querySelectorAll('.grid12 label input[type="checkbox"]:checked').forEach(checkbox => {
+                logradourosSelecionados.push(checkbox.parentNode.textContent.trim());
+            });
+            // Salva como JSON string
+            dataDetalhes['logradouros_monit'] = JSON.stringify(logradourosSelecionados);
+
+            try {
+                // 1. Atualiza a tabela PRINCIPAL (Campos Comuns)
+                const { error: errPrincipal } = await supabase
+                    .from('Principal')
+                    .update(dataPrincipal)
+                    .eq('id', currentOSId);
+
+                if (errPrincipal) throw errPrincipal;
+
+                // 2. Atualiza/Insere na tabela DETALHES_ESCORPIAO (Campos Específicos)
+                const { error: errDetalhes } = await supabase
+                    .from(TABELA_DETALHES)
+                    .upsert(dataDetalhes, { onConflict: 'os_id' }); 
+
+                if (errDetalhes) throw errDetalhes;
+
+                alert('Ficha de Escorpião salva (Principal e Detalhes) com sucesso!');
+                await CarregarFichaEscorpiao(currentOSId); 
+
+            } catch (err) {
+                console.error('Erro ao salvar ficha:', err);
+                alert(`Erro ao salvar no banco de dados. Verifique permissões e nomes das colunas.`);
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Salvar';
+            }
+        }
+        
+        // ================== FUNÇÃO LIMPAR CAMPOS ==================
+
+        function limparCampos(){
+            document.querySelectorAll('input, textarea, select').forEach(el=>{
+                // Não limpa o bloco de Registro (kv)
+                if (el.closest('.kv')) return;    
+                
+                if (el.type === 'checkbox') el.checked = false; 
+                else if (el.tagName==='SELECT') el.selectedIndex = 0;
+                else if (el.type!=='button') el.value = '';
+            });
+            alert("Campos de visita limpos. O bloco de Registro (topo) não foi alterado.");
+        }
+
+    </script>
+
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+
+</script>
+</body>
+</html>

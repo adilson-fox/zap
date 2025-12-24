@@ -1,0 +1,231 @@
+<!DOCTYPE html> 
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ficha de Campo da Ordem de Serviço</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      background-color: #f0f4f8;
+    }
+
+    header {
+      background-color: #003562;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .titulo { font-size: 2.4em; font-weight: bold; margin: 0; }
+    .subtitulo { font-size: 1.4em; font-weight: bold; margin: 0; }
+
+    nav {
+      background-color: #b0cbe9;
+      padding: 15px 10px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-button {
+      background-color: #b0cbe9;
+      color: black;
+      font-weight: bold;
+      border: 1px solid #888888;
+      padding: 10px 20px;
+      border-radius: 12px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .formulario {
+      background-color: #e0e0e0;
+      padding: 30px;
+      margin: 40px auto;
+      width: 90%;
+      max-width: 1100px;
+      border-radius: 10px;
+    }
+
+    .form-title {
+      color: #003562;
+      font-weight: bold;
+      font-size: 1.6em;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #000000;
+    }
+
+    select {
+      background-color: #ffffff;
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1em;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+      font-weight: normal;
+    }
+
+    /* ===== NOVO: dois campos lado a lado ===== */
+    .inline-fields{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: end; /* alinha as caixas pela base */
+      margin-bottom: 10px;
+    }
+    .inline-fields label{ margin-top: 0; } /* evita espaço extra no topo */
+
+    .tabela-container {
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: 300px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      margin-top: 20px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 1200px; /* rolagem horizontal se a tela for estreita */
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    /* ===== NOVO: cabeçalho azul escuro com texto branco ===== */
+    th {
+      background-color: #003562;
+      color: #fff;
+    }
+
+    .form-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .command-button {
+      background-color: #e0e0e0;
+      color: black;
+      font-weight: bold;
+      border: 1px solid #888888;
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      cursor: pointer;
+      font-size: 16px;
+      width: fit-content;
+      margin: 0 auto;
+    }
+
+    .command-button:hover { transform: scale(1.05); }
+
+    @media (max-width: 768px) {
+      .form-buttons { flex-direction: column; }
+      .command-button { width: 100%; }
+      .titulo { font-size: 1.8em; }
+      .subtitulo { font-size: 1.1em; }
+
+      /* Em telas pequenas, os dois campos empilham */
+      .inline-fields{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="titulo">Sistema de Gestão de Ordens de Serviço</p>
+    <p class="subtitulo">Unidade de Vigilância em Saúde - M’ Boi Mirim</p>
+  </header>
+
+  <nav>
+    <button class="nav-button" onclick="window.location.href='index.html'">Login</button>
+  </nav>
+
+  <div class="formulario">
+    <div class="form-title">Ficha de Campo de Ordem de Serviços</div>
+
+    <!-- ===== NOVO BLOCO LADO A LADO ===== -->
+    <div class="inline-fields">
+      <div class="field">
+        <label for="tecnico">Selecionar Técnico:</label>
+        <select id="tecnico">
+          <option>Selecione</option>
+          <option>Ana Vieira da Costa</option>
+          <option>Isabela Pereira Ricci Rocha</option>
+          <option>Juliana Blanco Bovino</option>
+          <option>Leandro Cesar Pompeu</option>
+          <option>Rosely Therezinha de Conti Cannavó</option>
+          <option>Samuel Paulo Gioia Guizze</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="integrante">Integrante da Equipe:</label>
+        <select id="integrante">
+          <option>Selecione</option>
+          <option>Ana Paula</option>
+          <option>Nelson</option>
+          <option>Francisco</option>
+          <option>Josemar</option>
+          <option>Marcos Antonio</option>
+          <option>Cicero</option>
+          <option>Felipe</option>
+          <option>Adriana Lucas</option>
+          <option>Marcos José</option>
+          <option>Gustavo</option>
+        </select>
+      </div>
+    </div>
+    <!-- ===== /NOVO BLOCO ===== -->
+
+    <div class="tabela-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Nº da OS</th>
+            <th>Endereço</th>
+            <th>DA</th>
+            <th>UBS</th>
+            <th>Tipo de Ocorrência</th>
+            <th>Descrição da Solicitação</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>001</td>
+            <td>Rua Exemplo, 123</td>
+            <td>DA 1</td>
+            <td>UBS 2</td>
+            <td>Escorpião</td>
+            <td>Solicitação Exemplo</td>
+            <td><button class="command-button">Abrir OS</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="form-buttons">
+      <button class="command-button">Visualizar Mapas</button>
+    </div>
+  </div>
+</body>
+</html>

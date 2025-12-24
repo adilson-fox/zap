@@ -1,0 +1,918 @@
+
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Ordem de Serviço</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        /* O seu CSS original foi mantido e está ótimo! */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #f0f4f8;
+        }
+
+        header {
+            background-color: #003562;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .titulo {
+            font-size: 2.4em;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .subtitulo {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        nav {
+            background-color: #b0cbe9;
+            padding: 15px 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-button {
+            background-color: #b0cbe9;
+            color: black;
+            font-weight: bold;
+            border: 1px solid #888888;
+            padding: 10px 20px;
+            border-radius: 12px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+
+        .nav-button:hover {
+            transform: scale(1.05);
+        }
+
+        .formulario {
+            background-color: #e0e0e0;
+            padding: 30px;
+            margin: 40px auto;
+            width: 95%;
+            max-width: 1500px;
+            border-radius: 10px;
+            box-shadow: 6px 6px 10px rgba(0, 0, 0, 0.2);
+            overflow-x: auto;
+        }
+
+        .form-title {
+            color: #003562;
+            font-weight: bold;
+            font-size: 1.6em;
+            margin-bottom: 20px;
+            margin-top: 40px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #000;
+            margin-right: 10px;
+            display: inline-block;
+            min-width: 150px;
+        }
+
+        select,
+        input[type="date"] {
+            padding: 8px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+            width: 300px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            /* sombra suave */
+        }
+
+        .filtros {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+
+        /* Container de todos os filtros e o botão */
+        .filter-group {
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 20px; /* Use uma medida válida, ex: 20px */
+            align-items: flex-end; /* Mantém a base dos campos alinhada */
+            margin-bottom: 30px; 
+}
+
+        /* Garante que o rótulo e o select/input estejam bem organizados */
+        .c4 {
+                /* Ativa o Flexbox para o label e o select */
+               
+                /* Espaçamento entre o label e o select */
+                gap: 0px; 
+            }
+
+
+        .filter-row {
+            display: flex; /* Habilita o alinhamento flexível */
+            flex-wrap: wrap; /* Permite quebrar se a tela for pequena */
+            gap: 5px; /* Espaçamento entre os filtros */
+            
+            /* 🔑 ESSENCIAL: Alinha todos os itens (caixas de seleção e o botão) pela base */
+            align-items: flex-end; 
+        }
+
+        /* Garante que cada filtro interno (como o de Ocorrência) organize seu label e select */
+        .c4 {
+                display: flex; 
+                align-items: center; /* Centraliza verticalmente o rótulo com o campo de seleção */
+                gap: 10px; 
+            }
+
+/* Estilo para alinhar os elementos dentro do c4 na horizontal, se for o caso: */
+/*
+.c4 {
+    display: flex;
+    align-items: center; 
+    gap: 10px;
+}
+*/
+
+
+        /* Opcional: Estilo para o botão de pesquisa para destacá-lo */
+        #search-button {
+            background-color: #003562; 
+            color: white; 
+            border: none;
+            padding: 10px 30px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            height: 40px; /* Garante que tenha uma altura similar ao select */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+            /* 🟢 CHAVE: Adiciona uma pequena margem superior para 'abaixar' */
+            margin-top: 18px;
+        }
+        #search-button:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+
+
+
+        table {
+            width: 100%;
+            max-width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            border: 1px solid #ccc;
+            text-align: center;
+            /* Centraliza horizontalmente */
+            vertical-align: middle;
+            /* Centraliza verticalmente */
+        }
+
+        th {
+            background-color: #003562;
+            color: white;
+        }
+
+        td input[type="date"] {
+            width: 120px;
+        }
+
+        .ver-button {
+            background-color: #e0e0e0;
+            border: 1px solid #888;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .relatorio-button {
+            margin-top: 20px;
+            background-color: #e0e0e0;
+            border: 1px solid #888;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Garante que o modal fique por cima */
+        }
+
+        .modal.show {
+            display: flex !important;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .modal-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .filtros {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-button {
+                flex: 1 1 100%;
+                text-align: center;
+            }
+
+            .relatorio-button {
+                width: 100%;
+            }
+
+            .formulario {
+                padding: 15px;
+            }
+
+            .modal-content input[type="date"] {
+                width: 100% !important;
+                margin-bottom: 10px;
+            }
+
+            select {
+                width: 100% !important;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <p class="titulo">Sistema de Gestão de Ordens de Serviço</p>
+        <p class="subtitulo">Unidade de Vigilância em Saúde - M’ Boi Mirim</p>
+    </header>
+    <nav>
+        <button class="nav-button" onclick="location.href='welcome_sigva.html'">Home</button>
+        <button class="nav-button" onclick="location.href='Cadastramento_OrdemServico.html'">Registro Ordem de Serviço</button>
+        <button class="nav-button" onclick="location.href='Registro.html'">Registro</button>
+        <button class="nav-button" onclick="location.href='Ficha_OS.html'">Ficha de campo-OS</button>
+    </nav>
+
+
+
+
+<div class="formulario">
+    <div class="form-title">Gestão de Ordem de Serviço</div>
+    
+    <div class="filtros"> 
+        
+         <div>
+            <label for="tecnico">Selecionar Técnico:</label><br>
+            <select id="tecnico">
+                <option value="">Selecione</option>               
+                <option value="">🔍Pesquisa apenas c/ Status da OS</option>
+                <option value="Ana Vieira da Costa">Ana Vieira da Costa</option>
+                <option value="Isabela Pereira Ricci Rocha">Isabela Pereira Ricci Rocha</option>
+                <option value="Juliana Blanco Bovino">Juliana Blanco Bovino</option>
+                <option value="Leandro Cesar Pompeu">Leandro Cesar Pompeu</option>
+                <option value="Rosely Therezinha de Conti Cannavó">Rosely Therezinha de Conti Cannavó</option>
+                <option value="Samuel Paulo Gioia Guizze">Samuel Paulo Gioia Guizze</option>
+            </select>
+        </div>
+
+
+        
+        <div>
+            <label for="status-os">Status da OS:</label><br>
+            <select id="status-os">
+                <option value="">Selecione</option>
+                <option value="Em aberto">Em aberto</option>
+                <option value="Retorno">Retorno</option>
+                <option value="Arquivada">Arquivada</option>
+            </select>
+     
+        </div>
+
+        <div>      
+            <label for="tipoOcorrencia">Tipo de Ocorrência</label><br>
+            <select id="tipoOcorrencia">
+                    <option value="" selected>Selecione</option>
+                    <option value="Aedes aegypti">Aedes aegypti</option>
+                    <option value="Animais">Animais</option>
+                    <option value="Barbeiro">Barbeiro</option>
+                    <option value="Culex sp.">Culex sp.</option>
+                    <option value="Escorpião">Escorpião</option>
+                    <option value="Escorpionismo">Escorpionismo</option>
+                    <option value="Esporotricose">Esporotricose</option>
+                    <option value="Febre maculosa">Febre maculosa</option>
+                    <option value="Himenoptero">Himenoptero</option>
+                    <option value="Leptospirose">Leptospirose</option>
+                    <option value="Roedores">Roedores</option>
+                    <option value="Pombos">Pombos</option>
+                    <option value="Transtorno de acumulação">Transtorno de acumulação</option>
+            </select>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <button id="search-button">
+                Pesquisar
+            </button>
+        </div>
+    </div>
+
+   
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Sel.</th>
+                    <th>Nº da OS</th>
+                    <th>Endereço</th>
+                    <th>DA</th>
+                    <th>UBS</th>
+                    <th>Tipo de Ocorrência</th>
+                    <th>Descrição da Solicitação</th>
+                    <th>1ª Visita</th>
+                    <th>2ª Visita</th>
+                    <th>3ª Visita</th>
+                    <th>Data de Arquivo</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="os-table-body">
+                <tr>
+                    <td colspan="12">Carregando Ordens de Serviço...</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table id="osTable">
+            <thead id="osTableHead">
+                </thead>
+            <tbody id="osTableBody">
+                </tbody>
+        </table>
+
+
+
+        <button class="relatorio-button" onclick="abrirModalRelatorio()">Gerar Relatório</button>
+    </div>
+
+    <div id="modal-relatorio" class="modal">
+        <div class="modal-content">
+            <h2>Gerar Relatório</h2>
+            <p>Selecione os campos desejados:</p>
+            <label><input type="checkbox" checked> Nº da OS</label>
+            <label><input type="checkbox" checked> Endereço</label>
+            <label><input type="checkbox" checked> DA</label>
+            <label><input type="checkbox" checked> UBS</label>
+            <label><input type="checkbox" checked> Tipo de Ocorrência</label>
+            <label><input type="checkbox" checked> Descrição da Solicitação</label>
+            <label><input type="checkbox"> Datas das Visitas</label>
+            <label><input type="checkbox"> Data de Arquivo</label>
+
+            <br><br>
+            <div style="margin-top: 20px;">
+                <p style="font-weight: bold; margin-bottom: 10px;">Filtrar por Período:</p>
+                <div style="display: flex; justify-content: flex-start; gap: 30px; flex-wrap: wrap;">
+                    <div style="display: flex; flex-direction: column;">
+                        <label for="data-inicial-modal" style="font-weight: bold; margin-bottom: 5px;">Data Inicial</label>
+                        <input type="date" id="data-inicial-modal" style="width: 160px;">
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <label for="data-final-modal" style="font-weight: bold; margin-bottom: 5px;">Data Final</label>
+                        <input type="date" id="data-final-modal" style="width: 160px;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button onclick="fecharModalRelatorio()">Cancelar</button>
+                <button>Exportar Excel</button>
+                <button>Exportar PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-os" class="modal">
+        <div class="modal-content">
+            <h2>Detalhes da OS</h2>
+            <p id="os-details-content">Conteúdo da OS selecionada.</p>
+            <div class="modal-buttons">
+                <button onclick="fecharModalOS()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    // === CONFIGURAÇÃO DO SUPABASE ===
+    // ATENÇÃO: Verifique se estas chaves estão corretas!
+    const SUPABASE_URL = 'https://vepnalrpyaxhpklicqrb.supabase.co'; 
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlcG5hbHJweWF4aHBrbGljcXJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5MDgxNzIsImV4cCI6MjA3NzQ4NDE3Mn0.-9_J-RE4IWdaGISGZgAXe6S2MLStG9lVm50suQKr7jY';
+    const { createClient } = window.supabase;
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const tbody = document.getElementById('os-table-body');
+
+/* ============================================================
+   FUNÇÃO PARA CARREGAR ORDENS DE SERVIÇO
+============================================================ */
+
+async function CarregarOS() {
+    
+    // 1. OBTENÇÃO DOS TERMOS DE PESQUISA
+    const tecnico_responsavel = document.getElementById('tecnico').value.trim();
+    const statusos = document.getElementById('status-os').value.trim();
+    const tipoocorrencia = document.getElementById('tipoOcorrencia').value.trim(); 
+
+    let query = supabase
+        .from('Principal') // A tabela Principal da sua RLS
+        .select('*');
+
+    const tbody = document.getElementById('os-table-body');
+    const temFiltro = tecnico_responsavel || statusos || tipoocorrencia;
+
+    tbody.innerHTML = `<tr><td colspan="12">Buscando Ordens de Serviço...</td></tr>`; 
+
+    // Se nenhum filtro foi aplicado (e você não quer carregar tudo)
+    if (!temFiltro) {
+        tbody.innerHTML = `<tr><td colspan="12">Preencha os filtros e clique em [Pesquisar] para buscar as Ordens de Serviço.</td></tr>`;
+        return;
+    }
+
+    try {
+        
+        // 🟢 FILTRO 1: POR TÉCNICO E AGENTES (OR)
+       
+       // if (tecnico_responsavel) {
+       
+       // Prepara o termo com curingas (%)
+       
+       //     const tecnicoComCuringa = `%${tecnico_responsavel}%`; 
+            
+            // OR: (tecnico_responsavel OU Agente 1 OU Agente 2 OU Agente 3)
+            // Este filtro é aplicado primeiro. Os filtros subsequentes serão AND.
+        
+       //     const orString = [
+       //         `tecnico_responsavel.ilike.${tecnicoComCuringa}`,
+       //         `agente_1.ilike.${tecnicoComCuringa}`,
+       //         `agente_2.ilike.${tecnicoComCuringa}`,
+       //         `agente_3.ilike.${tecnicoComCuringa}`,
+       //     ].join(',');
+
+        //    query = query.or(orString); 
+       // }
+
+        
+       if (tecnico_responsavel) {
+    const t = `%${tecnico_responsavel}%`;
+    
+    // Faz o filtro OR tratando NULL como ''
+    const orString = [
+        `tecnico_responsavel.ilike.${t}`,
+        `agente_1.ilike.${t}`,
+        `agente_2.ilike.${t}`,
+        `agente_3.ilike.${t}`
+    ].join(',');
+
+    // Consulta OR
+    query = query.or(orString);
+}
+
+
+
+
+
+
+
+
+
+        // 🟢 FILTRO 2: POR STATUS (AND)
+        if (statusos) {
+            // Este filtro só é adicionado se statusos tiver um valor (e é um AND implícito)
+            query = query.eq('statusos', statusos); 
+        }
+        
+
+        // 🟢 FILTRO 3: POR OCORRENCIA (AND)
+        if (tipoocorrencia) {
+            // Usa ilike para ignorar maiúsculas/minúsculas na ocorrência (e é um AND implícito)
+            const ocorrenciaComCuringa = `%${tipoocorrencia}%`;
+            query = query.ilike('tipoocorrencia', ocorrenciaComCuringa); 
+        }
+        
+        
+        // 3. EXECUÇÃO DA CONSULTA
+        const { data: ordens, error } = await query
+            .order('id', { ascending: true });
+
+        if (error) {
+            console.error('ERRO SUPABASE:', error);
+            throw error;
+        }
+        
+        // 💡 LOG 2: VERIFICA O QUE O SUPABASE RETORNOU
+        console.log(`Resultados do Supabase:`, ordens);
+
+
+        if (!ordens || ordens.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="12">Nenhuma OS encontrada com os filtros selecionados.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = ''; // Limpa a tabela antes de preencher
+
+        ordens.forEach(os => {
+            const row = tbody.insertRow();
+
+            // Checkbox
+            row.insertCell().innerHTML = `<input type="checkbox" data-os-id="${os.id}">`;
+
+            // Dados básicos
+            row.insertCell().textContent = os.nextosnumber || '—';
+            row.insertCell().textContent = `${os.logradouro || ''}, ${os.numero || ''}, ${os.bairro || ''}`;
+            row.insertCell().textContent = os.da || '—';
+            row.insertCell().textContent = os.ubs || '—';
+            row.insertCell().textContent = os.tipoocorrencia || '—';
+            row.insertCell().textContent = os.descricao || '—';
+
+            // 1ª visita (Ajustado para data-campo e agente_1)
+            const v1 = row.insertCell();
+            v1.innerHTML = `
+                <input type="date" 
+                    value="${os.data_visita_1 ? os.data_visita_1.substring(0,10) : ''}" 
+                    data-campo="data_visita_1" 
+                    style="width:120px;margin-bottom:5px;"><br>
+                <select style="width:120px;font-size:13px;" data-campo="agente_1">
+                    <option value="">Selecione</option> 
+                    <option ${os.agente_1 === 'Ana Paula' ? 'selected' : ''}>Ana Paula</option>
+                    <option ${os.agente_1 === 'Nelson' ? 'selected' : ''}>Nelson</option>
+                    <option ${os.agente_1 === 'Francisco' ? 'selected' : ''}>Francisco</option>
+                    <option ${os.agente_1 === 'Josemar' ? 'selected' : ''}>Josemar</option>
+                    <option ${os.agente_1 === 'Marcos Antonio' ? 'selected' : ''}>Marcos Antonio</option>
+                    <option ${os.agente_1 === 'Cicero' ? 'selected' : ''}>Cicero</option>
+                    <option ${os.agente_1 === 'Felipe' ? 'selected' : ''}>Felipe</option>
+                    <option ${os.agente_1 === 'Adriana Lucas' ? 'selected' : ''}>Adriana Lucas</option>
+                    <option ${os.agente_1 === 'Marcos José' ? 'selected' : ''}>Marcos José</option>
+                    <option ${os.agente_1 === 'Gustavo' ? 'selected' : ''}>Gustavo</option>
+                </select>
+            `;
+
+            // 2ª visita (Ajustado para data-campo e agente_2)
+            const v2 = row.insertCell();
+            v2.innerHTML = `
+                <input type="date" 
+                    value="${os.data_visita_2 ? os.data_visita_2.substring(0,10) : ''}" 
+                    data-campo="data_visita_2"
+                    style="width:120px;margin-bottom:5px;"><br>
+                <select style="width:120px;font-size:13px;" data-campo="agente_2">
+                    <option value="">Selecione</option>
+                    <option ${os.agente_2 === 'Ana Paula' ? 'selected' : ''}>Ana Paula</option>
+                    <option ${os.agente_2 === 'Nelson' ? 'selected' : ''}>Nelson</option>
+                    <option ${os.agente_2 === 'Francisco' ? 'selected' : ''}>Francisco</option>
+                    <option ${os.agente_2 === 'Josemar' ? 'selected' : ''}>Josemar</option>
+                    <option ${os.agente_2 === 'Marcos Antonio' ? 'selected' : ''}>Marcos Antonio</option>
+                    <option ${os.agente_2 === 'Cicero' ? 'selected' : ''}>Cicero</option>
+                    <option ${os.agente_2 === 'Felipe' ? 'selected' : ''}>Felipe</option>
+                    <option ${os.agente_2 === 'Adriana Lucas' ? 'selected' : ''}>Adriana Lucas</option>
+                    <option ${os.agente_2 === 'Marcos José' ? 'selected' : ''}>Marcos José</option>
+                    <option ${os.agente_2 === 'Gustavo' ? 'selected' : ''}>Gustavo</option>
+                </select>
+            `;
+
+            // 3ª visita (Ajustado para data-campo e agente_3)
+            const v3 = row.insertCell();
+            v3.innerHTML = `
+                <input type="date" 
+                    value="${os.data_visita_3 ? os.data_visita_3.substring(0,10) : ''}" 
+                    data-campo="data_visita_3"
+                    style="width:120px;margin-bottom:5px;"><br>
+                <select style="width:120px;font-size:13px;" data-campo="agente_3">
+                    <option value="">Selecione</option>
+                    <option ${os.agente_3 === 'Ana Paula' ? 'selected' : ''}>Ana Paula</option>
+                    <option ${os.agente_3 === 'Nelson' ? 'selected' : ''}>Nelson</option>
+                    <option ${os.agente_3 === 'Francisco' ? 'selected' : ''}>Francisco</option>
+                    <option ${os.agente_3 === 'Josemar' ? 'selected' : ''}>Josemar</option>
+                    <option ${os.agente_3 === 'Marcos Antonio' ? 'selected' : ''}>Marcos Antonio</option>
+                    <option ${os.agente_3 === 'Cicero' ? 'selected' : ''}>Cicero</option>
+                    <option ${os.agente_3 === 'Felipe' ? 'selected' : ''}>Felipe</option>
+                    <option ${os.agente_3 === 'Adriana Lucas' ? 'selected' : ''}>Adriana Lucas</option>
+                    <option ${os.agente_3 === 'Marcos José' ? 'selected' : ''}>Marcos José</option>
+                    <option ${os.agente_3 === 'Gustavo' ? 'selected' : ''}>Gustavo</option>
+                </select>
+            `;
+
+            // Arquivo (Ajustado para data-campo)
+            const va = row.insertCell();
+            va.innerHTML = `
+                <input type="date" 
+                    value="${os.data_arquivo ? os.data_arquivo.substring(0,10) : ''}" 
+                    data-campo="data_arquivo"
+                    style="width:120px;margin-bottom:5px;"><br>
+                <select style="width:120px;font-size:13px;" data-campo="tecnico_arquivo">
+                    <option value="">Selecione</option>
+                    <option ${os.tecnico_arquivo === 'Técnico' ? 'selected' : ''}>Técnico</option>
+                    <option ${os.tecnico_arquivo === 'Agente' ? 'selected' : ''}>Agente</option>
+                </select>
+            `;
+
+            // Botão "Salvar / Ver OS"
+            const action = row.insertCell();
+            action.innerHTML = `<button class="ver-button" onclick="salvarOS(${os.id}, this)">💾 Salvar / Ver OS</button>`;
+        });
+
+    } catch (err) {
+        console.error('❌ Erro ao carregar OS:', err);
+        tbody.innerHTML = `<tr><td colspan="12">Erro ao carregar dados: ${err.message}</td></tr>`;
+    }
+}
+
+
+
+
+/* ============================================================
+    FUNÇÃO DE SALVAMENTO MULTIPLO (OTIMIZADO)
+============================================================ */
+async function salvarOS(osId, buttonElement) {
+    // 1. Desabilita o botão para evitar cliques múltiplos
+    buttonElement.disabled = true;
+    buttonElement.textContent = 'Salvando...';
+
+
+
+    //*******************************************************
+    // 2. Encontra a linha (<tr>) que contém o botão clicado
+    const row = buttonElement.closest('tr');
+    const dataToUpdate = {};
+    let hasChanges = false;
+    
+    // Lista dos nomes CORRETOS das colunas no Supabase
+    const editableFields = [
+        'data_visita_1', 'agente_1',
+        'data_visita_2', 'agente_2',
+        'data_visita_3', 'agente_3',
+        'data_arquivo', 'tecnico_arquivo'
+        // CONFIRA SE OS NOMES ESTÃO CORRETOS na tabela ordens_servico!
+    ];
+    
+    row.querySelectorAll('input, select').forEach(field => {
+        // Pega o nome do campo se estiver na lista
+        //const fieldName = field.getAttribute('data-field-name');
+        const fieldName = field.getAttribute('data-campo');
+        
+        if (editableFields.includes(fieldName)) {
+            let valor = field.value;
+            if (valor === "") {
+                valor = null; // Envia NULL para campos vazios
+            }
+            dataToUpdate[fieldName] = valor;
+            hasChanges = true;
+        }
+    });
+
+    if (!hasChanges) {
+        // Se não houver campos editáveis encontrados (improvável com o código atual)
+        alert('Nenhum campo para salvar encontrado na linha.');
+        buttonElement.disabled = false;
+        buttonElement.textContent = '💾 Salvar / Ver OS';
+        return;
+    }
+    
+    // 4. Realiza o UPDATE único no Supabase
+    try {
+        const { data, error } = await supabase
+            .from("Principal") // Tabela onde estão os campos de visita
+            .update(dataToUpdate)
+            .eq("id", osId); // Filtra pela linha correta
+
+        if (error) throw error;
+
+        console.log(`✅ OS ${osId} atualizada com sucesso:`, dataToUpdate);
+        
+        // 5. Exibe uma mensagem de sucesso
+        alert(`O registro ${osId} da OS foi salva com sucesso!`);
+        
+        // 6. Recarrega a tabela para atualizar a visualização (opcional, mas recomendado)
+        // loadServiceOrders(); 
+        
+    } catch (err) {
+       // console.error(`❌ Erro ao salvar OS ${osId}:`, err.message);
+       // alert(`Erro ao salvar OS ${osId}: ${err.message}`);
+    
+         const errorMessage = err.message || JSON.stringify(err);
+        console.error('❌ Erro de Supabase DETALHADO:', err); // MANTENHA O LOG COMPLETO
+        
+        // MOSTRA A MENSAGEM EXATA DO SUPABASE!
+        alert(`Erro ao salvar valor no banco. Detalhe: ${errorMessage}`);
+
+
+
+    
+    } finally {
+        // 7. Reabilita o botão
+        buttonElement.disabled = false;
+        buttonElement.textContent = '💾 Salvar / Ver OS';
+        
+        // Além de salvar, você pode chamar o modal aqui se quiser manter as duas ações
+        // abrirModalOS(osId); 
+    }
+}
+
+
+/* ============================================================
+   ATUALIZAÇÃO AUTOMÁTICA DE CAMPOS
+============================================================ */
+/* ============================================================
+   ATUALIZAÇÃO AUTOMÁTICA DE CAMPOS
+============================================================ */
+async function atualizarCampo(osId, campo, valor) {
+    try {
+        // Garantir que o valor seja compatível com o banco
+        if (valor instanceof Date) {
+            valor = valor.toISOString(); // converte Date para string ISO
+        }
+        if (valor === "" || valor === undefined) {
+            valor = null; // trata campos vazios como null
+        }
+
+        const { data, error } = await supabase
+            .from("ordens_servico") // nome real da tabela
+            .update({ [campo]: valor })
+            .eq("id", osId);
+
+        if (error) throw error;
+
+
+
+        console.log(`✅ Campo '${campo}' da OS ${osId} atualizado.`, data);
+    } catch (err) {
+        console.error(`❌ Erro ao atualizar '${campo}' da OS ${osId}:`, err.message);
+
+        // Mensagem detalhada para RLS
+        if (err.message.includes("RLS")) {
+            alert("Erro de permissão: você não tem acesso para atualizar este campo.");
+        } else {
+            alert("Erro ao salvar valor no banco.");
+        }
+    }
+}
+
+
+/* ============================================================
+   SELECTS DOS FILTROS
+============================================================ */
+async function loadSelectOptions(selectId, tableName, columnName, defaultText) {
+    const select = document.getElementById(selectId);
+    select.innerHTML = `<option value="">Carregando...</option>`;
+
+    try {
+        const { data, error } = await supabase.from(tableName).select(columnName);
+        if (error) throw error;
+        const values = [...new Set(data.map(d => d[columnName]).filter(Boolean))];
+        select.innerHTML = `<option value="">${defaultText}</option>` +
+            values.map(v => `<option value="${v}">${v}</option>`).join('');
+    } catch (err) {
+        console.error(`Erro ao carregar ${tableName}:`, err.message);
+        select.innerHTML = `<option value="">Erro ao carregar</option>`;
+    }
+}
+
+/* ============================================================
+   INICIALIZAÇÃO
+============================================================ */
+document.addEventListener('DOMContentLoaded', async () => {
+   // await loadSelectOptions('tecnico', 'tecnicos', 'nome', 'Selecione o Técnico');
+
+   // await loadSelectOptions('tecnico', 'Principal', 'tecnico', 'Selecione o Técnico');
+    
+    //Desativado abaixo o sistema dinamico que busca na table do supabase 
+    //await loadSelectOptions('tipoOcorrencia', 'ocorrencias', 'tipo', 'Selecione a Ocorrência');
+    //await loadServiceOrders();
+
+tbody.innerHTML = `<tr><td colspan="12">Preencha os filtros e clique em [Pesquisar] para buscar as Ordens de Serviço.</td></tr>`;
+    document.getElementById('search-button').addEventListener('click', CarregarOS);
+});
+
+
+
+/* ============================================================
+   FUNÇÕES DO MODAL
+============================================================ */
+function abrirModalRelatorio() {
+    document.getElementById('modal-relatorio').classList.add('show');
+}
+function fecharModalRelatorio() {
+    document.getElementById('modal-relatorio').classList.remove('show');
+}
+function abrirModalOS(id) {
+    alert(`Abrindo detalhes da OS ID ${id}...`);
+}
+
+
+</script>
+
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+
+	// ]]>
+</script>
+</body>
+</html>
